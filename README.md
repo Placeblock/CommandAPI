@@ -3,7 +3,7 @@ API for an easier Command use on Minecraft Servers (BungeeCord, Spigot, ...).
 
 ### 🔴IMPORTANT🔴 Please read the whole documentation to prevent mistakes and to answer unanswered questions
 
-It simplifies and structures command definition and execution, especially with many subcommands.<br />
+CommandAPI simplifies and structures command definition and execution, especially with many subcommands.<br />
 Auto-Tab-Completion can be a mess to implement in large commands. CommandAPI does it for you!<br />
 It can be really hard to implement a complex Commands, Help-Messages and Auto-Tab-Completion without many duplicated code snippets. Because the Structure of your commands and subcommands are stored only in one place, all of this can be done without much effort!
 
