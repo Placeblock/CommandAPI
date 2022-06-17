@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Getter
 @SuppressWarnings("unused")
 public abstract class ScharkCommand<P, C> {
+    private ScharkCommand<P, C> parentCommand;
     private final String label;
     private final String description;
     private final String permission;
@@ -25,6 +26,7 @@ public abstract class ScharkCommand<P, C> {
 
 
     public ScharkCommand<P, C> addSubCommand(ScharkCommand<P, C> command) {
+        command.parentCommand = this;
         this.subCommands.add(command);
         return this;
     }
@@ -49,28 +51,51 @@ public abstract class ScharkCommand<P, C> {
         return this;
     }
 
-    public TextComponent generateHelp() {
-        TextComponent textComponent = Texts.generateWrappedText(this.label.substring(0, 1).toUpperCase() + this.label.substring(1), 40);
-        return textComponent.append(Component.newline()).append(this.generateHelpRaw("/"));
+    public ScharkCommand<P, C> getParentRecursive() {
+        if (this.parentCommand == null) {
+            return this;
+        }
+        return this.parentCommand.getParentRecursive();
     }
 
-    private TextComponent generateHelpRaw(String previousCommand) {
-        String[] previousCommands = previousCommand.split(" ");
-        TextComponent commandComponent = Texts.special(previousCommands[0]);
-        for (int i = 1; i < previousCommands.length; i++) {
-            commandComponent = commandComponent.append(Texts.primary(previousCommands[i]));
+    public List<ScharkCommand<P, C>> getCommandsRecursive() {
+        List<ScharkCommand<P, C>> commands = new ArrayList<>();
+        if (this.parentCommand != null) {
+            commands.addAll(this.parentCommand.getCommandsRecursive());
         }
-        Component argumentsComponent = Texts.secondary(this.arguments.stream().collect(Collectors.joining("] [", "[", "]")));
+        commands.add(this);
+        return commands;
+    }
+
+
+    public TextComponent generateHelp() {
+        TextComponent textComponent = Texts.generateWrappedText(this.label.substring(0, 1).toUpperCase() + this.label.substring(1), 40);
+        return textComponent.append(Component.newline()).append(this.generateHelpRaw());
+    }
+
+    private String generateArgumentsString() {
+        return this.getArguments().stream().collect(Collectors.joining("] [", "[", "]"));
+    }
+
+    private TextComponent generateHelpRaw() {
+        List<ScharkCommand<P, C>> recursiveCommands = this.getCommandsRecursive();
+        TextComponent commandComponent = Texts.primary("/").append(Texts.primary(recursiveCommands.get(0).getLabel()));
+        commandComponent = commandComponent.append(Texts.secondary(recursiveCommands.get(0).generateArgumentsString()));
+        for (int i = 1; i < recursiveCommands.size(); i++) {
+            commandComponent = commandComponent.append(Texts.secondary(recursiveCommands.get(i).getLabel()));
+            commandComponent = commandComponent.append(Texts.secondary(recursiveCommands.get(i).generateArgumentsString()));
+        }
+        Component argumentsComponent = Texts.secondary(this.generateArgumentsString());
         if (this.arguments.size() > 0) {
             commandComponent = commandComponent.append(argumentsComponent);
         }
         TextComponent textComponent = Component.empty();
         if (this.subCommands.size() == 0 || this.showWithoutSubcommands) {
             textComponent = textComponent.append(commandComponent).append(Component.newline()).append(Texts.secondary("   > " + this.description)).append(Component.newline());
-            textComponent = textComponent.clickEvent(ClickEvent.suggestCommand(previousCommand + this.label + " "));
+            textComponent = textComponent.clickEvent(ClickEvent.suggestCommand(this.getCommandsRecursive().stream().map(ScharkCommand::getLabel).collect(Collectors.joining()) + " "));
         }
         for (ScharkCommand<P, C> subCommand : this.subCommands) {
-            TextComponent subCommandComponent = subCommand.generateHelpRaw(previousCommand + this.label + " ");
+            TextComponent subCommandComponent = subCommand.generateHelpRaw();
             textComponent = textComponent.append(subCommandComponent);
         }
         return textComponent;
