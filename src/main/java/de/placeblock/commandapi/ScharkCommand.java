@@ -61,13 +61,12 @@ public abstract class ScharkCommand<P, C> {
             commandComponent = commandComponent.append(Texts.primary(previousCommands[i]));
         }
         Component argumentsComponent = Texts.secondary(this.arguments.stream().collect(Collectors.joining("] [", "[", "]")));
+        if (this.arguments.size() > 0) {
+            commandComponent = commandComponent.append(argumentsComponent);
+        }
         TextComponent textComponent = Component.empty();
         if (this.subCommands.size() == 0 || this.showWithoutSubcommands) {
-            textComponent = textComponent.append(commandComponent);
-            if (this.arguments.size() > 0) {
-                textComponent = textComponent.append(argumentsComponent);
-            }
-            textComponent = textComponent.append(Component.newline()).append(Texts.secondary("   > " + this.description)).append(Component.newline());
+            textComponent = textComponent.append(commandComponent).append(Component.newline()).append(Texts.secondary("   > " + this.description)).append(Component.newline());
             textComponent = textComponent.clickEvent(ClickEvent.suggestCommand(previousCommand + this.label + " "));
         }
         for (ScharkCommand<P, C> subCommand : this.subCommands) {
