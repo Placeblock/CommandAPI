@@ -35,7 +35,7 @@ ScharkCommand<Player, Console> scharkCommand = new ScharkCommand<Player, Console
 
 Because CommandAPI should be compatible with Spigot as well as Bungeecord the Player class and Console class are generic. Because of this there
 are Methods like sendHelpMessage(Player player) or hasPermission(Player player, String permission).
-If you want to create multiple Commands is recommended to create a class which extends ScharkCommand and implements theese methods.
+If you want to create multiple Commands it is recommended to create a class which extends ScharkCommand and implements theese methods, because they are the same for all commands.
 
 #### Example (BungeeCord):
 ```
