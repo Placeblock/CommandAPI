@@ -1,13 +1,13 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 
 group = "de.placeblock.CommandAPI"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.0"
 description = "API for an easier use of Commands"
 
 // Configure plugin.yml generation
 bukkit {
     load = BukkitPluginDescription.PluginLoadOrder.STARTUP
-    main = "Main"
+    main = "CommandAPI"
     apiVersion = "1.18"
     authors = listOf("Placeblock")
 }
@@ -18,6 +18,7 @@ plugins {
   id("io.papermc.paperweight.userdev") version "1.3.5"
   id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
   id("net.minecrell.plugin-yml.bukkit") version "0.5.1" // Generates plugin.yml
+  id("maven-publish")
 }
 
 java {
@@ -39,7 +40,7 @@ repositories {
 dependencies {
   paperDevBundle("1.18.2-R0.1-SNAPSHOT")
   compileOnly("org.projectlombok:lombok:1.18.24")
-  compileOnly("io.schark:ScharkDesign:1.0.2-SNAPSHOT")
+  compileOnly("io.schark:ScharkDesign:1.0.3")
   // paperweightDevBundle("com.example.paperfork", "1.18.2-R0.1-SNAPSHOT")
 
   // You will need to manually specify the full dependency if using the groovy gradle dsl
@@ -74,4 +75,27 @@ tasks {
     outputJar.set(layout.buildDirectory.file("libs/PaperweightTestPlugin-${project.version}.jar"))
   }
    */
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "de.placeblock"
+            artifactId = "CommandAPI"
+            version = "1.3.0"
+
+            from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            name = "ScharkIO"
+            url = uri("http://schark.io:8085/private")
+            isAllowInsecureProtocol = true
+            credentials{
+                username = project.properties["reposilite.username"] as String?
+                password = project.properties["reposilite.token"] as String?
+            }
+        }
+    }
 }
