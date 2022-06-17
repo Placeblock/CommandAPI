@@ -160,7 +160,6 @@ The empty list needs to be passed as the last argument because of the recursion 
 ```
 public abstract class CoreCommand extends Command implements TabExecutor {
 
-    @Setter
     protected ScharkCommand<CorePlayer, CommandSender> scharkCommand;
 
     public CoreCommand(String label, String[] aliases) {
