@@ -137,9 +137,15 @@ You don't have to filter Elements that match with the beginning of the user inpu
 If you have multiple Arguments argindex indicates which argument is going to be tab-completed.
 
 ### Generate HelpMessage
+If you want just to generate the Help Message
 ```
 ScharkCommand scharkCommand = ...
 TextComponent helpMessage = scharkCommand.generateHelpMessage();
+```
+If you want to generate the HelpMessage of the first Command in the Command Structure
+```
+ScharkCommand scharkCommand = ...
+TextComponent helpMessage = scharkCommand.getParentRecursive().generateHelpMessage();
 ```
 TextComponent from [AdventureAPI](https://github.com/KyoriPowered/adventure) is returned
 
