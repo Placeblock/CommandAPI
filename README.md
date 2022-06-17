@@ -15,6 +15,12 @@ ScharkCommand<Player, Console> scharkCommand = new ScharkCommand<Player, Console
     public void onExecutePlayer(Player player, List<String> args) {
 
     }
+    
+    /* Optional
+    @Override
+    public void onExecuteConsole(Console console, List<String> args) {
+    
+    }*/
 
     @Override
     public boolean hasPermission(Player player, String permission) {
