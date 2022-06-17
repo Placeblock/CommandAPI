@@ -52,7 +52,7 @@ public abstract class BungeeCommand extends ScharkCommand<ProxiedPlayer, Command
 
     @Override
     public void sendHelpMessage(ProxiedPlayer player) {
-        player.sendMessage(this.generateHelp());
+        player.sendMessage(this.getParentRecursive().generateHelp());
     }
 
     @Override
