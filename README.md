@@ -57,6 +57,27 @@ public abstract class BungeeCommand extends ScharkCommand<ProxiedPlayer, Command
 
 Now you only have to implement onExecutePlayer in your command.
 
+### What is showWithoutSubCommands?
+
+Example Command Structure
+```
+command [arg1] [arg2]
+    sub2 [arg3]
+    sub3
+```
+If you set showWithoutSubCommands in sub1 to false the HelpMessage will look like this:
+```
+/command [arg1] [arg2] sub2 [arg3]
+/command [arg1] [arg2] sub3
+```
+If you set showWithoutSubCommands in sub1 to true the HelpMessage will look like this:
+```
+/command [arg1] [arg2]
+/command [arg1] [arg2] sub2 [arg3]
+/command [arg1] [arg2] sub3
+```
+It does what it says, it shows the command without its subcommands!
+
 
 ## Features
 
@@ -93,7 +114,7 @@ TextComponent from [AdventureAPI](https://github.com/KyoriPowered/adventure) is 
 ### Execute Command
 
 Every ScharkCommand can be executed. CommandAPI will automatically call subCommands and pass arguments to the onExecute methods of them.
-If an user executes th following command
+If an user executes the following command
 /command sub1 sub2 [arg1] [arg2] 
 The onExecute method of the subCommand labeled "sub2" will be called with the arguments [arg1, arg2]
 
@@ -102,6 +123,7 @@ If an user executes th following command
 The subCommand "sub2" will be called again, but with the arguments including [arg1] from the subCommand "sub1", because maybe [arg1] is important for sub2
 
 ```
-  ScharkCommand scharkCommand = ...
+  ScharkCommand scharkCommand = ...some complex scharkCommand structure
   scharkCommand.execute(player, console, args, new ArrayList<>());
 ```
+The empty list needs to be passed as the last argument because of the recursion behind the method.
