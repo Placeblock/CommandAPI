@@ -1,28 +1,33 @@
 # CommandAPI
-API for an easier Command use in Waterfall / Paper , Help-Message and Auto-Completion support
+API for an easier Command use in Waterfall / Paper , Help-Message and Auto-Tab-Completion support.
+
+It simplifies and structures command execution, especially with many subcommands. Arguments get passed automatically!<br />
+Auto-Tab-Completion can be a mess to implement in large commands. CommandAPI does it for you!<br />
+It can be really hard to implement Help-Messages without many duplicated code snippets. Because the Structure of your commands and subcommands are stored only in one place, Help-Messages can be generated without much effort!
+
 
 ### Example for a simple Command:
 ```
 ScharkCommand<Player, Console> scharkCommand = new ScharkCommand<Player, Console>() {
-  @Override
-  public void onExecutePlayer(Player player, List<String> args) {
-                
-  }
+    @Override
+    public void onExecutePlayer(Player player, List<String> args) {
 
-  @Override
-  public boolean hasPermission(Player player, String permission) {
+    }
+
+    @Override
+    public boolean hasPermission(Player player, String permission) {
     return false;
-  }
+    }
 
-  @Override
-  public void sendHelpMessage(Player player) {
+    @Override
+    public void sendHelpMessage(Player player) {
 
-  }
+    }
 
-  @Override
-  public void sendNoPermMessage(Player player) {
+    @Override
+    public void sendNoPermMessage(Player player) {
 
-  }
+    }
 }
 ```
 
@@ -40,7 +45,7 @@ public abstract class BungeeCommand extends ScharkCommand<ProxiedPlayer, Command
 
     @Override
     public boolean hasPermission(ProxiedPlayer player, String permission) {
-        return CorePermission.hasPermission(player, permission);
+        return player.hasPermission(player, permission);
     }
 
     @Override
@@ -50,7 +55,7 @@ public abstract class BungeeCommand extends ScharkCommand<ProxiedPlayer, Command
 
     @Override
     public void sendNoPermMessage(ProxiedPlayer player) {
-        player.sendMessage(CoreMessages.INVALID_COMMAND);
+        player.sendMessage(Messages.NO_PERM);
     }
 }
 ```
@@ -77,37 +82,56 @@ If you set showWithoutSubCommands in sub1 to true the HelpMessage will look like
 /command [arg1] [arg2] sub3
 ```
 It does what it says, it shows the command without its subcommands!
-
-
+<br></br>
+<br></br>
 ## Features
 
 ### You can create complex Command Structures:
 ```
-  ScharkCommand scharkCommand = ...
-  ScharkCommand scharkCommand2 = ...
-  scharkCommand.addSubCommand(scharkCommand2);
+ScharkCommand scharkCommand = ...
+ScharkCommand scharkCommand2 = ...
+scharkCommand.addSubCommand(scharkCommand2);
 ```
 
 ### You can add Aliases to Commands:
 ```
-  ScharkCommand scharkCommand = ...
-  scharkCommand.addAlias("alias1");
-  scharkCommand.addAliases("alias2", "alias3", "alias4");
+ScharkCommand scharkCommand = ...
+scharkCommand.addAlias("alias1");
+scharkCommand.addAliases("alias2", "alias3", "alias4");
 ```
 
 ### You can add Arguments to Commands:
 ```
-  ScharkCommand scharkCommand = ...
-  scharkCommand.addArgument("arg1");
-  scharkCommand.addArguments("arg2", "arg3", "arg4");
+ScharkCommand scharkCommand = ...
+scharkCommand.addArgument("arg1");
+scharkCommand.addArguments("arg2", "arg3", "arg4");
 ```
 
 Theese methods are chainable, still it is not recommended in complex commands because of readability
 
+### Add Extra Tab-Completions
+Sometimes you want to add extra elements to Auto-Completion, at example if you want to invite somebody to your party, all online friends should be autocompleted.
+CommandAPI has a way to implement this easily!
+```
+    partyCommand.addSubCommand(new BungeeCommand("invite", "Invite Players to your Party", "network.party.invite", false) {
+        @Override
+        public void onExecutePlayer(ProxiedPlayer player, List<String> args) {
+            //Invite args[0] to player's Party
+        }
+        @Override
+        public Set<String> getExtraTabCompletions(ProxiedPlayer player, int argindex) {
+            return SomeFriendManager.getFriends(player);
+        }
+    }.addArgument("player")
+```
+❗IMPORTANT❗
+You don't have to filter Elements that match with the beginning of the user input, CommandAPI does this for you ;)
+If you have multiple Arguments argindex indicates which argument is going to be tab-completed.
+
 ### Generate HelpMessage
 ```
-  ScharkCommand scharkCommand = ...
-  TextComponent helpMessage = scharkCommand.generateHelpMessage();
+ScharkCommand scharkCommand = ...
+TextComponent helpMessage = scharkCommand.generateHelpMessage();
 ```
 TextComponent from [AdventureAPI](https://github.com/KyoriPowered/adventure) is returned
 
@@ -123,7 +147,42 @@ If an user executes th following command
 The subCommand "sub2" will be called again, but with the arguments including [arg1] from the subCommand "sub1", because maybe [arg1] is important for sub2
 
 ```
-  ScharkCommand scharkCommand = ...some complex scharkCommand structure
-  scharkCommand.execute(player, console, args, new ArrayList<>());
+ScharkCommand scharkCommand = ...some complex scharkCommand structure
+scharkCommand.execute(player, console, args, new ArrayList<>());
 ```
 The empty list needs to be passed as the last argument because of the recursion behind the method.
+<br></br>
+<br></br>
+## How to connect CommandAPI with Spigot or BungeeCord?
+### Example for BungeeCord:
+```
+public abstract class CoreCommand extends Command implements TabExecutor {
+
+    @Setter
+    protected ScharkCommand<CorePlayer, CommandSender> scharkCommand;
+
+    public CoreCommand(String label, String[] aliases) {
+        super(label, null, aliases);
+        this.scharkCommand = this.generateBungeeCommand(label, aliases);
+    }
+
+    public abstract BungeeCommand generateBungeeCommand(String label, String[] aliases);
+
+    @Override
+    public void execute(CommandSender commandSender, String[] args) {
+        this.scharkCommand.execute(
+                commandSender instanceof ProxiedPlayer proxiedPlayer ? proxiedPlayer : null,
+                commandSender,
+                List.of(args), new ArrayList<>());
+    }
+
+    @Override
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        if (!(sender instanceof ProxiedPlayer p)) return ImmutableSet.of();
+        return this.scharkCommand.getTabCompletions(p, args);
+    }
+}
+```
+You can use this class for all your other commands.
+Now you can just create at example a PartyCommand class which extends CoreCommand and register it in your Main Class!
+
