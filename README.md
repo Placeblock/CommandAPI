@@ -1,6 +1,8 @@
 # CommandAPI
 API for an easier Command use in Waterfall / Paper , Help-Message and Auto-Tab-Completion support.
 
+### 🔴IMPORTANT🔴 Please read the whole documentation to prevent mistakes and to answer unanswered questions
+
 It simplifies and structures command execution, especially with many subcommands. Arguments get passed automatically!<br />
 Auto-Tab-Completion can be a mess to implement in large commands. CommandAPI does it for you!<br />
 It can be really hard to implement Help-Messages without many duplicated code snippets. Because the Structure of your commands and subcommands are stored only in one place, Help-Messages can be generated without much effort!
