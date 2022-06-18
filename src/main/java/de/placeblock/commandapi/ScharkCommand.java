@@ -135,15 +135,18 @@ public abstract class ScharkCommand<P, C> {
             for (ScharkCommand<P, C> subCommand : this.subCommands) {
                 if (subCommand.getLabel().equals(currentargs.get(0)) || subCommand.getAliases().contains(currentargs.get(0))) {
                     subCommand.execute(player, console, currentargs.subList(1, currentargs.size()));
+                    return;
                 }
-                return;
             }
-            this.sendHelpMessage(player);
         }
-        if (player == null) {
-            this.onExecuteConsole(console, currentargs);
+        if (currentargs.size() == this.arguments.size()) {
+            if (player == null) {
+                this.onExecuteConsole(console, currentargs);
+            } else {
+                this.onExecutePlayer(player, currentargs);
+            }
         } else {
-            this.onExecutePlayer(player, currentargs);
+            this.sendHelpMessage(player);
         }
     }
 
