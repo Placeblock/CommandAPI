@@ -53,7 +53,7 @@ public abstract class ScharkCommand<P, C> {
     }
 
     public ScharkCommand<P, C> addOptionalArgument(String argument) {
-        this.addArguments(argument);
+        this.addOptionalArguments(argument);
         return this;
     }
 
@@ -99,7 +99,7 @@ public abstract class ScharkCommand<P, C> {
     }
 
     private String generateArgumentsString() {
-        return this.arguments.size() == 0 ? "" : this.getArguments().stream().collect(Collectors.joining("] [", "[", "]")) +
+        return (this.arguments.size() == 0 ? "" : this.getArguments().stream().collect(Collectors.joining("] [", "[", "]"))) +
             (this.optionalarguments.size() == 0 ? "" : this.getOptionalarguments().stream().collect(Collectors.joining(") (", "(", ")")));
     }
 
