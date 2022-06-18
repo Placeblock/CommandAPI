@@ -1,5 +1,6 @@
 package de.placeblock.commandapi;
 
+import io.schark.design.Colors;
 import io.schark.design.Texts;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +15,14 @@ import java.util.stream.Collectors;
 @Getter
 @SuppressWarnings("unused")
 public abstract class ScharkCommand<P, C> {
+    public static final String DESCRIPTION_PREFIX = "   > ";
     private ScharkCommand<P, C> parentCommand;
     private final String label;
     private final String description;
     private final String permission;
     private final List<ScharkCommand<P, C>> subCommands = new ArrayList<>();
     private final List<String> arguments = new ArrayList<>();
+    private final List<String> optionalarguments = new ArrayList<>();
     private final List<String> aliases = new ArrayList<>();
     private final boolean showWithoutSubcommands;
 
@@ -28,21 +31,43 @@ public abstract class ScharkCommand<P, C> {
     public ScharkCommand<P, C> addSubCommand(ScharkCommand<P, C> command) {
         command.parentCommand = this;
         this.subCommands.add(command);
+        if (this.arguments.size() > 0 && !showWithoutSubcommands) {
+            System.out.println("WARNING: Added SubCommand " + command.getLabel() + " to ScharkCommand " + this.getCommandsRecursive()
+                + ". This ScharkCommand has Arguments, which will be ignored from now");
+        }
         return this;
     }
 
     public ScharkCommand<P, C> addArgument(String argument) {
-        this.arguments.add(argument);
+        this.addArguments(argument);
         return this;
     }
 
     public ScharkCommand<P, C> addArguments(String... arguments) {
         this.arguments.addAll(List.of(arguments));
+        if (this.subCommands.size() > 0 && !showWithoutSubcommands) {
+            System.out.println("WARNING: Added Arguments " + Arrays.toString(arguments) + " to ScharkCommand " + this.getCommandsRecursive()
+                + ". This won't have any effect as this ScharkCommand has SubCommands");
+        }
         return this;
     }
 
-    public ScharkCommand<P, C> addAlias(String aliases) {
-        this.aliases.add(aliases);
+    public ScharkCommand<P, C> addOptionalArgument(String argument) {
+        this.addArguments(argument);
+        return this;
+    }
+
+    public ScharkCommand<P, C> addOptionalArguments(String... arguments) {
+        this.optionalarguments.addAll(List.of(arguments));
+        if (this.subCommands.size() > 0 && !showWithoutSubcommands) {
+            System.out.println("WARNING: Added Optional Arguments " + Arrays.toString(arguments) + " to ScharkCommand " + this.getCommandsRecursive()
+                + ". This won't have any effect as this ScharkCommand has SubCommands");
+        }
+        return this;
+    }
+
+    public ScharkCommand<P, C> addAlias(String alias) {
+        this.addAliases(alias);
         return this;
     }
 
@@ -69,30 +94,26 @@ public abstract class ScharkCommand<P, C> {
 
 
     public TextComponent generateHelp() {
-        TextComponent textComponent = Texts.generateWrappedText(this.label.substring(0, 1).toUpperCase() + this.label.substring(1), 40);
+        TextComponent textComponent = Texts.headline(this.label.substring(0, 1).toUpperCase() + this.label.substring(1), Colors.SPECIAL, 40);
         return textComponent.append(Component.newline()).append(this.generateHelpRaw());
     }
 
     private String generateArgumentsString() {
-        return this.getArguments().stream().collect(Collectors.joining("] [", "[", "]"));
+        return this.arguments.size() == 0 ? "" : this.getArguments().stream().collect(Collectors.joining("] [", "[", "]")) +
+            (this.optionalarguments.size() == 0 ? "" : this.getOptionalarguments().stream().collect(Collectors.joining(") (", "(", ")")));
     }
 
     private TextComponent generateHelpRaw() {
         List<ScharkCommand<P, C>> recursiveCommands = this.getCommandsRecursive();
-        TextComponent commandComponent = Texts.primary("/").append(Texts.primary(recursiveCommands.get(0).getLabel()));
-        commandComponent = commandComponent.append(Texts.secondary(recursiveCommands.get(0).generateArgumentsString()));
+        TextComponent commandComponent = Texts.primary("/").append(Texts.primary(recursiveCommands.get(0).getLabel())).append(Component.space());
         for (int i = 1; i < recursiveCommands.size(); i++) {
-            commandComponent = commandComponent.append(Texts.secondary(recursiveCommands.get(i).getLabel()));
-            commandComponent = commandComponent.append(Texts.secondary(recursiveCommands.get(i).generateArgumentsString()));
+            commandComponent = commandComponent.append(Texts.secondary(recursiveCommands.get(i).getLabel())).append(Component.space());
         }
-        Component argumentsComponent = Texts.secondary(this.generateArgumentsString());
-        if (this.arguments.size() > 0) {
-            commandComponent = commandComponent.append(argumentsComponent);
-        }
+        commandComponent = commandComponent.append(Texts.secondary(recursiveCommands.get(recursiveCommands.size() - 1).generateArgumentsString()));
         TextComponent textComponent = Component.empty();
         if (this.subCommands.size() == 0 || this.showWithoutSubcommands) {
-            textComponent = textComponent.append(commandComponent).append(Component.newline()).append(Texts.secondary("   > " + this.description)).append(Component.newline());
-            textComponent = textComponent.clickEvent(ClickEvent.suggestCommand(this.getCommandsRecursive().stream().map(ScharkCommand::getLabel).collect(Collectors.joining()) + " "));
+            textComponent = textComponent.append(commandComponent).append(Component.newline()).append(Texts.secondary(DESCRIPTION_PREFIX + this.description)).append(Component.newline());
+            textComponent = textComponent.clickEvent(ClickEvent.suggestCommand("/" + this.getCommandsRecursive().stream().map(ScharkCommand::getLabel).collect(Collectors.joining()) + " "));
         }
         for (ScharkCommand<P, C> subCommand : this.subCommands) {
             TextComponent subCommandComponent = subCommand.generateHelpRaw();
@@ -101,7 +122,7 @@ public abstract class ScharkCommand<P, C> {
         return textComponent;
     }
 
-    public void execute(P player, C console, List<String> currentargs, List<String> allargs) {
+    public void execute(P player, C console, List<String> currentargs) {
         if (this.permission != null && !this.hasPermission(player, this.permission)) {
             this.sendNoPermMessage(player);
             return;
@@ -110,14 +131,14 @@ public abstract class ScharkCommand<P, C> {
             this.sendHelpMessage(player);
             return;
         }
-        allargs.addAll(currentargs.subList(0, this.arguments.size()));
-        if (currentargs.size() > this.arguments.size()) {
+        if ((this.arguments.size() + this.optionalarguments.size() == 0 || this.showWithoutSubcommands) && currentargs.size() > 0) {
             for (ScharkCommand<P, C> subCommand : this.subCommands) {
-                if (subCommand.getLabel().equals(currentargs.get(this.arguments.size())) || subCommand.getAliases().contains(currentargs.get(this.arguments.size()))) {
-                    subCommand.execute(player, console, currentargs.subList(this.arguments.size(), currentargs.size()), allargs);
+                if (subCommand.getLabel().equals(currentargs.get(0)) || subCommand.getAliases().contains(currentargs.get(0))) {
+                    subCommand.execute(player, console, currentargs.subList(1, currentargs.size()));
                 }
                 return;
             }
+            this.sendHelpMessage(player);
         }
         if (player == null) {
             this.onExecuteConsole(console, currentargs);
@@ -138,30 +159,34 @@ public abstract class ScharkCommand<P, C> {
     }
 
     public Set<String> getTabCompletions(P player, String[] args) {
-        Set<String> tabCompleteArgs = new LinkedHashSet<>(this.subCommands.stream().map(ScharkCommand::getLabel).toList());
-        if (args.length > this.arguments.size()) {
-            for (ScharkCommand<P, C> subCommand : this.subCommands) {
-                if (subCommand.getLabel().equals(args[this.arguments.size()]) || subCommand.getAliases().contains(args[this.arguments.size()])) {
-                    return subCommand.getTabCompletions(player, Arrays.copyOfRange(args, this.arguments.size(), args.length));
+        System.out.println(args.length);
+        Set<String> tabCompleteArgs = new LinkedHashSet<>();
+        if (args.length <= this.arguments.size() + this.optionalarguments.size()) {
+            for (String extraTabCompletion : this.getExtraTabCompletions(player, args.length - 1)) {
+                if (extraTabCompletion.startsWith(args[args.length - 1])) {
+                    tabCompleteArgs.add(extraTabCompletion);
                 }
-                if (subCommand.getLabel().startsWith(args[this.arguments.size()])) {
+            }
+        }
+        if (args.length == 1) {
+            for (ScharkCommand<P, C> subCommand : this.subCommands) {
+                if (subCommand.getLabel().startsWith(args[0])) {
                     tabCompleteArgs.add(subCommand.getLabel());
                 }
                 for (String alias : subCommand.getAliases()) {
-                    if (alias.startsWith(args[this.arguments.size()])) {
+                    if (alias.startsWith(args[0])) {
                         tabCompleteArgs.add(alias);
                     }
                 }
             }
-        }
-        for (String extraTabCompletion : this.getExtraTabCompletions(player, args.length - 1)) {
-            if (extraTabCompletion.startsWith(args[this.arguments.size()])) {
-                tabCompleteArgs.add(extraTabCompletion);
+        } else if (args.length > 1) {
+            for (ScharkCommand<P, C> subCommand : this.subCommands) {
+                if (subCommand.getLabel().equals(args[0]) || subCommand.getAliases().contains(args[0])) {
+                    return subCommand.getTabCompletions(player, Arrays.copyOfRange(args, 1, args.length));
+                }
             }
         }
-        if (tabCompleteArgs.size() == 0) {
-            tabCompleteArgs.add("[" + this.arguments.get(args.length) + "]");
-        }
+
         return tabCompleteArgs;
     }
 }

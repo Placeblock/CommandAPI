@@ -68,20 +68,20 @@ Now you only have to implement onExecutePlayer in your command.
 
 Example Command Structure
 ```
-command [arg1] [arg2]
+command
     sub2 [arg3]
     sub3
 ```
 If you set showWithoutSubCommands in sub1 to false the HelpMessage will look like this:
 ```
-/command [arg1] [arg2] sub2 [arg3]
-/command [arg1] [arg2] sub3
+/command sub2 [arg3]
+/command sub3
 ```
 If you set showWithoutSubCommands in sub1 to true the HelpMessage will look like this:
 ```
-/command [arg1] [arg2]
-/command [arg1] [arg2] sub2 [arg3]
-/command [arg1] [arg2] sub3
+/command 
+/command sub2 [arg3]
+/command sub3
 ```
 It does what it says, it shows the command without its subcommands!
 <br></br>
@@ -106,7 +106,9 @@ scharkCommand.addAliases("alias2", "alias3", "alias4");
 ```
 ScharkCommand scharkCommand = ...
 scharkCommand.addArgument("arg1");
+scharkCommand.addOptionalArgument("arg1");
 scharkCommand.addArguments("arg2", "arg3", "arg4");
+scharkCommand.addOptionalArguments("arg1", "arg3", "arg10");
 ```
 
 Theese methods are chainable, still it is not recommended in complex commands because of readability
@@ -143,16 +145,10 @@ Every ScharkCommand can be executed. CommandAPI will automatically call subComma
 If an user executes the following command
 /command sub1 sub2 [arg1] [arg2] 
 The onExecute method of the subCommand labeled "sub2" will be called with the arguments [arg1, arg2]
-
-If an user executes th following command
-/command sub1 [arg1] sub2 [arg2] [arg3]
-The subCommand "sub2" will be called again, but with the arguments including [arg1] from the subCommand "sub1", because maybe [arg1] is important for sub2
-
 ```
 ScharkCommand scharkCommand = ...some complex scharkCommand structure
 scharkCommand.execute(player, console, args, new ArrayList<>());
 ```
-The empty list needs to be passed as the last argument because of the recursion behind the method.
 <br></br>
 <br></br>
 ## How to connect CommandAPI with Spigot or BungeeCord?
