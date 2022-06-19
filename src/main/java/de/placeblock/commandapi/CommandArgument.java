@@ -7,6 +7,7 @@ import java.util.Set;
 
 @Getter
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public abstract class CommandArgument<P> {
 
     private final String label;

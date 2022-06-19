@@ -8,7 +8,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.event.HoverEventSource;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,7 +43,9 @@ public abstract class ScharkCommand<P, C> {
         return this;
     }
 
-    public ScharkCommand<P, C> addArguments(CommandArgument<P>... arguments) {
+    @SafeVarargs
+    @SuppressWarnings("UnusedReturnValue")
+    public final ScharkCommand<P, C> addArguments(CommandArgument<P>... arguments) {
         this.arguments.addAll(List.of(arguments));
         if (this.subCommands.size() > 0 && !showWithoutSubcommands) {
             System.out.println("WARNING: Added Arguments " + Arrays.toString(arguments) + " to ScharkCommand " + this.getCommandsRecursive()
@@ -58,7 +59,9 @@ public abstract class ScharkCommand<P, C> {
         return this;
     }
 
-    public ScharkCommand<P, C> addOptionalArguments(CommandArgument<P>... arguments) {
+    @SafeVarargs
+    @SuppressWarnings("UnusedReturnValue")
+    public final ScharkCommand<P, C> addOptionalArguments(CommandArgument<P>... arguments) {
         this.optionalarguments.addAll(List.of(arguments));
         if (this.subCommands.size() > 0 && !showWithoutSubcommands) {
             System.out.println("WARNING: Added Optional Arguments " + Arrays.toString(arguments) + " to ScharkCommand " + this.getCommandsRecursive()
@@ -72,6 +75,7 @@ public abstract class ScharkCommand<P, C> {
         return this;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public ScharkCommand<P, C> addAliases(String... aliases) {
         this.aliases.addAll(List.of(aliases));
         return this;
@@ -99,30 +103,31 @@ public abstract class ScharkCommand<P, C> {
         return textComponent.append(Component.newline()).append(this.generateHelpRaw());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private TextComponent generateHelpRaw() {
         List<ScharkCommand<P, C>> recursiveCommands = this.getCommandsRecursive();
         TextComponent commandComponent = Texts.primary("/").append(Texts.primary(recursiveCommands.get(0).getLabel())).append(Component.space());
         for (int i = 1; i < recursiveCommands.size(); i++) {
-            commandComponent = commandComponent.append(Texts.secondary(recursiveCommands.get(i).getLabel()));
+            commandComponent.append(Texts.secondary(recursiveCommands.get(i).getLabel()));
         }
         for (CommandArgument<P> argument : this.arguments) {
-            commandComponent = commandComponent.append(Component.space().append( Texts.secondary("<" + argument.getLabel() + ">")
+            commandComponent = commandComponent.append(Component.space().append(Texts.secondary("<" + argument.getLabel() + ">")
                 .hoverEvent(HoverEvent.showText(Texts.secondary(argument.getDescription())))));
             commandComponent.append(Component.space());
         }
-        for (CommandArgument<P> optionalArgument: this.optionalarguments) {
+        for (CommandArgument<P> optionalArgument : this.optionalarguments) {
             commandComponent = commandComponent.append(Component.space().append(Texts.secondary("[" + optionalArgument.getLabel() + "]")
                 .hoverEvent(HoverEvent.showText(Texts.secondary(optionalArgument.getDescription())))));
             commandComponent.append(Component.space());
         }
         TextComponent textComponent = Component.empty();
         if (this.subCommands.size() == 0 || this.showWithoutSubcommands) {
-            textComponent = textComponent.append(commandComponent).append(Component.newline()).append(Texts.secondary(DESCRIPTION_PREFIX + this.description)).append(Component.newline());
-            textComponent = textComponent.clickEvent(ClickEvent.suggestCommand("/" + this.getCommandsRecursive().stream().map(ScharkCommand::getLabel).collect(Collectors.joining()) + " "));
+            textComponent.append(commandComponent).append(Component.newline()).append(Texts.secondary(DESCRIPTION_PREFIX + this.description)).append(Component.newline());
+            textComponent.clickEvent(ClickEvent.suggestCommand("/" + this.getCommandsRecursive().stream().map(ScharkCommand::getLabel).collect(Collectors.joining()) + " "));
         }
         for (ScharkCommand<P, C> subCommand : this.subCommands) {
             TextComponent subCommandComponent = subCommand.generateHelpRaw();
-            textComponent = textComponent.append(subCommandComponent);
+            textComponent.append(subCommandComponent);
         }
         return textComponent;
     }
@@ -155,11 +160,15 @@ public abstract class ScharkCommand<P, C> {
         }
     }
 
-    public void onExecuteConsole(C console, List<String> args) {}
+    public void onExecuteConsole(C console, List<String> args) {
+    }
+
     public abstract void onExecutePlayer(P player, List<String> args);
 
     public abstract boolean hasPermission(P player, String permission);
+
     public abstract void sendHelpMessage(P player);
+
     public abstract void sendNoPermMessage(P player);
 
     public Set<String> getTabCompletions(P player, String[] args) {
