@@ -75,18 +75,18 @@ Now you only have to implement onExecutePlayer in your command.
 Example Command Structure
 ```
 command
-    sub2 [arg3]
+    sub2 <arg3>
     sub3
 ```
 If you set showWithoutSubCommands in sub1 to false the HelpMessage will look like this:
 ```
-/command sub2 [arg3]
+/command sub2 <arg3>
 /command sub3
 ```
 If you set showWithoutSubCommands in sub1 to true the HelpMessage will look like this:
 ```
 /command 
-/command sub2 [arg3]
+/command sub2 <arg3>
 /command sub3
 ```
 It does what it says, it shows the command without its subcommands!
@@ -108,35 +108,27 @@ scharkCommand.addAlias("alias1");
 scharkCommand.addAliases("alias2", "alias3", "alias4");
 ```
 
-### You can add Arguments to Commands:
+### You can add Arguments and Optional Arguments to Commands:
 ```
 ScharkCommand scharkCommand = ...
-scharkCommand.addArgument("arg1");
-scharkCommand.addOptionalArgument("arg1");
-scharkCommand.addArguments("arg2", "arg3", "arg4");
-scharkCommand.addOptionalArguments("arg1", "arg3", "arg10");
+scharkCommand.addArgument(new CommandArgument<>("label", "Argument Description") {
+    @Override
+    public Set<String> getExtraTabCompletions(Player player) {
+        return getSomeSetOfExtraTabCompletionsForThisArgument()
+    }
+});
+scharkCommand.addOptionalArgument(new CommandArgument...);
 ```
+All Strings, which get returned from the getExtraTabCompletions Method will be appended to the List
+of possible Tab-Completions for this Argument
+The Description is shown in the Help Message if you hover over an Argument.
 
-Theese methods are chainable, still it is not recommended in complex commands because of readability
-
-### Add Extra Tab-Completions
-Sometimes you want to add extra elements to Auto-Completion, at example if you want to invite somebody to your party, all online friends should be autocompleted.
-CommandAPI has a way to implement this easily!
-```
-    partyCommand.addSubCommand(new BungeeCommand("invite", "Invite Players to your Party", "network.party.invite", false) {
-        @Override
-        public void onExecutePlayer(ProxiedPlayer player, List<String> args) {
-            //Invite args[0] to player's Party
-        }
-        @Override
-        public Set<String> getExtraTabCompletions(ProxiedPlayer player, int argindex) {
-            return SomeFriendManager.getFriends(player);
-        }
-    }.addArgument("player")
-```
 ❗IMPORTANT❗
 You don't have to filter Elements that match with the beginning of the user input, CommandAPI does this for you ;)
 If you have multiple Arguments argindex indicates which argument is going to be tab-completed.
+<br />
+Theese methods are chainable, still it is not recommended in complex commands because of readability
+
 
 ### Generate HelpMessage
 If you want just to generate the Help Message
@@ -155,7 +147,7 @@ TextComponent from [AdventureAPI](https://github.com/KyoriPowered/adventure) is 
 
 Every ScharkCommand can be executed. CommandAPI will automatically call subCommands and pass arguments to the onExecute methods of them.
 If an user executes the following command
-/command sub1 sub2 [arg1] [arg2] 
+/command sub1 sub2 <arg1> <arg2> 
 The onExecute method of the subCommand labeled "sub2" will be called with the arguments [arg1, arg2]
 ```
 ScharkCommand scharkCommand = ...some complex scharkCommand structure
