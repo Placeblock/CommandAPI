@@ -15,13 +15,14 @@ public abstract class CommandNode<S> {
     private final Map<String, CommandNode<S>> children = new LinkedHashMap<>();
     private final Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
     private final Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
+    private final Predicate<S> requirement;
     @Getter
     @Setter
     private Command<S> command;
-    private Predicate<S> requirement;
 
-    public CommandNode(Command<S> command) {
+    public CommandNode(Command<S> command, Predicate<S> requirement) {
         this.command = command;
+        this.requirement = requirement;
     }
 
     public void addChild(final CommandNode<S> node) {
@@ -71,7 +72,7 @@ public abstract class CommandNode<S> {
     }
 
     public boolean canUse(S source) {
-        return requirement.test(source);
+        return this.requirement.test(source);
     }
 
     public abstract String getName();

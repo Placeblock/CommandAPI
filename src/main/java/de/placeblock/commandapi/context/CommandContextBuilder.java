@@ -4,6 +4,7 @@ import de.placeblock.commandapi.Command;
 import de.placeblock.commandapi.tree.CommandNode;
 import de.placeblock.commandapi.util.StringRange;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -20,12 +21,19 @@ public class CommandContextBuilder<S> {
     private StringRange range;
     private final S source;
 
-    public CommandContextBuilder(S source) {
+    public CommandContextBuilder(S source, int start) {
         this.source = source;
+        this.range = StringRange.at(start);
     }
 
-    public CommandContextBuilder<S> copy() {
-        return new CommandContextBuilder<>(this.source);
+    public CommandContextBuilder<S> copyFor(S newSource) {
+        CommandContextBuilder<S> copy = new CommandContextBuilder<>(newSource, this.range.getStart());
+        copy.command = this.command;
+        copy.arguments.putAll(this.arguments);
+        copy.nodes.addAll(this.nodes);
+        copy.child = this.child;
+        copy.range = this.range;
+        return copy;
     }
 
     public CommandContextBuilder<S> withArgument(String name, ParsedArgument<S, ?> argument) {

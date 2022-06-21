@@ -16,8 +16,12 @@ public class CommandRegistry<S> {
 
     private final RootCommandNode<S> rootCommandNode;
 
-    public CommandRegistry() {
+    private final Map<String, ParseResults<S>> cache = new HashMap<>();
+    private final boolean cacheParseResults;
+
+    public CommandRegistry(boolean cacheParseResults) {
         this.rootCommandNode = new RootCommandNode<>();
+        this.cacheParseResults = cacheParseResults;
     }
 
     public void register(LiteralCommandNode<S> literalCommandNode) {
@@ -73,11 +77,15 @@ public class CommandRegistry<S> {
     }
 
     public ParseResults<S> parse(S source, StringReader reader) {
-        return this.parseNodes(this.rootCommandNode, reader, new CommandContextBuilder<>(source));
+        return this.parseNodes(this.rootCommandNode, reader, new CommandContextBuilder<>(source, reader.getCursor()));
     }
 
     public ParseResults<S> parseNodes(CommandNode<S> node, StringReader originalReader, CommandContextBuilder<S> contextSoFar) {
         final S source = contextSoFar.getSource();
+        if (this.cacheParseResults && this.cache.containsKey(originalReader.getString())) {
+            ParseResults<S> parseResults = this.cache.get(originalReader.getString());
+            return new ParseResults<>(parseResults.getContext().copyFor(source), parseResults.getReader(), parseResults.getExceptions());
+        }
         Map<CommandNode<S>, CommandSyntaxException> errors = null;
         List<ParseResults<S>> potentials = null;
         final int cursor = originalReader.getCursor();
@@ -86,7 +94,7 @@ public class CommandRegistry<S> {
             if (!child.canUse(source)) {
                 continue;
             }
-            CommandContextBuilder<S> context = contextSoFar.copy();
+            CommandContextBuilder<S> context = contextSoFar.copyFor(source);
             StringReader reader = new StringReader(originalReader);
             try {
                 try {
@@ -145,6 +153,10 @@ public class CommandRegistry<S> {
             return potentials.get(0);
         }
 
-        return new ParseResults<>(contextSoFar, originalReader, errors == null ? Collections.emptyMap() : errors);
+        ParseResults<S> parseResults = new ParseResults<>(contextSoFar, originalReader, errors == null ? Collections.emptyMap() : errors);
+        if (this.cacheParseResults) {
+            this.cache.put(originalReader.getString(), new ParseResults<>(parseResults.getContext().copyFor(null), parseResults.getReader(), parseResults.getExceptions()));
+        }
+        return parseResults;
     }
 }
