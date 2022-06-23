@@ -3,6 +3,10 @@
 
 package de.placeblock.commandapi.exception;
 
+import de.placeblock.commandapi.exception.type.Dynamic2CommandExceptionType;
+import de.placeblock.commandapi.exception.type.DynamicCommandExceptionType;
+import de.placeblock.commandapi.exception.type.SimpleCommandExceptionType;
+
 public interface BuiltInExceptionProvider {
     Dynamic2CommandExceptionType doubleTooLow();
 

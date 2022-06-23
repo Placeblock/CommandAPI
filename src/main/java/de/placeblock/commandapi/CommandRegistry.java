@@ -4,24 +4,24 @@ import de.placeblock.commandapi.context.CommandContext;
 import de.placeblock.commandapi.context.CommandContextBuilder;
 import de.placeblock.commandapi.context.ParseResults;
 import de.placeblock.commandapi.exception.CommandSyntaxException;
+import de.placeblock.commandapi.suggestion.SuggestionContext;
+import de.placeblock.commandapi.suggestion.Suggestions;
+import de.placeblock.commandapi.suggestion.SuggestionsBuilder;
 import de.placeblock.commandapi.tree.CommandNode;
 import de.placeblock.commandapi.tree.LiteralCommandNode;
 import de.placeblock.commandapi.tree.RootCommandNode;
 import de.placeblock.commandapi.util.StringReader;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
 public class CommandRegistry<S> {
 
     private final RootCommandNode<S> rootCommandNode;
 
-    private final Map<String, ParseResults<S>> cache = new HashMap<>();
-    private final boolean cacheParseResults;
-
-    public CommandRegistry(boolean cacheParseResults) {
+    public CommandRegistry() {
         this.rootCommandNode = new RootCommandNode<>();
-        this.cacheParseResults = cacheParseResults;
     }
 
     public void register(LiteralCommandNode<S> literalCommandNode) {
@@ -77,15 +77,11 @@ public class CommandRegistry<S> {
     }
 
     public ParseResults<S> parse(S source, StringReader reader) {
-        return this.parseNodes(this.rootCommandNode, reader, new CommandContextBuilder<>(source, reader.getCursor()));
+        return this.parseNodes(this.rootCommandNode, reader, new CommandContextBuilder<>(source, reader.getCursor(), this.rootCommandNode));
     }
 
     public ParseResults<S> parseNodes(CommandNode<S> node, StringReader originalReader, CommandContextBuilder<S> contextSoFar) {
         final S source = contextSoFar.getSource();
-        if (this.cacheParseResults && this.cache.containsKey(originalReader.getString())) {
-            ParseResults<S> parseResults = this.cache.get(originalReader.getString());
-            return new ParseResults<>(parseResults.getContext().copyFor(source), parseResults.getReader(), parseResults.getExceptions());
-        }
         Map<CommandNode<S>, CommandSyntaxException> errors = null;
         List<ParseResults<S>> potentials = null;
         final int cursor = originalReader.getCursor();
@@ -153,10 +149,43 @@ public class CommandRegistry<S> {
             return potentials.get(0);
         }
 
-        ParseResults<S> parseResults = new ParseResults<>(contextSoFar, originalReader, errors == null ? Collections.emptyMap() : errors);
-        if (this.cacheParseResults) {
-            this.cache.put(originalReader.getString(), new ParseResults<>(parseResults.getContext().copyFor(null), parseResults.getReader(), parseResults.getExceptions()));
+        return new ParseResults<>(contextSoFar, originalReader, errors == null ? Collections.emptyMap() : errors);
+    }
+
+    public CompletableFuture<Suggestions> getCompletionSuggestions(ParseResults<S> parse) {
+        return getCompletionSuggestions(parse, parse.getReader().getTotalLength());
+    }
+
+    public CompletableFuture<Suggestions> getCompletionSuggestions(ParseResults<S> parse, int cursor) {
+        final CommandContextBuilder<S> context = parse.getContext();
+
+        SuggestionContext<S> nodeBeforeCursor = context.findSuggestionContext(cursor);
+        CommandNode<S> parent = nodeBeforeCursor.parent;
+        int start = Math.min(nodeBeforeCursor.startPos, cursor);
+
+        String fullInput = parse.getReader().getString();
+        String truncatedInput = fullInput.substring(0, cursor);
+        String truncatedInputLowerCase = truncatedInput.toLowerCase(Locale.ROOT);
+        @SuppressWarnings("unchecked") CompletableFuture<Suggestions>[] futures = new CompletableFuture[parent.getChildren().size()];
+        int i = 0;
+        for (CommandNode<S> node : parent.getChildren()) {
+            CompletableFuture<Suggestions> future = Suggestions.empty();
+            try {
+                future = node.listSuggestions(context.build(truncatedInput), new SuggestionsBuilder(truncatedInput, truncatedInputLowerCase, start));
+            } catch (CommandSyntaxException ignored) {
+            }
+            futures[i++] = future;
         }
-        return parseResults;
+
+        CompletableFuture<Suggestions> result = new CompletableFuture<>();
+        CompletableFuture.allOf(futures).thenRun(() -> {
+            List<Suggestions> suggestions = new ArrayList<>();
+            for (CompletableFuture<Suggestions> future : futures) {
+                suggestions.add(future.join());
+            }
+            result.complete(Suggestions.merge(fullInput, suggestions));
+        });
+
+        return result;
     }
 }

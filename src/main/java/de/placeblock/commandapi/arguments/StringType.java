@@ -1,4 +1,4 @@
-package de.placeblock.commandapi.argument;
+package de.placeblock.commandapi.arguments;
 
 public enum StringType {
     SINGLE_WORD,

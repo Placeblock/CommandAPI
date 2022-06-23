@@ -3,6 +3,7 @@
 
 package de.placeblock.commandapi.exception;
 
+import de.placeblock.commandapi.exception.type.CommandExceptionType;
 import de.placeblock.commandapi.util.Message;
 
 public class CommandSyntaxException extends Exception {

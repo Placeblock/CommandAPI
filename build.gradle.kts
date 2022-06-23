@@ -41,7 +41,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "de.placeblock"
             artifactId = "CommandAPI"
-            version = "1.0.0"
+            version = "1.1.0-BRIGADIER"
 
             from(components["java"])
         }

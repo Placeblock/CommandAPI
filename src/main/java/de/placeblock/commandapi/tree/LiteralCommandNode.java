@@ -1,16 +1,22 @@
 package de.placeblock.commandapi.tree;
 
 import de.placeblock.commandapi.Command;
+import de.placeblock.commandapi.context.CommandContext;
 import de.placeblock.commandapi.context.CommandContextBuilder;
 import de.placeblock.commandapi.exception.CommandSyntaxException;
+import de.placeblock.commandapi.suggestion.Suggestions;
+import de.placeblock.commandapi.suggestion.SuggestionsBuilder;
 import de.placeblock.commandapi.util.StringRange;
 import de.placeblock.commandapi.util.StringReader;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 
 public class LiteralCommandNode<S> extends CommandNode<S> {
     private final String label;
 
-    public LiteralCommandNode(Command<S> command, String label) {
-        super(command);
+    public LiteralCommandNode(Command<S> command, String label, Predicate<S> requirement) {
+        super(command, requirement);
         this.label = label;
     }
 
@@ -39,6 +45,15 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
             }
         }
         return -1;
+    }
+
+    @Override
+    public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
+        if (this.label.toLowerCase().startsWith(builder.getRemainingLowerCase())) {
+            return builder.suggest(this.label).buildFuture();
+        } else {
+            return Suggestions.empty();
+        }
     }
 
     @Override

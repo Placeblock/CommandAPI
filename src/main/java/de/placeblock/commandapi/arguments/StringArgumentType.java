@@ -1,4 +1,4 @@
-package de.placeblock.commandapi.argument;
+package de.placeblock.commandapi.arguments;
 
 import de.placeblock.commandapi.exception.CommandSyntaxException;
 import de.placeblock.commandapi.util.StringReader;
