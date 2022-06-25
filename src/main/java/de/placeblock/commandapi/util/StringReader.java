@@ -102,13 +102,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt().createWithContext(this);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt().create();
         }
         try {
             return Integer.parseInt(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidInt().createWithContext(this, number);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidInt().create(number);
         }
     }
 
@@ -119,13 +119,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedLong().createWithContext(this);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedLong().create();
         }
         try {
             return Long.parseLong(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidLong().createWithContext(this, number);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidLong().create(number);
         }
     }
 
@@ -136,13 +136,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedDouble().createWithContext(this);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedDouble().create();
         }
         try {
             return Double.parseDouble(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidDouble().createWithContext(this, number);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidDouble().create(number);
         }
     }
 
@@ -153,13 +153,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedFloat().createWithContext(this);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedFloat().create();
         }
         try {
             return Float.parseFloat(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidFloat().createWithContext(this, number);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidFloat().create(number);
         }
     }
 
@@ -185,7 +185,7 @@ public class StringReader {
         }
         final char next = peek();
         if (!isQuotedStringStart(next)) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedStartOfQuote().createWithContext(this);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedStartOfQuote().create();
         }
         skip();
         return readStringUntil(next);
@@ -202,7 +202,7 @@ public class StringReader {
                     escaped = false;
                 } else {
                     setCursor(getCursor() - 1);
-                    throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidEscape().createWithContext(this, String.valueOf(c));
+                    throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidEscape().create(String.valueOf(c));
                 }
             } else if (c == SYNTAX_ESCAPE) {
                 escaped = true;
@@ -213,7 +213,7 @@ public class StringReader {
             }
         }
 
-        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedEndOfQuote().createWithContext(this);
+        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedEndOfQuote().create();
     }
 
     public String readString() throws CommandSyntaxException {
@@ -232,7 +232,7 @@ public class StringReader {
         final int start = cursor;
         final String value = readString();
         if (value.isEmpty()) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedBool().createWithContext(this);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedBool().create();
         }
 
         if (value.equals("true")) {
@@ -241,14 +241,18 @@ public class StringReader {
             return false;
         } else {
             cursor = start;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidBool().createWithContext(this, value);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidBool().create(value);
         }
     }
 
     public void expect(final char c) throws CommandSyntaxException {
         if (!canRead() || peek() != c) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbol().createWithContext(this, String.valueOf(c));
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbol().create(String.valueOf(c));
         }
         skip();
+    }
+
+    public String debugString() {
+        return this.getString().substring(0, this.getCursor()) + "|" + this.getString().substring(this.getCursor());
     }
 }

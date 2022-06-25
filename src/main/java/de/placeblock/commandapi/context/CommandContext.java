@@ -27,13 +27,15 @@ public class CommandContext<S> {
     private final String input;
     @Getter
     private final Command<S> command;
+    private final CommandContext<S> child;
     private final Map<String, ParsedArgument<S, ?>> arguments;
     @Getter
     private final StringRange range;
 
-    public CommandContext(S source, String input, Map<String, ParsedArgument<S, ?>> arguments, Command<S> command, StringRange range) {
+    public CommandContext(S source, String input, CommandContext<S> child, Map<String, ParsedArgument<S, ?>> arguments, Command<S> command, StringRange range) {
         this.source = source;
         this.input = input;
+        this.child = child;
         this.arguments = arguments;
         this.command = command;
         this.range = range;
@@ -64,5 +66,9 @@ public class CommandContext<S> {
             ", arguments=" + arguments +
             ", range=" + range +
             '}';
+    }
+
+    public CommandContext<S> getChild() {
+        return child;
     }
 }

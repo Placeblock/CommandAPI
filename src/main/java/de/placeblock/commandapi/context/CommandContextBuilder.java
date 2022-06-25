@@ -1,18 +1,23 @@
 package de.placeblock.commandapi.context;
 
 import de.placeblock.commandapi.Command;
+import de.placeblock.commandapi.exception.CommandSyntaxException;
 import de.placeblock.commandapi.tree.CommandNode;
 import de.placeblock.commandapi.util.StringRange;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Getter
 @SuppressWarnings("UnusedReturnValue")
 public class CommandContextBuilder<S> {
     private final Map<String, ParsedArgument<S, ?>> arguments = new LinkedHashMap<>();
+    private final List<CommandSyntaxException> exceptions = new ArrayList<>();
     private CommandNode<S> node;
+    private CommandContextBuilder<S> child;
     private Command<S> command;
     private StringRange range;
     private final S source;
@@ -22,18 +27,27 @@ public class CommandContextBuilder<S> {
         this.range = StringRange.at(start);
     }
 
-    public CommandContextBuilder<S> copyFor(S newSource) {
-        CommandContextBuilder<S> copy = new CommandContextBuilder<>(newSource, this.range.getStart());
-        copy.command = this.command;
-        copy.node = this.node;
-        copy.arguments.putAll(this.arguments);
-        copy.range = this.range;
-        return copy;
-    }
-
     public CommandContextBuilder<S> withArgument(String name, ParsedArgument<S, ?> argument) {
         this.arguments.put(name, argument);
         return this;
+    }
+
+    public CommandContextBuilder<S> withException(CommandSyntaxException ex) {
+        this.exceptions.add(ex);
+        return this;
+    }
+
+    public CommandContextBuilder<S> withChild(CommandContextBuilder<S> child) {
+        this.child = child;
+        return this;
+    }
+
+    public CommandContextBuilder<S> getLastChild() {
+        CommandContextBuilder<S> currentCCB = this;
+        while (currentCCB.getChild() != null) {
+            currentCCB = currentCCB.getChild();
+        }
+        return currentCCB;
     }
 
     public CommandContextBuilder<S> withCommand(Command<S> command) {
@@ -48,11 +62,13 @@ public class CommandContextBuilder<S> {
     }
 
     public CommandContext<S> build(String input) {
-        return new CommandContext<>(this.source, input, this.arguments, this.command, this.range);
+        return new CommandContext<>(this.source, input, this.child != null ? this.child.build(input) : null, this.arguments, this.command, this.range);
     }
 
     public void print(int index) {
         System.out.println(" ".repeat(index * 5) + (this.node != null ? this.node.getName() : "null"));
-        System.out.println(" ".repeat(index * 5) + this.command);
+        if (this.child != null) {
+            this.child.print(index + 1);
+        }
     }
 }

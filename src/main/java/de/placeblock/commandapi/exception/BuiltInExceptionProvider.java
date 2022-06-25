@@ -8,21 +8,10 @@ import de.placeblock.commandapi.exception.type.DynamicCommandExceptionType;
 import de.placeblock.commandapi.exception.type.SimpleCommandExceptionType;
 
 public interface BuiltInExceptionProvider {
-    Dynamic2CommandExceptionType doubleTooLow();
-
-    Dynamic2CommandExceptionType doubleTooHigh();
-
-    Dynamic2CommandExceptionType floatTooLow();
-
-    Dynamic2CommandExceptionType floatTooHigh();
 
     Dynamic2CommandExceptionType integerTooLow();
 
     Dynamic2CommandExceptionType integerTooHigh();
-
-    Dynamic2CommandExceptionType longTooLow();
-
-    Dynamic2CommandExceptionType longTooHigh();
 
     DynamicCommandExceptionType literalIncorrect();
 
@@ -57,8 +46,6 @@ public interface BuiltInExceptionProvider {
     SimpleCommandExceptionType dispatcherUnknownCommand();
 
     SimpleCommandExceptionType dispatcherUnknownArgument();
-
-    SimpleCommandExceptionType dispatcherExpectedArgumentSeparator();
 
     DynamicCommandExceptionType dispatcherParseException();
 }

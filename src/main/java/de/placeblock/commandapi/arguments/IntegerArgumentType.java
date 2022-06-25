@@ -23,11 +23,11 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
         final int result = reader.readInt();
         if (result < minimum) {
             reader.setCursor(start);
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooLow().createWithContext(reader, result, minimum);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooLow().create(result, minimum);
         }
         if (result > maximum) {
             reader.setCursor(start);
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooHigh().createWithContext(reader, result, maximum);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooHigh().create(result, maximum);
         }
         return result;
     }

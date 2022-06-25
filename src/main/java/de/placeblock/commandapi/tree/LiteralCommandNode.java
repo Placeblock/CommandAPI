@@ -28,7 +28,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
             contextBuilder.withNode(this, StringRange.between(start, end));
             return;
         }
-        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect().createWithContext(reader, this.label);
+        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect().create(this.label);
     }
 
     private int parse(StringReader reader) {

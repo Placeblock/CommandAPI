@@ -29,9 +29,9 @@ repositories {
 
 dependencies {
   compileOnly("org.projectlombok:lombok:1.18.24")
-  implementation("io.schark:ScharkDesign:1.0.3")
-  implementation("net.kyori:adventure-api:4.11.0")
-  implementation("net.kyori:adventure-text-minimessage:4.11.0")
+  compileOnly("io.schark:ScharkDesign:1.0.3")
+  compileOnly("net.kyori:adventure-api:4.11.0")
+  compileOnly("net.kyori:adventure-text-minimessage:4.11.0")
   annotationProcessor("org.projectlombok:lombok:1.18.24")
 }
 

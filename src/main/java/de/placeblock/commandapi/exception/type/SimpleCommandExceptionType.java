@@ -4,13 +4,12 @@
 package de.placeblock.commandapi.exception.type;
 
 import de.placeblock.commandapi.exception.CommandSyntaxException;
-import de.placeblock.commandapi.util.Message;
-import de.placeblock.commandapi.util.StringReader;
+import net.kyori.adventure.text.TextComponent;
 
 public class SimpleCommandExceptionType implements CommandExceptionType {
-    private final Message message;
+    private final TextComponent message;
 
-    public SimpleCommandExceptionType(final Message message) {
+    public SimpleCommandExceptionType(final TextComponent message) {
         this.message = message;
     }
 
@@ -18,12 +17,8 @@ public class SimpleCommandExceptionType implements CommandExceptionType {
         return new CommandSyntaxException(this, message);
     }
 
-    public CommandSyntaxException createWithContext(final StringReader reader) {
-        return new CommandSyntaxException(this, message, reader.getString(), reader.getCursor());
-    }
-
     @Override
     public String toString() {
-        return message.getString();
+        return message.toString();
     }
 }

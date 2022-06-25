@@ -4,8 +4,7 @@
 package de.placeblock.commandapi.exception.type;
 
 import de.placeblock.commandapi.exception.CommandSyntaxException;
-import de.placeblock.commandapi.util.Message;
-import de.placeblock.commandapi.util.StringReader;
+import net.kyori.adventure.text.TextComponent;
 
 public class DynamicNCommandExceptionType implements CommandExceptionType {
     private final Function function;
@@ -18,11 +17,7 @@ public class DynamicNCommandExceptionType implements CommandExceptionType {
         return new CommandSyntaxException(this, function.apply(args));
     }
 
-    public CommandSyntaxException createWithContext(final StringReader reader, final Object... args) {
-        return new CommandSyntaxException(this, function.apply(args), reader.getString(), reader.getCursor());
-    }
-
     public interface Function {
-        Message apply(Object[] args);
+        TextComponent apply(Object[] args);
     }
 }
