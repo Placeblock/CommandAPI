@@ -1,5 +1,6 @@
 package de.placeblock.commandapi.arguments;
 
+import de.placeblock.commandapi.context.CommandContext;
 import de.placeblock.commandapi.exception.CommandSyntaxException;
 import de.placeblock.commandapi.util.StringReader;
 
@@ -8,6 +9,10 @@ public class StringArgumentType implements ArgumentType<String> {
 
     public StringArgumentType(StringType type) {
         this.type = type;
+    }
+
+    public static String getString(final CommandContext<?> context, final String name) {
+        return context.getArgument(name, String.class);
     }
 
     @Override

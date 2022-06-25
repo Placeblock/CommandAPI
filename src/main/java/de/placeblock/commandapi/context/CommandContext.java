@@ -1,12 +1,10 @@
 package de.placeblock.commandapi.context;
 
 import de.placeblock.commandapi.Command;
-import de.placeblock.commandapi.tree.CommandNode;
 import de.placeblock.commandapi.util.StringRange;
 import lombok.Getter;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CommandContext<S> {
@@ -31,24 +29,14 @@ public class CommandContext<S> {
     private final Command<S> command;
     private final Map<String, ParsedArgument<S, ?>> arguments;
     @Getter
-    private final List<ParsedCommandNode<S>> nodes;
-    @Getter
-    private final CommandContext<S> child;
-    @Getter
     private final StringRange range;
 
-    public CommandContext(S source, String input, Map<String, ParsedArgument<S, ?>> arguments, Command<S> command, List<ParsedCommandNode<S>> nodes, StringRange range, CommandContext<S> child) {
+    public CommandContext(S source, String input, Map<String, ParsedArgument<S, ?>> arguments, Command<S> command, StringRange range) {
         this.source = source;
         this.input = input;
         this.arguments = arguments;
         this.command = command;
-        this.nodes = nodes;
         this.range = range;
-        this.child = child;
-    }
-
-    public boolean hasNodes() {
-        return !this.nodes.isEmpty();
     }
 
     @SuppressWarnings("unchecked")
@@ -65,5 +53,16 @@ public class CommandContext<S> {
         } else {
             throw new IllegalArgumentException("Argument '" + name + "' is defined as " + result.getClass().getSimpleName() + ", not " + clazz);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "CommandContext{" +
+            "source=" + source +
+            ", input='" + input + '\'' +
+            ", command=" + command +
+            ", arguments=" + arguments +
+            ", range=" + range +
+            '}';
     }
 }

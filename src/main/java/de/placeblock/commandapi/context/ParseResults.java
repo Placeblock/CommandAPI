@@ -6,7 +6,6 @@ import de.placeblock.commandapi.util.StringReader;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
 import java.util.Map;
 
 @Getter
@@ -15,8 +14,4 @@ public class ParseResults<S> {
     private final CommandContextBuilder<S> context;
     private final StringReader reader;
     private final Map<CommandNode<S>, CommandSyntaxException> exceptions;
-
-    public ParseResults(CommandContextBuilder<S> context) {
-        this(context, new StringReader(""), Collections.emptyMap());
-    }
 }

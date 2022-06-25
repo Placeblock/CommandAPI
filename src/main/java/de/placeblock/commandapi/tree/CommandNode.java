@@ -4,8 +4,6 @@ import de.placeblock.commandapi.Command;
 import de.placeblock.commandapi.context.CommandContext;
 import de.placeblock.commandapi.context.CommandContextBuilder;
 import de.placeblock.commandapi.exception.CommandSyntaxException;
-import de.placeblock.commandapi.suggestion.Suggestions;
-import de.placeblock.commandapi.suggestion.SuggestionsBuilder;
 import de.placeblock.commandapi.util.StringReader;
 import lombok.Getter;
 import lombok.Setter;
@@ -81,8 +79,15 @@ public abstract class CommandNode<S> {
 
     public abstract String getName();
 
-    public abstract CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) throws CommandSyntaxException;
+    public abstract CompletableFuture<List<String>> listSuggestions(CommandContext<S> context, String partial) throws CommandSyntaxException;
 
     public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException;
 
+    public void print(int index) {
+        System.out.println(" ".repeat(index * 5) + "Name: " + this.getName());
+        System.out.println(" ".repeat(index * 5) + "Command: " + this.command);
+        for (Map.Entry<String, CommandNode<S>> childEntry : this.children.entrySet()) {
+            childEntry.getValue().print(index + 1);
+        }
+    }
 }

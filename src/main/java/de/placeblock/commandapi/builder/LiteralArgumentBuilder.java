@@ -12,10 +12,6 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
         this.literal = literal;
     }
 
-    public static <S> LiteralArgumentBuilder<S> literal(final String name) {
-        return new LiteralArgumentBuilder<>(name);
-    }
-
     @Override
     protected LiteralArgumentBuilder<S> getThis() {
         return this;
@@ -25,8 +21,8 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
     public LiteralCommandNode<S> build() {
         final LiteralCommandNode<S> result = new LiteralCommandNode<>(getCommand(), getLiteral(), getRequirement());
 
-        for (final CommandNode<S> argument : getArguments()) {
-            result.addChild(argument);
+        for (final CommandNode<S> child : this.getChildren()) {
+            result.addChild(child);
         }
 
         return result;

@@ -6,22 +6,21 @@ import de.placeblock.commandapi.context.CommandContext;
 import de.placeblock.commandapi.context.CommandContextBuilder;
 import de.placeblock.commandapi.context.ParsedArgument;
 import de.placeblock.commandapi.exception.CommandSyntaxException;
-import de.placeblock.commandapi.suggestion.SuggestionProvider;
-import de.placeblock.commandapi.suggestion.Suggestions;
-import de.placeblock.commandapi.suggestion.SuggestionsBuilder;
 import de.placeblock.commandapi.util.StringReader;
 import lombok.Getter;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 @Getter
 public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final String name;
     private final ArgumentType<T> type;
-    private final SuggestionProvider<S> customSuggestions;
+    private final Function<String, CompletableFuture<List<String>>> customSuggestions;
 
-    public ArgumentCommandNode(Command<S> command, String name, ArgumentType<T> type, Predicate<S> requirement, final SuggestionProvider<S> customSuggestions) {
+    public ArgumentCommandNode(Command<S> command, String name, ArgumentType<T> type, Predicate<S> requirement, Function<String, CompletableFuture<List<String>>> customSuggestions) {
         super(command, requirement);
         this.name = name;
         this.type = type;
@@ -43,11 +42,11 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
+    public CompletableFuture<List<String>> listSuggestions(final CommandContext<S> context, String partial) throws CommandSyntaxException {
         if (customSuggestions == null) {
-            return type.listSuggestions(context, builder);
+            return type.listSuggestions(context, partial);
         } else {
-            return customSuggestions.getSuggestions(context, builder);
+            return customSuggestions.apply(partial);
         }
     }
 }

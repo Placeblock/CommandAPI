@@ -2,14 +2,15 @@ package de.placeblock.commandapi.builder;
 
 import de.placeblock.commandapi.Command;
 import de.placeblock.commandapi.tree.CommandNode;
-import de.placeblock.commandapi.tree.RootCommandNode;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
-    private final RootCommandNode<S> arguments = new RootCommandNode<>();
+    private final List<CommandNode<S>> children = new ArrayList<>();
     @Getter
     private Command<S> command;
     @Getter
@@ -18,12 +19,11 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     protected abstract T getThis();
 
     public T then(final ArgumentBuilder<S, ?> argument) {
-        arguments.addChild(argument.build());
-        return getThis();
+        return this.then(argument.build());
     }
 
     public T then(final CommandNode<S> argument) {
-        arguments.addChild(argument);
+        children.add(argument);
         return getThis();
     }
 
@@ -32,8 +32,8 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
         return getThis();
     }
 
-    public Collection<CommandNode<S>> getArguments() {
-        return arguments.getChildren();
+    public Collection<CommandNode<S>> getChildren() {
+        return children;
     }
 
     public T requires(final Predicate<S> requirement) {
