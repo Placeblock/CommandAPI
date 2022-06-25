@@ -18,7 +18,7 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final SimpleCommandExceptionType READER_EXPECTED_START_OF_QUOTE = new SimpleCommandExceptionType(Texts.negative("Anführungszeichen erwartet"));
     private static final SimpleCommandExceptionType READER_EXPECTED_END_OF_QUOTE = new SimpleCommandExceptionType(Texts.negative("Schließendes Anführungszeichen erwartet"));
     private static final DynamicCommandExceptionType READER_INVALID_ESCAPE = new DynamicCommandExceptionType(character -> Texts.negative("Falsches Schlusszeichen '" + character + "' <color:secondary>im in Anführungszeichen gesetzten Text"));
-    private static final DynamicCommandExceptionType READER_INVALID_BOOL = new DynamicCommandExceptionType(value -> Texts.primary("true <color:secondary>oder <color:primary>false erwartet, <color:negative>" + value + " gefunden"));
+    private static final DynamicCommandExceptionType READER_INVALID_BOOL = new DynamicCommandExceptionType(value -> Texts.primary("true <color:secondary>oder <color:primary>false <color:secondary>erwartet, <color:negative>" + value + " gefunden"));
     private static final DynamicCommandExceptionType READER_INVALID_INT = new DynamicCommandExceptionType(value -> Texts.negative("Ungültige Ganze Zahl <color:primary>'" + value + "'"));
     private static final SimpleCommandExceptionType READER_EXPECTED_INT = new SimpleCommandExceptionType(Texts.negative("Falsche Eingabe<color:secondary>. <color:primary>Ganze Zahl erwartet"));
     private static final DynamicCommandExceptionType READER_INVALID_LONG = new DynamicCommandExceptionType(value -> Texts.negative("Ungültige lange Ganze Zahl <color:primary>'" + value + "'"));

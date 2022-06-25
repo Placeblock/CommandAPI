@@ -57,17 +57,6 @@ public class CommandContext<S> {
         }
     }
 
-    @Override
-    public String toString() {
-        return "CommandContext{" +
-            "source=" + source +
-            ", input='" + input + '\'' +
-            ", command=" + command +
-            ", arguments=" + arguments +
-            ", range=" + range +
-            '}';
-    }
-
     public CommandContext<S> getChild() {
         return child;
     }
