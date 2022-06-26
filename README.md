@@ -97,6 +97,11 @@ Since CommandAPI should be compatible with Paper as well as Waterfall the Comman
 This means there is no fixed class for the Player or the Console, instead of this there is just the Source S.
 When a command gets executed you get the source, another word would be "whoever typed in this command".
 
+You should create a Source Class which holds your Custom Player and the CommandSender,
+because when the command gets executed from console you can set the Custom Player to null and
+in your execute lambda a simple check is needed to confirm that the command was sent by an actual player. <br />
+IMPORTANT: PaperCommandBridge and WaterfallCommandBridge does this for you (More information further down).
+
 ## Example for a "simple" Paper Command without implementation:
 ```
 public class FlyCommand extends CommandAPICommand<Source> implements CommandExecutor, TabCompleter {
@@ -147,11 +152,6 @@ as much logic as the above-mentioned. <br />
 Because there are still methods which are the same for every command, 
 it is recommended to create a class between the Paper-/Bungee-Commandbridge, an example is shown below.
 
-You should create a Source Class which holds your Custom Player and the CommandSender,
-because when the command gets executed from console you can set the Custom Player to null and
-in your execute lambda a simple check is needed to confirm that the command was sent by an actual player. <br />
-IMPORTANT: PaperCommandBridge and WaterfallCommandBridge does this for you.
-
 ### Example (Paper):
 ```
 public abstract class PaperCommand extends PaperCommandBridge<CustomPlayer> {
@@ -183,8 +183,8 @@ public abstract class PaperCommand extends PaperCommandBridge<CustomPlayer> {
 This looks much cleaner then the first-mentioned class, and now you can use PaperCommand freely.
 
 ### What is CustomPlayer?
-Remember the Information Note before the example? I said that Paper-/Waterfall-CommandBridge handle the
-Source for you. Well, it isn't 100% right. I could have implemented a Source Class just with
+Remember that I said that Paper-/Waterfall-CommandBridge handle the
+Source for you? Well, it isn't 100% right. I could have implemented a Source Class just with
 (for paper) the Bukkit Player and the CommandSender, and (for Waterfall) the ProxiedPlayer and the CommandSender,
 but in larger plugins you will likely have a Custom Player which holds your player data and (with Paper) your Bukkit Player.
 To Support these Custom Players, the Source used in the Paper-/Waterfall-CommandBridge is generic. You can set the Type
