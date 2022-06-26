@@ -1,7 +1,7 @@
 package de.placeblock.commandapi.core.arguments;
 
 import de.placeblock.commandapi.core.context.CommandContext;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.util.StringReader;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 @SuppressWarnings("unused")
 public class BooleanArgumentType implements ArgumentType<Boolean> {
     @Override
-    public Boolean parse(StringReader reader) throws CommandSyntaxException {
+    public Boolean parse(StringReader reader) throws CommandException {
         return reader.readBoolean();
     }
 

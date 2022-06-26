@@ -3,7 +3,9 @@ package de.placeblock.commandapi.core.tree;
 import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.context.CommandContext;
 import de.placeblock.commandapi.core.context.CommandContextBuilder;
+import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.exception.InvalidCommandException;
 import de.placeblock.commandapi.core.util.StringRange;
 import de.placeblock.commandapi.core.util.StringReader;
 import io.schark.design.Texts;
@@ -25,14 +27,14 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
+    public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
         int start = reader.getCursor();
         int end = parse(reader);
         if (end > -1) {
             contextBuilder.withNode(this, StringRange.between(start, end));
             return;
         }
-        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect().create(this.getName());
+        throw new InvalidCommandException();
     }
 
     private int parse(StringReader reader) {

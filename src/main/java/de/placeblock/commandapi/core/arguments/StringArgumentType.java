@@ -1,7 +1,7 @@
 package de.placeblock.commandapi.core.arguments;
 
 import de.placeblock.commandapi.core.context.CommandContext;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.util.StringReader;
 
 @SuppressWarnings("unused")
@@ -17,7 +17,7 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     @Override
-    public String parse(final StringReader reader) throws CommandSyntaxException {
+    public String parse(final StringReader reader) throws CommandException {
         if (type == StringType.GREEDY_PHRASE) {
             final String text = reader.getRemaining();
             reader.setCursor(reader.getTotalLength());

@@ -2,9 +2,7 @@ package de.placeblock.commandapi.paper;
 
 import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
 import de.placeblock.commandapi.core.CommandAPICommand;
-import de.placeblock.commandapi.core.context.CommandContextBuilder;
 import de.placeblock.commandapi.core.context.ParseResults;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -34,18 +32,9 @@ public abstract class PaperCommandBridge<P> extends CommandAPICommand<PaperComma
         if (sender instanceof Player player) {
             lobbyPlayer = this.getCustomPlayer(player);
         }
-        try {
-            ParseResults<PaperCommandSource<P>> parseResults = this.parse(new PaperCommandSource<>(lobbyPlayer, sender), label + " " + String.join(" ", args));
-            CommandContextBuilder<PaperCommandSource<P>> lastChild = parseResults.getContext().getLastChild();
-            for (CommandSyntaxException exception : lastChild.getExceptions()) {
-                sender.sendMessage(exception.getRawMessage());
-            }
-            if (lastChild.getExceptions().size() == 0) {
-                this.execute(parseResults);
-            }
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(e.getRawMessage());
-        }
+        PaperCommandSource<P> source = new PaperCommandSource<>(lobbyPlayer, sender);
+        ParseResults<PaperCommandSource<P>> parseResults = this.parse(source, label + " " + String.join(" ", args));
+        this.execute(parseResults);
         return true;
     }
 

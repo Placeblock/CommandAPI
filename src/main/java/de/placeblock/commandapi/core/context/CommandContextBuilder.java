@@ -1,7 +1,7 @@
 package de.placeblock.commandapi.core.context;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.tree.CommandNode;
 import de.placeblock.commandapi.core.util.StringRange;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.util.Map;
 @SuppressWarnings("UnusedReturnValue")
 public class CommandContextBuilder<S> {
     private final Map<String, ParsedArgument<S, ?>> arguments = new LinkedHashMap<>();
-    private final List<CommandSyntaxException> exceptions = new ArrayList<>();
+    private final List<CommandException> exceptions = new ArrayList<>();
     private CommandNode<S> node;
     private CommandContextBuilder<S> child;
     private Command<S> command;
@@ -32,7 +32,7 @@ public class CommandContextBuilder<S> {
         return this;
     }
 
-    public CommandContextBuilder<S> withException(CommandSyntaxException ex) {
+    public CommandContextBuilder<S> withException(CommandException ex) {
         this.exceptions.add(ex);
         return this;
     }
@@ -67,6 +67,7 @@ public class CommandContextBuilder<S> {
 
     public void print(int index) {
         System.out.println(" ".repeat(index * 5) + (this.node != null ? this.node.getName() : "null"));
+        System.out.println(" ".repeat(index * 5) + this.exceptions);
         if (this.child != null) {
             this.child.print(index + 1);
         }

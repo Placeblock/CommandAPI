@@ -7,183 +7,155 @@ CommandAPI simplifies and structures command definition and execution, especiall
 Auto-Tab-Completion can be a mess to implement in large commands. CommandAPI does it for you!<br />
 It can be really hard to implement complex Commands, Help-Messages and Auto-Tab-Completion without many duplicated code snippets. Because the Structure of your commands and subcommands are stored only in one place, all of this can be done without much effort!
 
+This API was originally inspired by Mojang's Brigadier, but in the end it turned out that i reworked nearly everything,
+because for me Brigadier was unnecessary complex.
+Bridges for Paper and Waterfall are included in the API.
 
-### Example for a simple Command:
+### Example for a "simple" Paper Command:
 ```
-ScharkCommand<Player, Console> scharkCommand = new ScharkCommand<Player, Console>() {
-    @Override
-    public void onExecutePlayer(Player player, List<String> args) {
+public class FlyCommand extends CommandAPICommand<PaperCommandSource<Player>> implements CommandExecutor, Listener {
 
+    public FlyCommand() {
+        super("fly");
+    }
+
+    @Override
+    public LiteralArgumentBuilder<PaperCommandSource<Player>> generateCommand() {
+        return new LiteralArgumentBuilder<PaperCommandSource<Player>>("fly")
+            .executes(c -> {
+                Player player = c.getSource().getPlayer();
+                //FLY LOGIC
+            });
+    }
+
+    @Override
+    public boolean hasSourcePermission(PaperCommandSource<Player> source, String permission) {
+        if (source.getPlayer() != null) {
+            return source.getPlayer().hasPermission(permission);
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public void sendSourceMessage(PaperCommandSource<Player> source, TextComponent textComponent) {
+        source.getSender().sendMessage(textComponent);
     }
     
-    /* Optional
     @Override
-    public void onExecuteConsole(Console console, List<String> args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        P lobbyPlayer = null;
+        if (sender instanceof Player player) {
+            lobbyPlayer = this.getCustomPlayer(player);
+        }
+        PaperCommandSource<P> source = new PaperCommandSource<>(lobbyPlayer, sender);
+        ParseResults<PaperCommandSource<P>> parseResults = this.parse(source, label + " " + String.join(" ", args));
+        this.execute(parseResults);
+        return true;
+    }
+
+    @EventHandler
+    public void onTabComplete(AsyncTabCompleteEvent event) {
+        String buffer = event.getBuffer().substring(1);
+        if (!buffer.split(" ")[0].equals(this.getName())) {
+            return;
+        }
+        P customPlayer = null;
+        CommandSender sender = event.getSender();
+        if (sender instanceof Player player) {
+            customPlayer = this.getCustomPlayer(player);
+        }
+        ParseResults<PaperCommandSource<P>> parseResults = this.parse(new PaperCommandSource<>(customPlayer, sender), buffer);
+        this.getSuggestions(parseResults).thenAccept(suggestions -> {
+            event.setCompletions(suggestions);
+            event.setHandled(true);
+        }).exceptionally(throwable -> {
+            event.setCompletions(new ArrayList<>());
+            event.setHandled(true);
+            return null;
+        });
+    }
     
-    }*/
+}
+```
 
-    @Override
-    public boolean hasPermission(Player player, String permission) {
-    return false;
+WOHA, AND I HAVE TO DO THIS FOR EVERY SINGLE COMMAND?
+
+Since CommandAPI should be compatible with Spigot as well as Bungeecord the CommandAPI classes are generic.
+Because of this there are Methods like sendSourceMessage(Source source) or hasSourcePermission(Source source, String permission).
+These methods will be probably the same for all your commands, and you would have to implement these in all commands.
+One solution would be to create another class which extends CommandAPICommand and implements these methods.
+For Paper and Waterfall this is already done by the classes BungeeCommandBridge and PaperCommandBridge.
+They still have some abstract methods you would have to implement in every command and it is still recommended to
+create a class between the Paper-/Bungee-Commandbridge, an exmample is shown below.
+
+#### Example (Paper):
+```
+public abstract class PaperCommand extends PaperCommandBridge<CustomPlayer> {
+    public PaperCommand(String label) {
+        super(label);
     }
 
     @Override
-    public void sendHelpMessage(Player player) {
-
+    public LobbySlime getPlugin() {
+        return MainPluginClass.getInstance();
     }
 
     @Override
-    public void sendNoPermMessage(Player player) {
+    protected CustomPlayer getCustomPlayer(Player player) {
+        return SomeMethodToGetYourCustomPlayerFromBukkitPlayer(player);
+    }
 
+    @Override
+    protected boolean hasPermission(CustomPlayer lobbyPlayer, String permission) {
+        return CheckIfYourCustomPlayerHasPermission(permission)
+    }
+
+    @Override
+    protected void sendMessage(CustomPlayer customPlayer, TextComponent textComponent) {
+        customPlayer.getBukkitPlayer().sendMessage(textComponent);
     }
 }
 ```
 
-Because CommandAPI should be compatible with Spigot as well as Bungeecord the Player class and Console class are generic. Because of this there
-are Methods like sendHelpMessage(Player player) or hasPermission(Player player, String permission).
-If you want to create multiple Commands it is recommended to create a class which extends ScharkCommand and implements theese methods, because they are the same for all commands.
+Now you can use PaperCommand freely.
 
-#### Example (BungeeCord):
-```
-public abstract class BungeeCommand extends ScharkCommand<ProxiedPlayer, CommandSender> {
 
-    public BungeeCommand(String label, String description, String permission, boolean showWithoutSubcommands) {
-        super(label, description, permission, showWithoutSubcommands);
-    }
-
-    @Override
-    public boolean hasPermission(ProxiedPlayer player, String permission) {
-        return player.hasPermission(player, permission);
-    }
-
-    @Override
-    public void sendHelpMessage(ProxiedPlayer player) {
-        player.sendMessage(this.getParentRecursive().generateHelp());
-    }
-
-    @Override
-    public void sendNoPermMessage(ProxiedPlayer player) {
-        player.sendMessage(Messages.NO_PERM);
-    }
-}
-```
-
-Now you only have to implement onExecutePlayer in your command.
-
-### What is showWithoutSubCommands?
-
-Example Command Structure
-```
-command
-    sub2 <arg3>
-    sub3
-```
-If you set showWithoutSubCommands in sub1 to false the HelpMessage will look like this:
-```
-/command sub2 <arg3>
-/command sub3
-```
-If you set showWithoutSubCommands in sub1 to true the HelpMessage will look like this:
-```
-/command 
-/command sub2 <arg3>
-/command sub3
-```
-It does what it says, it shows the command without its subcommands!
-<br></br>
-<br></br>
 ## Features
 
 ### You can create complex Command Structures:
 ```
-ScharkCommand scharkCommand = ...
-ScharkCommand scharkCommand2 = ...
-scharkCommand.addSubCommand(scharkCommand2);
+    @Override
+    public LiteralArgumentBuilder<PaperCommandSource<Player>> generateCommand() {
+        return new LiteralArgumentBuilder<PaperCommandSource<ILobbyPlayer>>("fly")
+            .executes(c -> {
+                //Gets executed if a player types /fly
+            })
+            .then(
+                new RequiredArgumentBuilder<PaperCommandSource<ILobbyPlayer>, ILobbyPlayer>("spieler", new LobbyPlayerArgumentType())
+                .then(new RequiredArgumentBuilder<PaperCommandSource<ILobbyPlayer>, Boolean>("true/false", new BooleanArgumentType())
+                    .executes(c -> {
+                        //Gets executed if a player types /fly <spieler> 
+                    }))
+            );
+    }
 ```
+Use LiteralArgumentBuilder for SubCommands and RequiredArgumentBuilder for Parameters a player has to fulfill.
 
 ### You can add Aliases to Commands:
-```
-ScharkCommand scharkCommand = ...
-scharkCommand.addAlias("alias1");
-scharkCommand.addAliases("alias2", "alias3", "alias4");
-```
-
-### You can add Arguments and Optional Arguments to Commands:
-```
-ScharkCommand scharkCommand = ...
-scharkCommand.addArgument(new CommandArgument<>("label", "Argument Description") {
+```    
     @Override
-    public Set<String> getExtraTabCompletions(Player player) {
-        return getSomeSetOfExtraTabCompletionsForThisArgument()
+    public LiteralArgumentBuilder<PaperCommandSource<Player>> generateCommand() {
+        return new LiteralArgumentBuilder<PaperCommandSource<ILobbyPlayer>>("fly")
+            .withAlias("flymode")
     }
-});
-scharkCommand.addOptionalArgument(new CommandArgument...);
 ```
-All Strings, which get returned from the getExtraTabCompletions Method will be appended to the List
-of possible Tab-Completions for this Argument
-The Description is shown in the Help Message if you hover over an Argument.
-
-❗IMPORTANT❗
-You don't have to filter Elements that match with the beginning of the user input, CommandAPI does this for you ;)
-If you have multiple Arguments argindex indicates which argument is going to be tab-completed.
-<br />
-Theese methods are chainable, still it is not recommended in complex commands because of readability
 
 
 ### Generate HelpMessage
-If you want just to generate the Help Message
+CommandAPI automatically sends HelpMessages, however, if you want just to generate the Help Message, here you go:
 ```
-ScharkCommand scharkCommand = ...
-TextComponent helpMessage = scharkCommand.generateHelpMessage();
-```
-If you want to generate the HelpMessage of the first Command in the Command Structure
-```
-ScharkCommand scharkCommand = ...
-TextComponent helpMessage = scharkCommand.getParentRecursive().generateHelpMessage();
+PaperCommand command = somePaperCommand()
+TextComponent helpMessage = command.generateHelpMessage(source)
 ```
 TextComponent from [AdventureAPI](https://github.com/KyoriPowered/adventure) is returned
-
-### Execute Command
-
-Every ScharkCommand can be executed. CommandAPI will automatically call subCommands and pass arguments to the onExecute methods of them.
-If an user executes the following command
-/command sub1 sub2 <arg1> <arg2> 
-The onExecute method of the subCommand labeled "sub2" will be called with the arguments [arg1, arg2]
-```
-ScharkCommand scharkCommand = ...some complex scharkCommand structure
-scharkCommand.execute(player, console, args, new ArrayList<>());
-```
-<br></br>
-<br></br>
-## How to connect CommandAPI with Spigot or BungeeCord?
-### Example for BungeeCord:
-```
-public abstract class CoreCommand extends Command implements TabExecutor {
-
-    protected ScharkCommand<CorePlayer, CommandSender> scharkCommand;
-
-    public CoreCommand(String label, String[] aliases) {
-        super(label, null, aliases);
-        this.scharkCommand = this.generateBungeeCommand(label, aliases);
-    }
-
-    public abstract BungeeCommand generateBungeeCommand(String label, String[] aliases);
-
-    @Override
-    public void execute(CommandSender commandSender, String[] args) {
-        this.scharkCommand.execute(
-                commandSender instanceof ProxiedPlayer proxiedPlayer ? proxiedPlayer : null,
-                commandSender,
-                List.of(args), new ArrayList<>());
-    }
-
-    @Override
-    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        if (!(sender instanceof ProxiedPlayer p)) return ImmutableSet.of();
-        return this.scharkCommand.getTabCompletions(p, args);
-    }
-}
-```
-You can use this class for all your other commands.
-Now you can just create at example a PartyCommand class which extends CoreCommand and register it in your Main Class!
-

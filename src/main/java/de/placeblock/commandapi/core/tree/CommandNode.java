@@ -3,18 +3,15 @@ package de.placeblock.commandapi.core.tree;
 import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.context.CommandContext;
 import de.placeblock.commandapi.core.context.CommandContextBuilder;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.util.StringReader;
-import io.schark.design.Texts;
 import lombok.Getter;
 import lombok.Setter;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public abstract class CommandNode<S> {
     @Getter
@@ -71,9 +68,9 @@ public abstract class CommandNode<S> {
         return this.requirement.test(source);
     }
 
-    public abstract CompletableFuture<List<String>> listSuggestions(CommandContext<S> context, String partial) throws CommandSyntaxException;
+    public abstract CompletableFuture<List<String>> listSuggestions(CommandContext<S> context, String partial) throws CommandException;
 
-    public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException;
+    public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException;
 
     public void print(int index) {
         System.out.println(" ".repeat(index * 5) + "Name: " + this.getName());
@@ -85,7 +82,9 @@ public abstract class CommandNode<S> {
 
     public List<List<CommandNode<S>>> getBranches() {
         List<List<CommandNode<S>>> branches = new ArrayList<>();
-        branches.add(List.of(this));
+        List<CommandNode<S>> currentBranch = new ArrayList<>();
+        currentBranch.add(this);
+        branches.add(currentBranch);
         for (CommandNode<S> child : this.children.values()) {
             branches.addAll(child.getBranches().stream().peek(branch -> branch.add(0, this)).toList());
         }

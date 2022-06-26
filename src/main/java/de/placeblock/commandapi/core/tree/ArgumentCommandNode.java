@@ -5,7 +5,7 @@ import de.placeblock.commandapi.core.arguments.ArgumentType;
 import de.placeblock.commandapi.core.context.CommandContext;
 import de.placeblock.commandapi.core.context.CommandContextBuilder;
 import de.placeblock.commandapi.core.context.ParsedArgument;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.util.StringReader;
 import io.schark.design.Texts;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
+    public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
         int start = reader.getCursor();
         T result = this.type.parse(reader);
         ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);

@@ -1,6 +1,9 @@
 package de.placeblock.commandapi.core.util;
 
+import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import io.schark.design.Texts;
+import net.kyori.adventure.text.TextComponent;
 
 @SuppressWarnings("unused")
 public class StringReader {
@@ -96,71 +99,71 @@ public class StringReader {
         }
     }
 
-    public int readInt() throws CommandSyntaxException {
+    public int readInt() throws CommandException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt().create();
+            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Ganze Zahl <color:secondary>erwartet"));
         }
         try {
             return Integer.parseInt(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidInt().create(number);
+            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:secondary>erwartet, <color:negative>" + number + " <color:secondary>gefunden"));
         }
     }
 
-    public long readLong() throws CommandSyntaxException {
+    public long readLong() throws CommandException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedLong().create();
+            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>lange ganze Zahl <color:secondary>erwartet"));
         }
         try {
             return Long.parseLong(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidLong().create(number);
+            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:secondary>erwartet, <color:negative>" + number + " <color:secondary>gefunden"));
         }
     }
 
-    public double readDouble() throws CommandSyntaxException {
+    public double readDouble() throws CommandException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedDouble().create();
+            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:secondary>erwartet"));
         }
         try {
             return Double.parseDouble(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidDouble().create(number);
+            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:secondary>erwartet, <color:negative>" + number + " <color:secondary>gefunden"));
         }
     }
 
-    public float readFloat() throws CommandSyntaxException {
+    public float readFloat() throws CommandException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedFloat().create();
+            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:secondary>erwartet"));
         }
         try {
             return Float.parseFloat(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidFloat().create(number);
+            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:secondary>erwartet, <color:negative>" + number + " <color:secondary>gefunden"));
         }
     }
 
@@ -180,19 +183,19 @@ public class StringReader {
         return string.substring(start, cursor);
     }
 
-    public String readQuotedString() throws CommandSyntaxException {
+    public String readQuotedString() throws CommandException {
         if (!canRead()) {
             return "";
         }
         final char next = peek();
         if (!isQuotedStringStart(next)) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedStartOfQuote().create();
+            throw new CommandSyntaxException(Texts.negative("Anführungszeichen erwartet"));
         }
         skip();
         return readStringUntil(next);
     }
 
-    public String readStringUntil(char terminator) throws CommandSyntaxException {
+    public String readStringUntil(char terminator) throws CommandException {
         final StringBuilder result = new StringBuilder();
         boolean escaped = false;
         while (canRead()) {
@@ -203,7 +206,7 @@ public class StringReader {
                     escaped = false;
                 } else {
                     setCursor(getCursor() - 1);
-                    throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidEscape().create(String.valueOf(c));
+                    throw new CommandSyntaxException(Texts.negative("Falsches Zeichen '"+c+"' <color:secondary>im in Anführungszeichen gesetzten Text"));
                 }
             } else if (c == SYNTAX_ESCAPE) {
                 escaped = true;
@@ -213,11 +216,11 @@ public class StringReader {
                 result.append(c);
             }
         }
+        throw new CommandSyntaxException(Texts.negative("Schließendes Anführungszeichen erwartet"));
 
-        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedEndOfQuote().create();
     }
 
-    public String readString() throws CommandSyntaxException {
+    public String readString() throws CommandException {
         if (!canRead()) {
             return "";
         }
@@ -229,11 +232,11 @@ public class StringReader {
         return readUnquotedString();
     }
 
-    public boolean readBoolean() throws CommandSyntaxException {
+    public boolean readBoolean() throws CommandException {
         final int start = cursor;
         final String value = readString();
         if (value.isEmpty()) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedBool().create();
+            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>true <color:secondary>oder <color:primary>false <color:secondary>erwartet"));
         }
 
         if (value.equals("true")) {
@@ -242,18 +245,18 @@ public class StringReader {
             return false;
         } else {
             cursor = start;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidBool().create(value);
+            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>true <color:secondary>oder <color:primary>false <color:secondary>erwartet, <color:negative>" + value + " <color:secondary>gefunden"));
         }
     }
 
-    public void expect(final char c) throws CommandSyntaxException {
+    public void expect(final char c) throws CommandException {
         if (!canRead() || peek() != c) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbol().create(String.valueOf(c));
+            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Zeichen '"+c+"' <color:secondary>erwartet"));
         }
         skip();
     }
 
     public String debugString() {
-        return this.getString().substring(0, this.getCursor()) + "|" + this.getString().substring(this.getCursor());
+        return "'" + this.getString().substring(0, this.getCursor()) + "|" + this.getString().substring(this.getCursor()) + "'";
     }
 }
