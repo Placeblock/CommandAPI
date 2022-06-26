@@ -196,7 +196,7 @@ This is why you have to implement Methods like sendMessage(), hasPermission() et
 ## Generate HelpMessage
 CommandAPI automatically sends HelpMessages, however, if you want just to generate the Help Message, here you go:
 ```
-PaperCommand command = somePaperCommand()
+CommandAPICommand command = someCommandAPICommand()
 TextComponent helpMessage = command.generateHelpMessage(source)
 ```
 TextComponent from [AdventureAPI](https://github.com/KyoriPowered/adventure) is returned
