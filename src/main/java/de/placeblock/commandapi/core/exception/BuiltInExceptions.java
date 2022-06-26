@@ -30,10 +30,11 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final SimpleCommandExceptionType READER_EXPECTED_BOOL = new SimpleCommandExceptionType(Texts.negative("Falsche Eingabe<color:secondary>. <color:primary>true/false <color:secondary>erwartet"));
     private static final DynamicCommandExceptionType READER_EXPECTED_SYMBOL = new DynamicCommandExceptionType(symbol -> Texts.negative("Falsche Eingabe<color:secondary>. Symbol <color:primary>'" + symbol + "' <color:secondary>erwartet"));
 
-    private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_COMMAND = new SimpleCommandExceptionType(Texts.negative("Unbekannter Command"));
-    private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType(Texts.negative("Falsches Argument für Command"));
-    private static final DynamicCommandExceptionType DISPATCHER_PARSE_EXCEPTION = new DynamicCommandExceptionType(message -> Texts.secondary("Command <color:negative>nicht ausführbar<color:secondary>: ").append((Component) message));
+    private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_COMMAND = new SimpleCommandExceptionType(Texts.negative("Unbekannter Befehl"));
+    private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType(Texts.negative("Falsches Argument für Befehl"));
+    private static final DynamicCommandExceptionType DISPATCHER_PARSE_EXCEPTION = new DynamicCommandExceptionType(message -> Texts.secondary("Befehl <color:negative>nicht ausführbar<color:secondary>: ").append((Component) message));
 
+    private static final SimpleCommandExceptionType NO_PERMISSION_EXCEPTION = new SimpleCommandExceptionType(Texts.secondary("Dazu hast du <color:negative>keine Berechtigung"));
 
     @Override
     public Dynamic2CommandExceptionType integerTooLow() {
@@ -133,5 +134,10 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     @Override
     public DynamicCommandExceptionType dispatcherParseException() {
         return DISPATCHER_PARSE_EXCEPTION;
+    }
+
+    @Override
+    public SimpleCommandExceptionType nopermissionException() {
+        return NO_PERMISSION_EXCEPTION;
     }
 }

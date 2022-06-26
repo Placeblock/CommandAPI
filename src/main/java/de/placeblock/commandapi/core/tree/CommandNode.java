@@ -5,14 +5,24 @@ import de.placeblock.commandapi.core.context.CommandContext;
 import de.placeblock.commandapi.core.context.CommandContextBuilder;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.util.StringReader;
+import io.schark.design.Texts;
 import lombok.Getter;
 import lombok.Setter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public abstract class CommandNode<S> {
+    @Getter
+    private final String name;
+    @Getter
+    private final TextComponent description;
+    @Getter
+    private final List<String> permissions;
 
     private final Map<String, CommandNode<S>> children = new LinkedHashMap<>();
     private final Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
@@ -22,7 +32,10 @@ public abstract class CommandNode<S> {
     @Setter
     private Command<S> command;
 
-    public CommandNode(Command<S> command, Predicate<S> requirement) {
+    public CommandNode(String name, TextComponent description, List<String> permissions, Command<S> command, Predicate<S> requirement) {
+        this.name = name;
+        this.description = description;
+        this.permissions = permissions;
         this.command = command;
         this.requirement = requirement;
     }
@@ -58,8 +71,6 @@ public abstract class CommandNode<S> {
         return this.requirement.test(source);
     }
 
-    public abstract String getName();
-
     public abstract CompletableFuture<List<String>> listSuggestions(CommandContext<S> context, String partial) throws CommandSyntaxException;
 
     public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException;
@@ -71,4 +82,15 @@ public abstract class CommandNode<S> {
             childEntry.getValue().print(index + 1);
         }
     }
+
+    public List<List<CommandNode<S>>> getBranches() {
+        List<List<CommandNode<S>>> branches = new ArrayList<>();
+        branches.add(List.of(this));
+        for (CommandNode<S> child : this.children.values()) {
+            branches.addAll(child.getBranches().stream().peek(branch -> branch.add(0, this)).toList());
+        }
+        return branches;
+    }
+
+    public abstract TextComponent getUsageText();
 }

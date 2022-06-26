@@ -6,9 +6,13 @@ import de.placeblock.commandapi.core.context.CommandContextBuilder;
 import de.placeblock.commandapi.core.context.ParseResults;
 import de.placeblock.commandapi.core.context.ParsedArgument;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.tree.ArgumentCommandNode;
 import de.placeblock.commandapi.core.tree.CommandNode;
 import de.placeblock.commandapi.core.tree.LiteralCommandNode;
 import de.placeblock.commandapi.core.util.StringReader;
+import io.schark.design.Texts;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +34,8 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
     }
 
     public abstract LiteralArgumentBuilder<S> generateCommand();
+    public abstract boolean hasSourcePermission(S source, String permission);
+    protected abstract void sendSourceMessage(S source, TextComponent message);
 
     public void execute(S source, String input) throws CommandSyntaxException {
         this.execute(source, new StringReader(input));
@@ -77,7 +83,7 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
         S source = contextSoFar.getSource();
         ParseResults<S> parseResults = new ParseResults<>(contextSoFar, originalReader);
 
-        if (node.canUse(source)) {
+        if (node.canUse(source) && !node.getPermissions().removeIf(permission -> !this.hasSourcePermission(source, permission))) {
             try {
                 try {
                     node.parse(originalReader, contextSoFar);
@@ -99,7 +105,8 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
             } catch (CommandSyntaxException e) {
                 contextSoFar.withException(e);
             }
-
+        } else {
+            contextSoFar.withException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.nopermissionException().create());
         }
 
         return parseResults;
@@ -138,6 +145,35 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
         });
 
         return result;
+    }
+
+    public TextComponent generateHelpMessage(S source) {
+        TextComponent textComponent = Texts.headline(this.getName().toUpperCase()).append(Component.newline());
+        List<List<CommandNode<S>>> branches = this.commandNode.getBranches();
+        for (List<CommandNode<S>> branch : branches) {
+            if (branch.get(branch.size() - 1).getCommand() == null) {
+                continue;
+            }
+            for (CommandNode<S> node : branch) {
+                if (!node.canUse(source) || node.getPermissions().removeIf(permission -> !this.hasSourcePermission(source, permission))) {
+                    continue;
+                }
+            }
+            textComponent = textComponent.append(Texts.primary("/")).append(Texts.primary(branch.get(0).getName()));
+            for (int i = 1; i < branch.size(); i++) {
+                CommandNode<S> node = branch.get(i);
+                if (node instanceof LiteralCommandNode<S>) {
+                    textComponent = textComponent.append(Component.space()).append(node.getUsageText());
+                } else if (node instanceof ArgumentCommandNode<S,?>) {
+                    if (branch.get(i - 1).getCommand() == null) {
+                        textComponent = textComponent.append(Component.space()).append(node.getUsageText());
+                    } else {
+                        textComponent = textComponent.append(Component.space()).append(Texts.secondary("[")).append(node.getUsageText()).append(Texts.secondary("]"));
+                    }
+                }
+            }
+        }
+        return textComponent;
     }
 
 }

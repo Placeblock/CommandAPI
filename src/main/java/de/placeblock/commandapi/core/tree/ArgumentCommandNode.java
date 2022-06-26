@@ -7,7 +7,9 @@ import de.placeblock.commandapi.core.context.CommandContextBuilder;
 import de.placeblock.commandapi.core.context.ParsedArgument;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.util.StringReader;
+import io.schark.design.Texts;
 import lombok.Getter;
+import net.kyori.adventure.text.TextComponent;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -16,20 +18,13 @@ import java.util.function.Predicate;
 
 @Getter
 public class ArgumentCommandNode<S, T> extends CommandNode<S> {
-    private final String name;
     private final ArgumentType<T> type;
     private final Function<String, CompletableFuture<List<String>>> customSuggestions;
 
-    public ArgumentCommandNode(Command<S> command, String name, ArgumentType<T> type, Predicate<S> requirement, Function<String, CompletableFuture<List<String>>> customSuggestions) {
-        super(command, requirement);
-        this.name = name;
+    public ArgumentCommandNode(String name, TextComponent description, List<String> permissions, Command<S> command, ArgumentType<T> type, Predicate<S> requirement, Function<String, CompletableFuture<List<String>>> customSuggestions) {
+        super(name, description, permissions, command, requirement);
         this.type = type;
         this.customSuggestions = customSuggestions;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
     }
 
     @Override
@@ -37,7 +32,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         int start = reader.getCursor();
         T result = this.type.parse(reader);
         ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);
-        contextBuilder.withArgument(this.name, parsed);
+        contextBuilder.withArgument(this.getName(), parsed);
         contextBuilder.withNode(this, parsed.getRange());
     }
 
@@ -48,5 +43,9 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         } else {
             return customSuggestions.apply(partial);
         }
+    }
+
+    public TextComponent getUsageText() {
+        return Texts.secondary("<").append(Texts.secondary(this.getName())).append(Texts.secondary(">"));
     }
 }

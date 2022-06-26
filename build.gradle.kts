@@ -24,14 +24,18 @@ repositories {
             password = project.properties["reposilite.token"] as String?
         }
     }
+    maven {
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
     mavenCentral()
 }
 
 dependencies {
+  compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+  compileOnly("io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT")
   compileOnly("org.projectlombok:lombok:1.18.24")
   compileOnly("io.schark:ScharkDesign:1.0.3")
-  compileOnly("net.kyori:adventure-api:4.11.0")
-  compileOnly("net.kyori:adventure-text-minimessage:4.11.0")
+  compileOnly("net.kyori:adventure-platform-bungeecord:4.1.1")
   annotationProcessor("org.projectlombok:lombok:1.18.24")
 }
 

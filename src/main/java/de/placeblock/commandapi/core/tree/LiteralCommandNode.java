@@ -6,18 +6,22 @@ import de.placeblock.commandapi.core.context.CommandContextBuilder;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.util.StringRange;
 import de.placeblock.commandapi.core.util.StringReader;
+import io.schark.design.Texts;
+import lombok.Getter;
+import net.kyori.adventure.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
+@Getter
 public class LiteralCommandNode<S> extends CommandNode<S> {
-    private final String label;
+    private final List<String> aliases;
 
-    public LiteralCommandNode(Command<S> command, String label, Predicate<S> requirement) {
-        super(command, requirement);
-        this.label = label;
+    public LiteralCommandNode(String label, TextComponent description, List<String> aliases, List<String> permissions, Command<S> command, Predicate<S> requirement) {
+        super(label, description, permissions, command, requirement);
+        this.aliases = aliases;
     }
 
     @Override
@@ -28,14 +32,15 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
             contextBuilder.withNode(this, StringRange.between(start, end));
             return;
         }
-        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect().create(this.label);
+        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect().create(this.getName());
     }
 
     private int parse(StringReader reader) {
         int start = reader.getCursor();
-        if (reader.canRead(this.label.length())) {
-            int end = start + this.label.length();
-            if (reader.getString().substring(start, end).equals(this.label)) {
+        if (reader.canRead(this.getName().length())) {
+            int end = start + this.getName().length();
+            String parsedLiteral = reader.getString().substring(start, end);
+            if (parsedLiteral.equalsIgnoreCase(this.getName()) || this.aliases.removeIf(alias -> alias.equalsIgnoreCase(parsedLiteral))) {
                 reader.setCursor(end);
                 if (!reader.canRead() || reader.peek() == ' ') {
                     return end;
@@ -49,16 +54,15 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
 
     @Override
     public CompletableFuture<List<String>> listSuggestions(CommandContext<S> context, String partial) {
-        if (this.label.toLowerCase().startsWith(partial)) {
-            return CompletableFuture.completedFuture(List.of(this.label));
+        if (this.getName().toLowerCase().startsWith(partial)) {
+            return CompletableFuture.completedFuture(List.of(this.getName()));
         } else {
             return CompletableFuture.completedFuture(new ArrayList<>());
         }
     }
 
-    @Override
-    public String getName() {
-        return this.label;
+    public TextComponent getUsageText() {
+        return Texts.secondary(this.getName());
     }
 
 }

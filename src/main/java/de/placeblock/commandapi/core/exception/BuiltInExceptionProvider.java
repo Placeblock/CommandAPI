@@ -48,4 +48,6 @@ public interface BuiltInExceptionProvider {
     SimpleCommandExceptionType dispatcherUnknownArgument();
 
     DynamicCommandExceptionType dispatcherParseException();
+
+    SimpleCommandExceptionType nopermissionException();
 }
