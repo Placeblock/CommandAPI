@@ -7,7 +7,7 @@ CommandAPI simplifies and structures command definition and execution, especiall
 Auto-Tab-Completion can be a mess to implement in large commands. CommandAPI does it for you!<br />
 It can be really hard to implement complex Commands, Help-Messages and Auto-Tab-Completion without many duplicated code snippets. Because the Structure of your commands and subcommands are stored only in one place, all of this can be done without much effort!
 
-This API was originally inspired by Mojang's Brigadier, but in the end it turned out that i reworked nearly everything,
+This API was originally inspired by Mojang's Brigadier, but in the end it turned out that I reworked nearly everything,
 because for me Brigadier was unnecessary complex.
 Bridges for Paper and Waterfall are included in the API.
 
@@ -41,14 +41,17 @@ It is an abstract class and has the following methods:
   <dt>then(ArgumentBuilder builder)</dt>
   <dd>Used to add Child ArgumentBuilder.</dd>
   <dt>executes(Command command)</dt>
-  <dd>Sets the Callback to be executed when executing this node</dd>
-  <dd>Command is a functional interface, so it can be used as a lambda function</dd>
+  <dd>Sets the Callback to be executed when executing this node.</dd>
+  <dd>Command is a functional interface, so it can be used as a lambda function.</dd>
   <dt>withDescription(TextComponent description)</dt>
-  <dd>Sets the description of this node</dd>
+  <dd>Sets the description of this node.</dd>
+  <dd>The only use of descriptions is for generating the HelpMessage.</dd>
+  <dd>If no description is provided there will be no description in the HelpMessage.</dd>
+
   <dt>withPermission(String permission)</dt>
   <dd>Sets the permission that is required to run this command. </dd>
   <dt>requires(Predicate requirement)</dt>
-  <dd>This Node is only executed if this Predicate returns true</dd>
+  <dd>This Node is only executed if this Predicate returns true.</dd>
 </dl>
 
 ### There arer two implementations of the abstract [ArgumentBuilder](src/main/java/de/placeblock/commandapi/core/builder/ArgumentBuilder.java)
@@ -83,79 +86,64 @@ return new LiteralArgumentBuilder<Source>("fly")
 ```
 
 ### What is source?
-Since CommandAPI should be compatible with Spigot as well as Bungeecord the CommandAPI classes are generic.<br />
+Since CommandAPI should be compatible with Paper as well as Waterfall the CommandAPI classes are generic.<br />
 This means there is no fixed class for the Player or the Console, instead of this there is just the Source S.
 When a command gets executed you get the source, another word would be "whoever typed in this command".
 
-
-### Example for a "simple" Paper Command:
+### Example for a "simple" Paper Fly Command without implementation:
 ```
-public class FlyCommand extends CommandAPICommand<PaperCommandSource<Player>> implements CommandExecutor, TabCompleter {
+public class FlyCommand extends CommandAPICommand<Source> implements CommandExecutor, TabCompleter {
 
     public FlyCommand() {
         super("fly");
-        Objects.requireNonNull(howeveryougetyourserver().getPluginCommand(label)).setExecutor(this);
+        //Registration missing
     }
 
     @Override
-    public LiteralArgumentBuilder<PaperCommandSource<Player>> generateCommand() {
-        return new LiteralArgumentBuilder<PaperCommandSource<Player>>("fly")
-            .executes(c -> {
-                Player player = c.getSource().getPlayer();
-                //FLY LOGIC
-            });
+    public LiteralArgumentBuilder<Source> generateCommand() {
+        //Here you can Define your Command Structure
     }
 
     @Override
-    public boolean hasSourcePermission(PaperCommandSource<Player> source, String permission) {
-        if (source.getPlayer() != null) {
-            return source.getPlayer().hasPermission(permission);
-        } else {
-            return true;
-        }
+    public boolean hasSourcePermission(Source source, String permission) {
+        //Implementation missing
     }
 
     @Override
-    public void sendSourceMessage(PaperCommandSource<Player> source, TextComponent textComponent) {
-        source.getSender().sendMessage(textComponent);
+    public void sendSourceMessage(Source source, TextComponent textComponent) {
+
     }
     
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        P lobbyPlayer = null;
-        if (sender instanceof Player player) {
-            lobbyPlayer = this.getCustomPlayer(player);
-        }
-        PaperCommandSource<P> source = new PaperCommandSource<>(lobbyPlayer, sender);
-        ParseResults<PaperCommandSource<P>> parseResults = this.parse(source, label + " " + String.join(" ", args));
-        this.execute(parseResults);
-        return true;
+        //Implementation missing
     }
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        String buffer = label + " " + String.join(" ", args);
-        P customPlayer = null;
-        if (sender instanceof Player player) {
-            customPlayer = this.getCustomPlayer(player);
-        }
-        ParseResults<PaperCommandSource<P>> parseResults = this.parse(new PaperCommandSource<>(customPlayer, sender), buffer);
-        return this.getSuggestions(parseResults);
+        //Implementation missing
     }
 }
 ```
-In Bungeecord things are even more complicated, because you can't extend CommandApiCommand as you have to extend Command.
+The CommandAPI does not know how to send Messages to the Source because it doesn't know of which type Source is.<br />
+This is why you have to implement methods Like sendSourceMessage(Source source, TextComponent textComponent).<br />
 
-WOHA, AND I HAVE TO DO THIS FOR EVERY SINGLE COMMAND? <br />
+Maybe you are wondering if you have to do this for every single command...
 Long answer short: no, of course not. <br />
-Since CommandAPI should be compatible with Spigot as well as Bungeecord the CommandAPI classes are generic.<br />
-Because of this there are Methods like sendSourceMessage(Source source) or hasSourcePermission(Source source, String permission).<br />
-These methods will be probably the same for all your commands, and you would have to implement these in all commands.<br />
+These methods will be probably the same for all your commands, and it would be stupid to implement them again and again.<br />
 One solution would be to create another class which extends CommandAPICommand and implements these methods.<br />
 For Paper and Waterfall this is already done with the [WaterfallCommandBridge](src/main/java/de/placeblock/commandapi/bungee/WaterfallCommandBridge.java)
 and [PaperCommandBridge](src/main/java/de/placeblock/commandapi/paper/PaperCommandBridge.java) classes.<br />
-They still have some abstract methods you would have to implement in every command and it is still recommended to
-create a class between the Paper-/Bungee-Commandbridge, an example is shown below.
+They already have implemented Command Execution, Tab Completion and Command Registration,
+but still have some abstract methods (explained below example) you would have to implement in every command, however they don't need
+as much logic as the above-mentioned. <br />
+Because there are still methods which are the same for every command, 
+it is recommended to create a class between the Paper-/Bungee-Commandbridge, an example is shown below.
+
+You should create a Source Class which holds your Custom Player and the CommandSender,
+because when the command gets executed from console you can set the Custom Player to null and
+in your execute lambda a simple check is needed to confirm that the command was sent by an actual player. <br />
+IMPORTANT: PaperCommandBridge and WaterfallCommandBridge does this for you.
 
 #### Example (Paper):
 ```
@@ -175,7 +163,7 @@ public abstract class PaperCommand extends PaperCommandBridge<CustomPlayer> {
     }
 
     @Override
-    protected boolean hasPermission(CustomPlayer lobbyPlayer, String permission) {
+    protected boolean hasPermission(CustomPlayer customPlayer, String permission) {
         return CheckIfYourCustomPlayerHasPermission(permission)
     }
 
@@ -185,57 +173,18 @@ public abstract class PaperCommand extends PaperCommandBridge<CustomPlayer> {
     }
 }
 ```
-Now you can use PaperCommand freely.
+This looks much cleaner then the first-mentioned class, and now you can use PaperCommand freely.
 
 ### What is CustomPlayer?
-When programming larger plugins you will likely have a Custom Player Class which holds the BukkitPlayer
-and other important Data. To work with these Custom Players directly the WaterfallCommandSource which
-holds the Player and the CommandSender, where Player is of the Type, which you pass to PaperCommandBridge.
-When a command is executed you will receive the source and because of this generics you will get your
-CustomPlayer directly.
+Remember the Information Note before the example? I said that Paper-/Waterfall-CommandBridge handle the
+Source for you. Well, it isn't 100% right. I could have implemented a Source Class just with
+(for paper) the Bukkit Player and the CommandSender, and (for Waterfall) the ProxiedPlayer and the CommandSender,
+but in larger plugins you will likely have a Custom Player which holds your player data and (with Paper) your Bukkit Player.
+To Support these Custom Players, the Source used in the Paper-/Waterfall-CommandBridge is generic. You can set the Type
+for the Player to your Custom Player!
+But because the API don't know the type of Player, it doesn't know how to check Permissions, send Messages, etc.
+This is why you have to implement Methods like sendMessage(), hasPermission() etc.
 
-## Features
-
-### You can create complex Command Structures:
-```
-    @Override
-    public LiteralArgumentBuilder<PaperCommandSource<Player>> generateCommand() {
-        return new LiteralArgumentBuilder<PaperCommandSource<ILobbyPlayer>>("fly")
-            .executes(c -> {
-                //Gets executed if a player types /fly
-            })
-            .then(
-                new RequiredArgumentBuilder<PaperCommandSource<ILobbyPlayer>, ILobbyPlayer>("spieler", new LobbyPlayerArgumentType())
-                .then(new RequiredArgumentBuilder<PaperCommandSource<ILobbyPlayer>, Boolean>("true/false", new BooleanArgumentType())
-                    .executes(c -> {
-                        //Gets executed if a player types /fly <spieler> 
-                    }))
-            );
-    }
-```
-Use LiteralArgumentBuilder for SubCommands and RequiredArgumentBuilder for Parameters a player has to fulfill.
-
-### You can add Aliases to Commands:
-```    
-    @Override
-    public LiteralArgumentBuilder<PaperCommandSource<Player>> generateCommand() {
-        return new LiteralArgumentBuilder<PaperCommandSource<ILobbyPlayer>>("fly")
-            .withAlias("flymode")
-            .withAlias("f")
-    }
-```
-
-
-### You can add a Description to Commands:
-```    
-    @Override
-    public LiteralArgumentBuilder<PaperCommandSource<Player>> generateCommand() {
-        return new LiteralArgumentBuilder<PaperCommandSource<ILobbyPlayer>>("fly")
-            .withDescription("Custom Description for This Command")
-    }
-```
-The only use of descriptions is for generating the HelpMessage.
-If no description is provided there will be no description in the HelpMessage.
 
 
 ### Generate HelpMessage
