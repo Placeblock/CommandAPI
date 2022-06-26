@@ -68,7 +68,7 @@ public abstract class CommandNode<S> {
         return this.requirement.test(source);
     }
 
-    public abstract CompletableFuture<List<String>> listSuggestions(CommandContext<S> context, String partial) throws CommandException;
+    public abstract List<String> listSuggestions(CommandContext<S> context, String partial) throws CommandException;
 
     public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException;
 

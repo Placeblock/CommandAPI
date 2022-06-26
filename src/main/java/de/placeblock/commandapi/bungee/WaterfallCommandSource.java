@@ -6,7 +6,7 @@ import net.md_5.bungee.api.CommandSender;
 
 @Getter
 @RequiredArgsConstructor
-public class BungeeCommandSource<P> {
+public class WaterfallCommandSource<P> {
     private final P player;
     private final CommandSender sender;
 }

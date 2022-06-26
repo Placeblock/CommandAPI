@@ -1,6 +1,5 @@
 package de.placeblock.commandapi.paper;
 
-import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
 import de.placeblock.commandapi.core.CommandAPICommand;
 import de.placeblock.commandapi.core.context.ParseResults;
 import net.kyori.adventure.text.TextComponent;
@@ -8,21 +7,19 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginBase;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-public abstract class PaperCommandBridge<P> extends CommandAPICommand<PaperCommandSource<P>> implements CommandExecutor, Listener {
+@SuppressWarnings("unused")
+public abstract class PaperCommandBridge<P> extends CommandAPICommand<PaperCommandSource<P>> implements CommandExecutor, TabCompleter {
 
     public PaperCommandBridge(String label) {
         super(label);
         Server server = this.getPlugin().getServer();
-        server.getPluginManager().registerEvents(this, this.getPlugin());
         Objects.requireNonNull(server.getPluginCommand(label)).setExecutor(this);
     }
 
@@ -38,26 +35,15 @@ public abstract class PaperCommandBridge<P> extends CommandAPICommand<PaperComma
         return true;
     }
 
-    @EventHandler
-    public void onTabComplete(AsyncTabCompleteEvent event) {
-        String buffer = event.getBuffer().substring(1);
-        if (!buffer.split(" ")[0].equals(this.getName())) {
-            return;
-        }
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        String buffer = label + " " + String.join(" ", args);
         P customPlayer = null;
-        CommandSender sender = event.getSender();
         if (sender instanceof Player player) {
             customPlayer = this.getCustomPlayer(player);
         }
         ParseResults<PaperCommandSource<P>> parseResults = this.parse(new PaperCommandSource<>(customPlayer, sender), buffer);
-        this.getSuggestions(parseResults).thenAccept(suggestions -> {
-            event.setCompletions(suggestions);
-            event.setHandled(true);
-        }).exceptionally(throwable -> {
-            event.setCompletions(new ArrayList<>());
-            event.setHandled(true);
-            return null;
-        });
+        return this.getSuggestions(parseResults);
     }
 
     @Override

@@ -55,11 +55,11 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public CompletableFuture<List<String>> listSuggestions(CommandContext<S> context, String partial) {
+    public List<String> listSuggestions(CommandContext<S> context, String partial) {
         if (this.getName().toLowerCase().startsWith(partial)) {
-            return CompletableFuture.completedFuture(List.of(this.getName()));
+            return List.of(this.getName());
         } else {
-            return CompletableFuture.completedFuture(new ArrayList<>());
+            return new ArrayList<>();
         }
     }
 

@@ -20,7 +20,7 @@ public class BooleanArgumentType implements ArgumentType<Boolean> {
     }
 
     @Override
-    public <S> CompletableFuture<List<String>> listSuggestions(CommandContext<S> context, String partial) {
+    public <S> List<String> listSuggestions(CommandContext<S> context, String partial) {
         List<String> completions = new ArrayList<>();
         if ("true".startsWith(partial.toLowerCase())) {
             completions.add("true");
@@ -28,6 +28,6 @@ public class BooleanArgumentType implements ArgumentType<Boolean> {
         if ("false".startsWith(partial.toLowerCase())) {
             completions.add("false");
         }
-        return CompletableFuture.completedFuture(completions);
+        return completions;
     }
 }

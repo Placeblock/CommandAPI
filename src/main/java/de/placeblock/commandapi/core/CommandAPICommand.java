@@ -126,7 +126,7 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
 
 
 
-    public CompletableFuture<List<String>> getSuggestions(ParseResults<S> parse) {
+    public List<String> getSuggestions(ParseResults<S> parse) {
         if (CommandAPI.DEBUG_MODE) {
             System.out.println("Getting Suggestions for Command:");
             parse.getContext().print(0);
@@ -141,30 +141,19 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
         }
         String partial = parse.getReader().getRemaining();
         if (context.getExceptions().size() > 0 || (!partial.equals(" ") && partial.endsWith(" "))) {
-            return CompletableFuture.completedFuture(new ArrayList<>());
+            return new ArrayList<>();
         }
         partial = partial.strip();
         Collection<CommandNode<S>> children = context.getNode().getChildren();
-        @SuppressWarnings("unchecked") CompletableFuture<List<String>>[] futures = new CompletableFuture[children.size()];
+        List<String> suggestions = new ArrayList<>();
         int i = 0;
         for (CommandNode<S> child : children) {
-            CompletableFuture<List<String>> future = CompletableFuture.completedFuture(new ArrayList<>());
             try {
-                future = child.listSuggestions(context.build(parse.getReader().getString().substring(0, parse.getReader().getCursor())), partial);
+                suggestions.addAll(child.listSuggestions(context.build(parse.getReader().getString().substring(0, parse.getReader().getCursor())), partial));
             } catch (CommandException ignored) {
             }
-            futures[i++] = future;
         }
-        CompletableFuture<List<String>> result = new CompletableFuture<>();
-        CompletableFuture.allOf(futures).thenRun(() -> {
-            final List<String> suggestions = new ArrayList<>();
-            for (CompletableFuture<List<String>> future : futures) {
-                suggestions.addAll(future.join());
-            }
-            result.complete(suggestions);
-        });
-
-        return result;
+        return suggestions;
     }
 
     public TextComponent generateHelpMessage(S source) {

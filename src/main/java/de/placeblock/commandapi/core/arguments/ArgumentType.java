@@ -12,8 +12,8 @@ public interface ArgumentType<T> {
 
     T parse(final StringReader reader) throws CommandException;
 
-    default <S> CompletableFuture<List<String>> listSuggestions(final CommandContext<S> context, String partial) {
-        return CompletableFuture.completedFuture(new ArrayList<>());
+    default <S> List<String> listSuggestions(final CommandContext<S> context, String partial) {
+        return new ArrayList<>();
     }
 
 }

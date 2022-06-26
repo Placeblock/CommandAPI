@@ -19,9 +19,9 @@ import java.util.function.Predicate;
 @Getter
 public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final ArgumentType<T> type;
-    private final Function<String, CompletableFuture<List<String>>> customSuggestions;
+    private final Function<String, List<String>> customSuggestions;
 
-    public ArgumentCommandNode(String name, TextComponent description, List<String> permissions, Command<S> command, ArgumentType<T> type, Predicate<S> requirement, Function<String, CompletableFuture<List<String>>> customSuggestions) {
+    public ArgumentCommandNode(String name, TextComponent description, List<String> permissions, Command<S> command, ArgumentType<T> type, Predicate<S> requirement, Function<String, List<String>> customSuggestions) {
         super(name, description, permissions, command, requirement);
         this.type = type;
         this.customSuggestions = customSuggestions;
@@ -37,7 +37,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public CompletableFuture<List<String>> listSuggestions(final CommandContext<S> context, String partial) {
+    public List<String> listSuggestions(final CommandContext<S> context, String partial) {
         if (customSuggestions == null) {
             return type.listSuggestions(context, partial);
         } else {

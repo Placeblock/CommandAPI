@@ -4,16 +4,14 @@ import de.placeblock.commandapi.core.arguments.ArgumentType;
 import de.placeblock.commandapi.core.tree.ArgumentCommandNode;
 import de.placeblock.commandapi.core.tree.CommandNode;
 import lombok.Getter;
-
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 @Getter
 public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredArgumentBuilder<S, T>> {
     private final String name;
     private final ArgumentType<T> type;
-    private Function<String, CompletableFuture<List<String>>> customSuggestions = null;
+    private Function<String, List<String>> customSuggestions = null;
 
     public RequiredArgumentBuilder(String name, ArgumentType<T> type) {
         super(name);
@@ -22,7 +20,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 
 
-    public RequiredArgumentBuilder<S, T> suggests(Function<String, CompletableFuture<List<String>>> customSuggestions) {
+    public RequiredArgumentBuilder<S, T> suggests(Function<String, List<String>> customSuggestions) {
         this.customSuggestions = customSuggestions;
         return getThis();
     }
