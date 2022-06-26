@@ -11,7 +11,7 @@ This API was originally inspired by Mojang's Brigadier, but in the end it turned
 because for me Brigadier was unnecessary complex.
 Bridges for Paper and Waterfall are included in the API.
 
-## How does the API work?
+# Documentation
 
 Every command is stored in a tree-like structure <br />
 Example:
@@ -34,7 +34,8 @@ Literal   Literal   Argument
 ```
 At the same time every single of them are Nodes.
 
-### When using CommandAPI you can define this Structure by using the [ArgumentBuilder](src/main/java/de/placeblock/commandapi/core/builder/ArgumentBuilder.java)
+## How to create the Command Structure
+#### When using CommandAPI you can define this Structure by using the [ArgumentBuilder](src/main/java/de/placeblock/commandapi/core/builder/ArgumentBuilder.java)
 It is an abstract class and has the following methods:
 
 <dl>
@@ -58,19 +59,25 @@ It is an abstract class and has the following methods:
 
 
 #### [LiteralArgumentBuilder](src/main/java/de/placeblock/commandapi/core/builder/LiteralArgumentBuilder.java) with the following additional methods:
+Used for Literals (above-mentioned)
 <dl>
   <dt>withAlias(String alias)</dt>
   <dd>Adds an Alias to the Node.</dd>
 </dl>
 
-and the
+
 #### [RequiredArgumentBuilder](src/main/java/de/placeblock/commandapi/core/builder/RequiredArgumentBuilder.java) with the following additional methods:
+Used for Arguments (above-mentioned)
 <dl>
   <dt>suggests(Function&lt;String, List&lt;String&gt;&gt; customSuggestions)</dt>
   <dd>This Function will be called in addition to the ArgumentType when getting Suggestions for TabCompletion.</dd>
 </dl>
+RequiredArgumentBuilder needs an ArgumentType, at example, <br />
+/msg [player] [msg] <- This is an Argument of Type String
+When the Player types a command, the parser tries to parse arguments into their Types.
+You can create your own CustomArgumentType by implementing ArgumentType
 
-####  You can use these two Builders to build your Command, or if you want to, define your own:
+###  You can use these two Builders to build your Command, or if you want to, define your own:
 ```
 return new LiteralArgumentBuilder<Source>("fly")
     .executes(c -> {
@@ -85,12 +92,12 @@ return new LiteralArgumentBuilder<Source>("fly")
     );
 ```
 
-### What is source?
+## What is source?
 Since CommandAPI should be compatible with Paper as well as Waterfall the CommandAPI classes are generic.<br />
 This means there is no fixed class for the Player or the Console, instead of this there is just the Source S.
 When a command gets executed you get the source, another word would be "whoever typed in this command".
 
-### Example for a "simple" Paper Fly Command without implementation:
+## Example for a "simple" Paper Command without implementation:
 ```
 public class FlyCommand extends CommandAPICommand<Source> implements CommandExecutor, TabCompleter {
 
@@ -145,7 +152,7 @@ because when the command gets executed from console you can set the Custom Playe
 in your execute lambda a simple check is needed to confirm that the command was sent by an actual player. <br />
 IMPORTANT: PaperCommandBridge and WaterfallCommandBridge does this for you.
 
-#### Example (Paper):
+### Example (Paper):
 ```
 public abstract class PaperCommand extends PaperCommandBridge<CustomPlayer> {
     public PaperCommand(String label) {
@@ -186,8 +193,7 @@ But because the API don't know the type of Player, it doesn't know how to check 
 This is why you have to implement Methods like sendMessage(), hasPermission() etc.
 
 
-
-### Generate HelpMessage
+## Generate HelpMessage
 CommandAPI automatically sends HelpMessages, however, if you want just to generate the Help Message, here you go:
 ```
 PaperCommand command = somePaperCommand()
