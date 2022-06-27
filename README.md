@@ -75,7 +75,7 @@ Used for Arguments (above-mentioned)
 RequiredArgumentBuilder needs an ArgumentType, at example, <br />
 /msg [player] [msg] <- This is an Argument of Type String
 When the Player types a command, the parser tries to parse arguments into their Types.
-You can create your own CustomArgumentType by implementing ArgumentType
+You can create your own CustomArgumentType by implementing ArgumentType.
 
 ###  You can use these two Builders to build your Command, or if you want to, define your own:
 ```

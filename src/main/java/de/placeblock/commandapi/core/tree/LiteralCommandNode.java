@@ -42,7 +42,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
         if (reader.canRead(this.getName().length())) {
             int end = start + this.getName().length();
             String parsedLiteral = reader.getString().substring(start, end);
-            if (parsedLiteral.equalsIgnoreCase(this.getName()) || this.aliases.removeIf(alias -> alias.equalsIgnoreCase(parsedLiteral))) {
+            if (parsedLiteral.equalsIgnoreCase(this.getName()) && (this.aliases == null || this.aliases.removeIf(alias -> alias.equalsIgnoreCase(parsedLiteral)))) {
                 reader.setCursor(end);
                 if (!reader.canRead() || reader.peek() == ' ') {
                     return end;

@@ -2,7 +2,6 @@ package de.placeblock.commandapi.core;
 
 import de.placeblock.commandapi.CommandAPI;
 import de.placeblock.commandapi.core.builder.LiteralArgumentBuilder;
-import de.placeblock.commandapi.core.context.CommandContext;
 import de.placeblock.commandapi.core.context.CommandContextBuilder;
 import de.placeblock.commandapi.core.context.ParseResults;
 import de.placeblock.commandapi.core.context.ParsedArgument;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
 public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
@@ -105,13 +103,36 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
                 contextSoFar.withCommand(node.getCommand());
                 if (originalReader.canRead(2)) {
                     originalReader.skip();
+                    List<ParseResults<S>> potentials = new ArrayList<>();
                     for (CommandNode<S> child : node.getChildren()) {
                         CommandContextBuilder<S> childCommandContext = new CommandContextBuilder<>(source, originalReader.getCursor());
                         for (Map.Entry<String, ParsedArgument<S, ?>> argumentEntry : contextSoFar.getArguments().entrySet()) {
                             childCommandContext.withArgument(argumentEntry.getKey(), argumentEntry.getValue());
                         }
                         ParseResults<S> parse = this.parseNodes(child, originalReader, childCommandContext);
-                        contextSoFar.withChild(parse.getContext());
+                        potentials.add(parse);
+                    }
+                    if (potentials.size() > 1) {
+                        potentials.sort((a, b) -> {
+                            if (!a.getReader().canRead() && b.getReader().canRead()) {
+                                return -1;
+                            }
+                            if (a.getReader().canRead() && !b.getReader().canRead()) {
+                                return 1;
+                            }
+                            CommandContextBuilder<S> lastAChild = a.getContext().getLastChild();
+                            CommandContextBuilder<S> lastBChild = b.getContext().getLastChild();
+                            if (lastAChild.getExceptions().isEmpty() && !lastBChild.getExceptions().isEmpty()) {
+                                return -1;
+                            }
+                            if (!lastAChild.getExceptions().isEmpty() && lastBChild.getExceptions().isEmpty()) {
+                                return 1;
+                            }
+                            return 0;
+                        });
+                    }
+                    if (potentials.size() > 0) {
+                        contextSoFar.withChild(potentials.get(0).getContext());
                     }
                 }
             } catch (CommandException e) {
@@ -128,8 +149,14 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
 
     public List<String> getSuggestions(ParseResults<S> parse) {
         if (CommandAPI.DEBUG_MODE) {
-            System.out.println("Getting Suggestions for Command:");
+            System.out.println("Getting Suggestions for Command: " + parse.getReader().debugString());
             parse.getContext().print(0);
+            System.out.println("Exceptions:");
+            for (CommandException exception : parse.getContext().getLastChild().getExceptions()) {
+                for (StackTraceElement stackTraceElement : exception.getStackTrace()) {
+                    System.out.println(stackTraceElement);
+                }
+            }
         }
         CommandContextBuilder<S> context = parse.getContext();
         while (context.getChild() != null && context.getChild().getExceptions().size() == 0) {
@@ -140,7 +167,7 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
             context.print(0);
         }
         String partial = parse.getReader().getRemaining();
-        if (context.getExceptions().size() > 0 || (!partial.equals(" ") && partial.endsWith(" "))) {
+        if (!partial.equals(" ") && partial.endsWith(" ")) {
             return new ArrayList<>();
         }
         partial = partial.strip();
