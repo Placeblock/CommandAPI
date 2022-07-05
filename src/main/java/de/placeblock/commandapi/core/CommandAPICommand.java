@@ -120,12 +120,12 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
                             if (a.getReader().canRead() && !b.getReader().canRead()) {
                                 return 1;
                             }
-                            CommandContextBuilder<S> lastAChild = a.getContext().getLastChild();
-                            CommandContextBuilder<S> lastBChild = b.getContext().getLastChild();
-                            if (lastAChild.getExceptions().isEmpty() && !lastBChild.getExceptions().isEmpty()) {
+                            CommandContextBuilder<S> childA = a.getContext();
+                            CommandContextBuilder<S> childB = b.getContext();
+                            if (childA.getExceptions().isEmpty() && !childB.getExceptions().isEmpty()) {
                                 return -1;
                             }
-                            if (!lastAChild.getExceptions().isEmpty() && lastBChild.getExceptions().isEmpty()) {
+                            if (!childA.getExceptions().isEmpty() && childB.getExceptions().isEmpty()) {
                                 return 1;
                             }
                             return 0;
