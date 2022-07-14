@@ -8,10 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class BooleanArgumentType implements ArgumentType<Boolean> {
+public class BooleanArgumentType<S> implements ArgumentType<S, Boolean> {
     @Override
-    public Boolean parse(StringReader reader) throws CommandException {
+    public Boolean parse(S source, StringReader reader) throws CommandException {
         return reader.readBoolean();
+    }
+
+    private BooleanArgumentType() {
+
+    }
+
+    public static <S> BooleanArgumentType<S> bool() {
+        return new BooleanArgumentType<>();
     }
 
     public static boolean getBoolean(final CommandContext<?> context, final String name) {
@@ -19,7 +27,7 @@ public class BooleanArgumentType implements ArgumentType<Boolean> {
     }
 
     @Override
-    public <S> List<String> listSuggestions(CommandContext<S> context, String partial) {
+    public List<String> listSuggestions(CommandContext<S> context, String partial) {
         List<String> completions = new ArrayList<>();
         if ("true".startsWith(partial.toLowerCase())) {
             completions.add("true");

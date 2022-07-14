@@ -10,16 +10,16 @@ import java.util.function.Function;
 @Getter
 public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredArgumentBuilder<S, T>> {
     private final String name;
-    private final ArgumentType<T> type;
+    private final ArgumentType<S, T> type;
     private Function<String, List<String>> customSuggestions = null;
 
-    protected RequiredArgumentBuilder(String name, ArgumentType<T> type) {
+    protected RequiredArgumentBuilder(String name, ArgumentType<S, T> type) {
         super(name);
         this.name = name;
         this.type = type;
     }
 
-    public static <S, T> RequiredArgumentBuilder<S, T> argument(String name, ArgumentType<T> type) {
+    public static <S, T> RequiredArgumentBuilder<S, T> argument(String name, ArgumentType<S, T> type) {
         return new RequiredArgumentBuilder<>(name, type);
     }
 

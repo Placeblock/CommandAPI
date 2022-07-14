@@ -5,11 +5,23 @@ import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.util.StringReader;
 
 @SuppressWarnings("unused")
-public class StringArgumentType implements ArgumentType<String> {
+public class StringArgumentType<S> implements ArgumentType<S, String> {
     private final StringType type;
 
     private StringArgumentType(StringType type) {
         this.type = type;
+    }
+
+    public static <S> StringArgumentType<S> word() {
+        return new StringArgumentType<S>(StringType.SINGLE_WORD);
+    }
+
+    public static <S> StringArgumentType<S> string() {
+        return new StringArgumentType<S>(StringType.QUOTABLE_PHRASE);
+    }
+
+    public static <S> StringArgumentType<S> greedyString() {
+        return new StringArgumentType<S>(StringType.GREEDY_PHRASE);
     }
 
     public static String getString(final CommandContext<?> context, final String name) {
@@ -17,7 +29,7 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     @Override
-    public String parse(final StringReader reader) throws CommandException {
+    public String parse(S source, final StringReader reader) throws CommandException {
         if (type == StringType.GREEDY_PHRASE) {
             final String text = reader.getRemaining();
             reader.setCursor(reader.getTotalLength());

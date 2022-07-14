@@ -17,10 +17,10 @@ import java.util.function.Predicate;
 
 @Getter
 public class ArgumentCommandNode<S, T> extends CommandNode<S> {
-    private final ArgumentType<T> type;
+    private final ArgumentType<S, T> type;
     private final Function<String, List<String>> customSuggestions;
 
-    public ArgumentCommandNode(String name, TextComponent description, List<String> permissions, Command<S> command, ArgumentType<T> type, Predicate<S> requirement, Function<String, List<String>> customSuggestions) {
+    public ArgumentCommandNode(String name, TextComponent description, List<String> permissions, Command<S> command, ArgumentType<S, T> type, Predicate<S> requirement, Function<String, List<String>> customSuggestions) {
         super(name, description, permissions, command, requirement);
         this.type = type;
         this.customSuggestions = customSuggestions;
@@ -29,7 +29,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     @Override
     public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
         int start = reader.getCursor();
-        T result = this.type.parse(reader);
+        T result = this.type.parse(contextBuilder.getSource(), reader);
         ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);
         contextBuilder.withArgument(this.getName(), parsed);
         contextBuilder.withNode(this, parsed.getRange());

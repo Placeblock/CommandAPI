@@ -7,11 +7,11 @@ import de.placeblock.commandapi.core.util.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface ArgumentType<T> {
+public interface ArgumentType<S, T> {
 
-    T parse(final StringReader reader) throws CommandException;
+    T parse(S source, StringReader reader) throws CommandException;
 
-    default <S> List<String> listSuggestions(final CommandContext<S> context, String partial) {
+    default List<String> listSuggestions(CommandContext<S> context, String partial) {
         return new ArrayList<>();
     }
 

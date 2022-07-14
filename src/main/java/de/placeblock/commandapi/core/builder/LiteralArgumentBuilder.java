@@ -20,7 +20,7 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
     }
 
     @Override
-    protected LiteralArgumentBuilder<S> getThis() {
+    public LiteralArgumentBuilder<S> getThis() {
         return this;
     }
 
