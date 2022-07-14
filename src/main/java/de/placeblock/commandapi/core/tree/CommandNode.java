@@ -10,7 +10,6 @@ import lombok.Setter;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public abstract class CommandNode<S> {
@@ -22,8 +21,6 @@ public abstract class CommandNode<S> {
     private final List<String> permissions;
 
     private final Map<String, CommandNode<S>> children = new LinkedHashMap<>();
-    private final Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
-    private final Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
     private final Predicate<S> requirement;
     @Getter
     @Setter
@@ -48,11 +45,6 @@ public abstract class CommandNode<S> {
             }
         } else {
             this.children.put(node.getName(), node);
-            if (node instanceof LiteralCommandNode<S> literalCommandNode) {
-                this.literals.put(node.getName(), literalCommandNode);
-            } else if (node instanceof ArgumentCommandNode<S, ?> argumentCommandNode) {
-                this.arguments.put(node.getName(), argumentCommandNode);
-            }
         }
     }
 

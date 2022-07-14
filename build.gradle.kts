@@ -17,7 +17,7 @@ java {
 
 repositories {
     maven {
-        url = uri("http://schark.io:8085/private")
+        url = uri("https://repo.schark.io/private")
         isAllowInsecureProtocol = true
         credentials {
             username = project.properties["reposilite.username"] as String?
@@ -45,7 +45,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "de.placeblock"
             artifactId = "CommandAPI"
-            version = "1.1.0-BRIGADIER"
+            version = "1.1.1-TEST"
 
             from(components["java"])
         }
@@ -53,7 +53,7 @@ publishing {
     repositories {
         maven {
             name = "ScharkIO"
-            url = uri("http://schark.io:8085/private")
+            url = uri("https://repo.schark.io/private")
             isAllowInsecureProtocol = true
             credentials{
                 username = project.properties["reposilite.username"] as String?

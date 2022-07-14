@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private final String name;
     private TextComponent description;
-    private List<String> permissions = new ArrayList<>();
+    private final List<String> permissions = new ArrayList<>();
     private final List<CommandNode<S>> children = new ArrayList<>();
     private Command<S> command;
     private Predicate<S> requirement = s -> true;

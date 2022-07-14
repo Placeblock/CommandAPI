@@ -12,7 +12,6 @@ import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Predicate;
 

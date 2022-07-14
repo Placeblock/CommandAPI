@@ -25,7 +25,7 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
             @Override
             public boolean hasSourcePermission(WaterfallCommandSource<P> source, String permission) {
                 if (source.getPlayer() != null) {
-                    return WaterfallCommandBridge.this.hasPermission(source.getPlayer());
+                    return WaterfallCommandBridge.this.hasPermission(source.getPlayer(), permission);
                 }
                 return true;
             }
@@ -68,8 +68,8 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
     }
 
     public abstract LiteralArgumentBuilder<WaterfallCommandSource<P>> generateCommand();
-    public abstract boolean hasPermission(P customPlayer);
-    public abstract void sendMessage(P customPlayer, TextComponent message);
-    public abstract Plugin getPlugin();
-    public abstract P getCustomPlayer(ProxiedPlayer proxiedPlayer);
+    protected abstract boolean hasPermission(P customPlayer, String permission);
+    protected abstract void sendMessage(P customPlayer, TextComponent message);
+    protected abstract Plugin getPlugin();
+    protected abstract P getCustomPlayer(ProxiedPlayer proxiedPlayer);
 }

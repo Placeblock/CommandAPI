@@ -97,7 +97,7 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
         S source = contextSoFar.getSource();
         ParseResults<S> parseResults = new ParseResults<>(contextSoFar, originalReader);
 
-        if (node.canUse(source) && !node.getPermissions().removeIf(permission -> !this.hasSourcePermission(source, permission))) {
+        if (node.canUse(source) && node.getPermissions().stream().filter(permission -> !this.hasSourcePermission(source, permission)).toList().size() == 0) {
             try {
                 node.parse(originalReader, contextSoFar);
                 contextSoFar.withCommand(node.getCommand());
@@ -159,6 +159,9 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
             }
         }
         CommandContextBuilder<S> context = parse.getContext();
+        if (context.getExceptions().size() != 0) {
+            return new ArrayList<>();
+        }
         while (context.getChild() != null && context.getChild().getExceptions().size() == 0) {
             context = context.getChild();
         }

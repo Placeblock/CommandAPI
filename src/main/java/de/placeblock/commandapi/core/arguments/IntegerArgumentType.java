@@ -11,7 +11,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     private final int minimum;
     private final int maximum;
 
-    public IntegerArgumentType(int minimum, int maximum) {
+    private IntegerArgumentType(int minimum, int maximum) {
         this.minimum = minimum;
         this.maximum = maximum;
     }

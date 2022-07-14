@@ -4,14 +4,19 @@ import de.placeblock.commandapi.core.tree.CommandNode;
 import de.placeblock.commandapi.core.tree.LiteralCommandNode;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumentBuilder<S>> {
-    private List<String> aliases;
+    private final List<String> aliases = new ArrayList<>();
 
     public LiteralArgumentBuilder(String name) {
         super(name);
+    }
+
+    public static <S> LiteralArgumentBuilder<S> literal(String name) {
+        return new LiteralArgumentBuilder<>(name);
     }
 
     @Override

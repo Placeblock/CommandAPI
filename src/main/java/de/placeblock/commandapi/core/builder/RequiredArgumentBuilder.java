@@ -13,12 +13,15 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     private final ArgumentType<T> type;
     private Function<String, List<String>> customSuggestions = null;
 
-    public RequiredArgumentBuilder(String name, ArgumentType<T> type) {
+    protected RequiredArgumentBuilder(String name, ArgumentType<T> type) {
         super(name);
         this.name = name;
         this.type = type;
     }
 
+    public static <S, T> RequiredArgumentBuilder<S, T> argument(String name, ArgumentType<T> type) {
+        return new RequiredArgumentBuilder<>(name, type);
+    }
 
     public RequiredArgumentBuilder<S, T> suggests(Function<String, List<String>> customSuggestions) {
         this.customSuggestions = customSuggestions;

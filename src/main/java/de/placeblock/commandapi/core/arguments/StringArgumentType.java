@@ -8,7 +8,7 @@ import de.placeblock.commandapi.core.util.StringReader;
 public class StringArgumentType implements ArgumentType<String> {
     private final StringType type;
 
-    public StringArgumentType(StringType type) {
+    private StringArgumentType(StringType type) {
         this.type = type;
     }
 
