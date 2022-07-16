@@ -45,6 +45,6 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     public TextComponent getUsageText() {
-        return Texts.secondary("<").append(Texts.secondary(this.getName())).append(Texts.secondary(">"));
+        return Texts.inferior("<").append(Texts.inferior(this.getName())).append(Texts.inferior(">"));
     }
 }

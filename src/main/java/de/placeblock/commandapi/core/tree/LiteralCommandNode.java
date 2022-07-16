@@ -5,7 +5,6 @@ import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.context.CommandContext;
 import de.placeblock.commandapi.core.context.CommandContextBuilder;
 import de.placeblock.commandapi.core.exception.CommandException;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.exception.InvalidCommandException;
 import de.placeblock.commandapi.core.util.StringRange;
 import de.placeblock.commandapi.core.util.StringReader;
@@ -15,7 +14,6 @@ import net.kyori.adventure.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 @Getter
@@ -85,7 +83,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     public TextComponent getUsageText() {
-        return Texts.secondary(this.getName());
+        return Texts.inferior(this.getName());
     }
 
 }

@@ -3,9 +3,11 @@ package de.placeblock.commandapi.core.arguments;
 import de.placeblock.commandapi.core.context.CommandContext;
 import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.util.StringReader;
+import lombok.Getter;
 
 @SuppressWarnings("unused")
 public class StringArgumentType<S> implements ArgumentType<S, String> {
+    @Getter
     private final StringType type;
 
     private StringArgumentType(StringType type) {

@@ -1,6 +1,8 @@
 package de.placeblock.commandapi.core;
 
 import de.placeblock.commandapi.CommandAPI;
+import de.placeblock.commandapi.core.arguments.StringArgumentType;
+import de.placeblock.commandapi.core.arguments.StringType;
 import de.placeblock.commandapi.core.builder.LiteralArgumentBuilder;
 import de.placeblock.commandapi.core.context.CommandContextBuilder;
 import de.placeblock.commandapi.core.context.ParseResults;
@@ -8,6 +10,7 @@ import de.placeblock.commandapi.core.context.ParsedArgument;
 import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.exception.CommandNoPermissionException;
 import de.placeblock.commandapi.core.exception.InvalidCommandException;
+import de.placeblock.commandapi.core.tree.ArgumentCommandNode;
 import de.placeblock.commandapi.core.tree.CommandNode;
 import de.placeblock.commandapi.core.tree.LiteralCommandNode;
 import de.placeblock.commandapi.core.util.StringReader;
@@ -127,10 +130,11 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
                         for (Map.Entry<String, ParsedArgument<S, ?>> argumentEntry : contextSoFar.getArguments().entrySet()) {
                             childCommandContext.withArgument(argumentEntry.getKey(), argumentEntry.getValue());
                         }
-                        ParseResults<S> parse = this.parseNodes(child, originalReader, childCommandContext);
+                        ParseResults<S> parse = this.parseNodes(child, new StringReader(originalReader), childCommandContext);
                         if (CommandAPI.DEBUG_MODE) {
                             System.out.println("Context: ");
                             parse.getContext().print(0);
+                            System.out.println("After Child String Reader: " + originalReader.getCursor());
                         }
                         potentials.add(parse);
                     }
@@ -154,6 +158,7 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
                         });
                     }
                     if (potentials.size() > 0) {
+                        originalReader.setCursor(potentials.get(0).getReader().getCursor());
                         contextSoFar.withChild(potentials.get(0).getContext());
                     }
                 }
@@ -192,12 +197,57 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
             context.print(0);
         }
         String partial = parse.getReader().getRemaining();
-        if (!partial.equals(" ") && partial.endsWith(" ")) {
-            return new ArrayList<>();
+        List<String> suggestions = new ArrayList<>();
+
+        /*
+           If you have the following Structure:
+
+           literal("test")
+               some argument("create")
+               greedy string
+
+           And you type the following:
+
+           "test c"
+
+           It should autocomplete some argument (create)
+         */
+
+        if (context.getNode() instanceof ArgumentCommandNode<S, ?> argumentCommandNode
+            && argumentCommandNode.getType() instanceof StringArgumentType<?> stringArgumentType
+            && stringArgumentType.getType() == StringType.GREEDY_PHRASE) {
+            //If current argument is StringArgumentType and Type GREEDY PHRASE get Parent Context
+            CommandContextBuilder<S> parentContext = parse.getContext();
+            while (!parentContext.getChild().equals(context)) {
+                parentContext = parentContext.getChild();
+            }
+            for (CommandNode<S> child : parentContext.getNode().getChildren()) {
+                if (!child.equals(context.getNode())) {
+                    try {
+                        String greedyPartial = parse.getReader().getString().substring(context.getRange().getStart(), context.getRange().getEnd());
+                        suggestions.addAll(child.listSuggestions(context.build(greedyPartial), greedyPartial));
+                    } catch (CommandException ignored) {
+                    }
+                }
+            }
         }
+
+        /*
+           To prevent autocompletion in the following cases (example):
+           literal("test")
+              literal("abc")
+           "test| " -> abc
+           "test| a " -> abc
+         */
+        if ((!partial.equals(" ") && partial.endsWith(" ")) || partial.equals("")) {
+            if (CommandAPI.DEBUG_MODE) {
+                System.out.println("Return Empty Array");
+            }
+            return suggestions;
+        }
+
         partial = partial.strip();
         Collection<CommandNode<S>> children = context.getNode().getChildren();
-        List<String> suggestions = new ArrayList<>();
         int i = 0;
         for (CommandNode<S> child : children) {
             try {
@@ -205,6 +255,7 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
             } catch (CommandException ignored) {
             }
         }
+
         return suggestions;
     }
 

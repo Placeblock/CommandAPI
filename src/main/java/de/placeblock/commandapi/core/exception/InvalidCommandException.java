@@ -5,7 +5,7 @@ import io.schark.design.Texts;
 public class InvalidCommandException extends CommandException {
 
     public InvalidCommandException() {
-        super(Texts.secondary("Dieser Befehl <color:negative>existiert nicht"));
+        super(Texts.inferior("Dieser Befehl <color:negative>existiert nicht"));
     }
 
 }
