@@ -74,9 +74,9 @@ public abstract class CommandNode<S> {
 
     public List<List<CommandNode<S>>> getBranches() {
         List<List<CommandNode<S>>> branches = new ArrayList<>();
-        List<CommandNode<S>> currentBranch = new ArrayList<>();
-        currentBranch.add(this);
-        branches.add(currentBranch);
+        if (this.children.size() == 0) {
+            branches.add(new ArrayList<>(List.of(this)));
+        }
         for (CommandNode<S> child : this.children.values()) {
             branches.addAll(child.getBranches().stream().peek(branch -> branch.add(0, this)).toList());
         }

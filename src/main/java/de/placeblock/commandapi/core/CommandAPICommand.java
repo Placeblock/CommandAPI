@@ -18,11 +18,13 @@ import io.schark.design.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
@@ -273,13 +275,22 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
                     continue branchLoop;
                 }
             }
-            textComponent = textComponent.append(Component.newline()).append(Texts.primary("/")).append(Texts.primary(branch.get(0).getName()));
+
+            String commandString = "/" + branch.stream().filter(commandNode -> commandNode instanceof LiteralCommandNode<S>).map(CommandNode::getName).collect(Collectors.joining(" ")) + " ";
+            TextComponent branchComponent = Texts.primary("/").append(Texts.primary(branch.get(0).getName()));
             for (int i = 1; i < branch.size(); i++) {
-                textComponent = textComponent.append(Component.space()).append(branch.get(i).getUsageText());
+                boolean optional = branch.get(i - 1).getCommand() != null;
+                TextComponent partialComponent = branch.get(i).getUsageText();
+                if (optional) {
+                    partialComponent = Texts.inferior("[").append(partialComponent).append(Texts.inferior("]"));
+                }
+                branchComponent = branchComponent.append(Component.space()).append(partialComponent);
             }
             if (lastNode.getDescription() != null) {
-                textComponent = textComponent.append(Component.newline()).append(lastNode.getDescription());
+                branchComponent = branchComponent.append(Component.newline()).append(lastNode.getDescription());
             }
+            branchComponent = branchComponent.clickEvent(ClickEvent.suggestCommand(commandString));
+            textComponent = textComponent.append(Component.newline()).append(branchComponent);
         }
         return textComponent;
     }
