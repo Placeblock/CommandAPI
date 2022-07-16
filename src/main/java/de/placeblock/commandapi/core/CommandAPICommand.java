@@ -94,22 +94,44 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
     }
 
     public ParseResults<S> parseNodes(CommandNode<S> node, StringReader originalReader, CommandContextBuilder<S> contextSoFar) {
+        if (CommandAPI.DEBUG_MODE) {
+            System.out.println("Trying to Parse Node " + node.getName());
+        }
         S source = contextSoFar.getSource();
         ParseResults<S> parseResults = new ParseResults<>(contextSoFar, originalReader);
 
         if (node.canUse(source) && node.getPermissions().stream().filter(permission -> !this.hasSourcePermission(source, permission)).toList().size() == 0) {
+            if (CommandAPI.DEBUG_MODE) {
+                System.out.println("has permission!");
+            }
             try {
+                if (CommandAPI.DEBUG_MODE) {
+                    System.out.println("StringReader: " + originalReader.debugString());
+                }
                 node.parse(originalReader, contextSoFar);
+                if (CommandAPI.DEBUG_MODE) {
+                    System.out.println("After String Reader: " + originalReader.debugString());
+                }
                 contextSoFar.withCommand(node.getCommand());
                 if (originalReader.canRead(2)) {
+                    if (CommandAPI.DEBUG_MODE) {
+                        System.out.println("Can read further");
+                    }
                     originalReader.skip();
                     List<ParseResults<S>> potentials = new ArrayList<>();
                     for (CommandNode<S> child : node.getChildren()) {
+                        if (CommandAPI.DEBUG_MODE) {
+                            System.out.println("parsing child " + child.getName());
+                        }
                         CommandContextBuilder<S> childCommandContext = new CommandContextBuilder<>(source, originalReader.getCursor());
                         for (Map.Entry<String, ParsedArgument<S, ?>> argumentEntry : contextSoFar.getArguments().entrySet()) {
                             childCommandContext.withArgument(argumentEntry.getKey(), argumentEntry.getValue());
                         }
                         ParseResults<S> parse = this.parseNodes(child, originalReader, childCommandContext);
+                        if (CommandAPI.DEBUG_MODE) {
+                            System.out.println("Context: ");
+                            parse.getContext().print(0);
+                        }
                         potentials.add(parse);
                     }
                     if (potentials.size() > 1) {

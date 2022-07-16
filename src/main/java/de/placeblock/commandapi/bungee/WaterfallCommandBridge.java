@@ -3,6 +3,7 @@ package de.placeblock.commandapi.bungee;
 import de.placeblock.commandapi.core.CommandAPICommand;
 import de.placeblock.commandapi.core.builder.LiteralArgumentBuilder;
 import de.placeblock.commandapi.core.context.ParseResults;
+import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.md_5.bungee.api.CommandSender;
@@ -11,8 +12,11 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
+import java.lang.reflect.Field;
+
 @SuppressWarnings("unused")
 public abstract class WaterfallCommandBridge<P> extends Command implements TabExecutor {
+    @Getter
     private final CommandAPICommand<WaterfallCommandSource<P>> commandAPICommand;
 
     public WaterfallCommandBridge(String label) {
@@ -40,6 +44,16 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
             }
         };
         Plugin plugin = this.getPlugin();
+
+        //Set aliases
+        try {
+            Field aliasField = this.getClass().getSuperclass().getDeclaredField("aliases");
+            aliasField.setAccessible(true);
+            aliasField.set(this, this.commandAPICommand.getAliases().toArray(new String[0]));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
         plugin.getProxy().getPluginManager().registerCommand(this.getPlugin(), this);
     }
 
@@ -52,7 +66,6 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
         WaterfallCommandSource<P> source = new WaterfallCommandSource<>(customPlayer, sender);
         ParseResults<WaterfallCommandSource<P>> parseResults = this.commandAPICommand.parse(source, String.join(" ", args));
         this.commandAPICommand.execute(parseResults);
-
     }
 
     @Override
