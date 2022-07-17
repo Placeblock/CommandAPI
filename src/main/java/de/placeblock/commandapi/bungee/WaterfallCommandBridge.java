@@ -13,6 +13,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 @SuppressWarnings("unused")
 public abstract class WaterfallCommandBridge<P> extends Command implements TabExecutor {
@@ -47,8 +48,11 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
 
         //Set aliases
         try {
-            Field aliasField = this.getClass().getSuperclass().getDeclaredField("aliases");
+            Field aliasField = Command.class.getDeclaredField("aliases");
+            Field modField = Field.class.getDeclaredField("modifiers");
             aliasField.setAccessible(true);
+            modField.setAccessible(true);
+            modField.setInt(aliasField, aliasField.getModifiers() &~Modifier.FINAL);
             aliasField.set(this, this.commandAPICommand.getAliases().toArray(new String[0]));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
