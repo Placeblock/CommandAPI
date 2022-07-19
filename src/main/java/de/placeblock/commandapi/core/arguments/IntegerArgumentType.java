@@ -42,7 +42,7 @@ public class IntegerArgumentType<S> implements ArgumentType<S, Integer> {
         }
         if (result > maximum) {
             reader.setCursor(start);
-            throw new CommandSyntaxException(Texts.inferior("Die angegebene Zahl <color:negative>"+result+" <color:inferior>ist <color:negative>zu groß<color:inferior>. Das Maximum ist <color:negative>" + this.minimum));
+            throw new CommandSyntaxException(Texts.inferior("Die angegebene Zahl <color:negative>"+result+" <color:inferior>ist <color:negative>zu groß<color:inferior>. Das Maximum ist <color:negative>" + this.maximum));
         }
         return result;
     }
