@@ -41,6 +41,14 @@ public class CommandContext<S> {
         this.range = range;
     }
 
+    public <V> V getArgumentOrDefault(String name, Class<V> clazz, V defaultValue) {
+        try {
+            return this.getArgument(name, clazz);
+        } catch (IllegalArgumentException ex) {
+            return defaultValue;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public <V> V getArgument(String name, Class<V> clazz) {
         final ParsedArgument<S, ?> argument = this.arguments.get(name);
