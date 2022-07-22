@@ -14,6 +14,9 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public abstract class WaterfallCommandBridge<P> extends Command implements TabExecutor {
@@ -68,7 +71,10 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
             customPlayer = this.getCustomPlayer(player);
         }
         WaterfallCommandSource<P> source = new WaterfallCommandSource<>(customPlayer, sender);
-        ParseResults<WaterfallCommandSource<P>> parseResults = this.commandAPICommand.parse(source, String.join(" ", args));
+        List<String> nodes = new ArrayList<>();
+        Collections.addAll(nodes, this.getName());
+        Collections.addAll(nodes, args);
+        ParseResults<WaterfallCommandSource<P>> parseResults = this.commandAPICommand.parse(source, String.join(" ", nodes));
         this.commandAPICommand.execute(parseResults);
     }
 
