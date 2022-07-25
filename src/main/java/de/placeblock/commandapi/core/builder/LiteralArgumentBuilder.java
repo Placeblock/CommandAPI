@@ -1,5 +1,6 @@
 package de.placeblock.commandapi.core.builder;
 
+import de.placeblock.commandapi.CommandAPI;
 import de.placeblock.commandapi.core.tree.CommandNode;
 import de.placeblock.commandapi.core.tree.LiteralCommandNode;
 import lombok.Getter;
@@ -26,6 +27,10 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
 
     public LiteralArgumentBuilder<S> withAlias(String alias) {
         this.aliases.add(alias);
+        if (CommandAPI.DEBUG_MODE) {
+            System.out.println("Registered new Alias: " + alias);
+            System.out.println("Current Aliases are: " + aliases);
+        }
         return getThis();
     }
 

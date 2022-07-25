@@ -1,5 +1,6 @@
 package de.placeblock.commandapi.bungee;
 
+import de.placeblock.commandapi.CommandAPI;
 import de.placeblock.commandapi.core.CommandAPICommand;
 import de.placeblock.commandapi.core.builder.LiteralArgumentBuilder;
 import de.placeblock.commandapi.core.context.ParseResults;
@@ -11,10 +12,11 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.TabExecutor;
+import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +24,17 @@ import java.util.List;
 public abstract class WaterfallCommandBridge<P> extends Command implements TabExecutor {
     @Getter
     private final CommandAPICommand<WaterfallCommandSource<P>> commandAPICommand;
+    private static Unsafe unsafe;
+
+    static {
+        try {
+            Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+            unsafeField.setAccessible(true);
+            unsafe = (Unsafe) unsafeField.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     public WaterfallCommandBridge(String label) {
         super(label);
@@ -49,16 +62,18 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
         };
         Plugin plugin = this.getPlugin();
 
+
         //Set aliases
         try {
             Field aliasField = Command.class.getDeclaredField("aliases");
-            Field modField = Field.class.getDeclaredField("modifiers");
-            aliasField.setAccessible(true);
-            modField.setAccessible(true);
-            modField.setInt(aliasField, aliasField.getModifiers() &~Modifier.FINAL);
-            aliasField.set(this, this.commandAPICommand.getAliases().toArray(new String[0]));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            long fieldOffset = unsafe.objectFieldOffset(aliasField);
+            unsafe.putObject(this, fieldOffset, this.commandAPICommand.getAliases().toArray(new String[0]));
+        } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
+        }
+        if (CommandAPI.DEBUG_MODE) {
+            System.out.println("Registered Waterfall Command with Aliases: " + this.commandAPICommand.getAliases());
+            System.out.println("The following Aliases are registered: " + Arrays.toString(this.getAliases()));
         }
 
         plugin.getProxy().getPluginManager().registerCommand(this.getPlugin(), this);
@@ -80,7 +95,10 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        String buffer = String.join(" ", args);
+        List<String> nodes = new ArrayList<>();
+        Collections.addAll(nodes, this.getName());
+        Collections.addAll(nodes, args);
+        String buffer = String.join(" ", nodes);
         P customPlayer = null;
         if (sender instanceof ProxiedPlayer player) {
             customPlayer = this.getCustomPlayer(player);

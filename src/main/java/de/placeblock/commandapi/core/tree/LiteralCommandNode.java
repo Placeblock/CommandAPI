@@ -55,7 +55,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
                 System.out.println(this.getName());
                 System.out.println(this.aliases);
             }
-            if (parsedLiteral.equalsIgnoreCase(this.getName()) && (this.aliases == null || this.aliases.isEmpty() || new ArrayList<>(this.aliases).removeIf(alias -> alias.equalsIgnoreCase(parsedLiteral)))) {
+            if (parsedLiteral.equalsIgnoreCase(this.getName()) || (this.aliases == null || this.aliases.isEmpty() || new ArrayList<>(this.aliases).removeIf(alias -> alias.equalsIgnoreCase(parsedLiteral)))) {
                 reader.setCursor(end);
                 if (CommandAPI.DEBUG_MODE) {
                     System.out.println("IsEqual");
@@ -71,6 +71,16 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
             }
         }
         return -1;
+    }
+
+    @Override
+    public void print(int index) {
+        System.out.println(" ".repeat(index * 5) + "Name: " + this.getName());
+        System.out.println(" ".repeat(index * 5) + "Command: " + this.getCommand());
+        System.out.println(" ".repeat(index * 5) + "Aliases: " + this.aliases);
+        for (CommandNode<S> childEntry : this.getChildren()) {
+            childEntry.print(index + 1);
+        }
     }
 
     @Override
