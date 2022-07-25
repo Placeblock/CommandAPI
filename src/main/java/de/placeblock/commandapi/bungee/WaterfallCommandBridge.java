@@ -67,12 +67,12 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
         try {
             Field aliasField = Command.class.getDeclaredField("aliases");
             long fieldOffset = unsafe.objectFieldOffset(aliasField);
-            unsafe.putObject(this, fieldOffset, this.commandAPICommand.getAliases().toArray(new String[0]));
+            unsafe.putObject(this, fieldOffset, this.commandAPICommand.getCommandNode().getAliases().toArray(new String[0]));
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
         if (CommandAPI.DEBUG_MODE) {
-            System.out.println("Registered Waterfall Command with Aliases: " + this.commandAPICommand.getAliases());
+            System.out.println("Registered Waterfall Command with Aliases: " + this.commandAPICommand.getCommandNode().getAliases());
             System.out.println("The following Aliases are registered: " + Arrays.toString(this.getAliases()));
         }
 

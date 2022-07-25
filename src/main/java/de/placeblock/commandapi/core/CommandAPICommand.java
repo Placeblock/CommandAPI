@@ -27,22 +27,21 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
+@Getter
+public abstract class CommandAPICommand<S> {
     public static final char ARGUMENT_SEPARATOR_CHAR = ' ';
 
     private final LiteralCommandNode<S> commandNode;
 
-    @Getter
     private final TextComponent prefix;
 
     public CommandAPICommand(String label) {
-        super(label);
         this.commandNode = this.generateCommand().build();
         if (CommandAPI.DEBUG_MODE) {
             System.out.println("Registerd new Command:");
             this.commandNode.print(0);
         }
-        this.prefix = Texts.subPrefix(Texts.primary(this.getName())).append(Component.space());
+        this.prefix = Texts.subPrefix(Texts.primary(this.commandNode.getName())).append(Component.space());
     }
 
     public abstract LiteralArgumentBuilder<S> generateCommand();
@@ -262,7 +261,7 @@ public abstract class CommandAPICommand<S> extends LiteralArgumentBuilder<S> {
     }
 
     public TextComponent generateHelpMessage(S source) {
-        TextComponent textComponent = Texts.headline(this.getName().toUpperCase());
+        TextComponent textComponent = Texts.headline(this.commandNode.getName().toUpperCase());
         List<List<CommandNode<S>>> branches = this.commandNode.getBranches();
         branchLoop:
         for (List<CommandNode<S>> branch : branches) {
