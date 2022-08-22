@@ -43,34 +43,48 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     private int parse(StringReader reader) {
-        int start = reader.getCursor();
-        if (reader.canRead(this.getName().length())) {
-            if (CommandAPI.DEBUG_MODE) {
-                System.out.println("Can Read");
+        if (this.checkString(reader, this.getName())) {
+            return reader.getCursor();
+        }
+        for (String alias : this.aliases) {
+            if (this.checkString(reader, alias)) {
+                return reader.getCursor();
             }
-            int end = start + this.getName().length();
+        }
+        return -1;
+    }
+
+    private boolean checkString(StringReader reader, String string) {
+        if (CommandAPI.DEBUG_MODE) {
+            System.out.println("Checking String " + string);
+        }
+        if (reader.canRead(string.length())) {
+            if (CommandAPI.DEBUG_MODE) {
+                System.out.println("CanRead String " + string);
+            }
+            int start = reader.getCursor();
+            int end = start + string.length();
             String parsedLiteral = reader.getString().substring(start, end);
             if (CommandAPI.DEBUG_MODE) {
-                System.out.println("parsed literal: '" + parsedLiteral + "'");
-                System.out.println(this.getName());
-                System.out.println(this.aliases);
+                System.out.println("ParsedLiteral " + string);
             }
-            if (parsedLiteral.equalsIgnoreCase(this.getName()) || (this.aliases == null || this.aliases.isEmpty() || new ArrayList<>(this.aliases).removeIf(alias -> alias.equalsIgnoreCase(parsedLiteral)))) {
-                reader.setCursor(end);
+            if (parsedLiteral.equalsIgnoreCase(string)) {
                 if (CommandAPI.DEBUG_MODE) {
-                    System.out.println("IsEqual");
+                    System.out.println("IsEqual " + string);
                 }
+                reader.setCursor(end);
                 if (!reader.canRead() || reader.peek() == ' ') {
-                    return end;
+                    return true;
                 } else {
                     if (CommandAPI.DEBUG_MODE) {
                         System.out.println("Reset Cursor");
                     }
                     reader.setCursor(start);
+                    return false;
                 }
             }
         }
-        return -1;
+        return false;
     }
 
     @Override

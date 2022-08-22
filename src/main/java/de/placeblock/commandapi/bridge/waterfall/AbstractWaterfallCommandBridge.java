@@ -1,6 +1,7 @@
-package de.placeblock.commandapi.bungee;
+package de.placeblock.commandapi.bridge.waterfall;
 
 import de.placeblock.commandapi.CommandAPI;
+import de.placeblock.commandapi.bridge.CommandBridge;
 import de.placeblock.commandapi.core.CommandAPICommand;
 import de.placeblock.commandapi.core.builder.LiteralArgumentBuilder;
 import de.placeblock.commandapi.core.context.ParseResults;
@@ -21,10 +22,15 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public abstract class WaterfallCommandBridge<P> extends Command implements TabExecutor {
+public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> extends Command implements CommandBridge<ProxiedPlayer, P>, TabExecutor {
     @Getter
     private final CommandAPICommand<WaterfallCommandSource<P>> commandAPICommand;
+
+    @Getter
+    private final PL plugin;
+
     private static Unsafe unsafe;
+
 
     static {
         try {
@@ -36,17 +42,18 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
         }
     }
 
-    public WaterfallCommandBridge(String label) {
+    public AbstractWaterfallCommandBridge(PL plugin, String label) {
         super(label);
+        this.plugin = plugin;
         this.commandAPICommand = new CommandAPICommand<>(label) {
             @Override
-            public LiteralArgumentBuilder<WaterfallCommandSource<P>> generateCommand() {
-                return WaterfallCommandBridge.this.generateCommand();
+            public LiteralArgumentBuilder<WaterfallCommandSource<P>> generateCommand(LiteralArgumentBuilder<WaterfallCommandSource<P>> literalArgumentBuilder) {
+                return AbstractWaterfallCommandBridge.this.generateCommand(literalArgumentBuilder);
             }
             @Override
             public boolean hasSourcePermission(WaterfallCommandSource<P> source, String permission) {
                 if (source.getPlayer() != null) {
-                    return WaterfallCommandBridge.this.hasPermission(source.getPlayer(), permission);
+                    return AbstractWaterfallCommandBridge.this.hasPermission(source.getPlayer(), permission);
                 }
                 return true;
             }
@@ -54,14 +61,12 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
             @Override
             public void sendSourceMessage(WaterfallCommandSource<P> source, TextComponent message) {
                 if (source.getPlayer() != null) {
-                    WaterfallCommandBridge.this.sendMessage(source.getPlayer(), message);
+                    AbstractWaterfallCommandBridge.this.sendMessage(source.getPlayer(), message);
                 } else {
                     source.getSender().sendMessage(BungeeComponentSerializer.get().serialize(message));
                 }
             }
         };
-        Plugin plugin = this.getPlugin();
-
 
         //Set aliases
         try {
@@ -76,7 +81,7 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
             System.out.println("The following Aliases are registered: " + Arrays.toString(this.getAliases()));
         }
 
-        plugin.getProxy().getPluginManager().registerCommand(this.getPlugin(), this);
+        plugin.getProxy().getPluginManager().registerCommand(this.plugin, this);
     }
 
     @Override
@@ -108,9 +113,5 @@ public abstract class WaterfallCommandBridge<P> extends Command implements TabEx
         return this.commandAPICommand.getSuggestions(parseResults);
     }
 
-    public abstract LiteralArgumentBuilder<WaterfallCommandSource<P>> generateCommand();
-    protected abstract boolean hasPermission(P customPlayer, String permission);
-    protected abstract void sendMessage(P customPlayer, TextComponent message);
-    protected abstract Plugin getPlugin();
-    protected abstract P getCustomPlayer(ProxiedPlayer proxiedPlayer);
+    public abstract LiteralArgumentBuilder<WaterfallCommandSource<P>> generateCommand(LiteralArgumentBuilder<WaterfallCommandSource<P>> literalArgumentBuilder);
 }

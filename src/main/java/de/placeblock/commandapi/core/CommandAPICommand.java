@@ -36,7 +36,7 @@ public abstract class CommandAPICommand<S> {
     private final TextComponent prefix;
 
     public CommandAPICommand(String label) {
-        this.commandNode = this.generateCommand().build();
+        this.commandNode = this.generateCommand(new LiteralArgumentBuilder<>(label)).build();
         if (CommandAPI.DEBUG_MODE) {
             System.out.println("Registerd new Command:");
             this.commandNode.print(0);
@@ -44,7 +44,7 @@ public abstract class CommandAPICommand<S> {
         this.prefix = Texts.subPrefix(Texts.primary(this.commandNode.getName())).append(Component.space());
     }
 
-    public abstract LiteralArgumentBuilder<S> generateCommand();
+    public abstract LiteralArgumentBuilder<S> generateCommand(LiteralArgumentBuilder<S> literalArgumentBuilder);
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public abstract boolean hasSourcePermission(S source, String permission);
     public abstract void sendSourceMessage(S source, TextComponent message);

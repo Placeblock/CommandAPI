@@ -1,4 +1,4 @@
-package de.placeblock.commandapi.paper;
+package de.placeblock.commandapi.bridge.paper;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

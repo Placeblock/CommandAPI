@@ -1,7 +1,9 @@
-package de.placeblock.commandapi.paper;
+package de.placeblock.commandapi.bridge.paper;
 
+import de.placeblock.commandapi.bridge.CommandBridge;
 import de.placeblock.commandapi.core.CommandAPICommand;
 import de.placeblock.commandapi.core.context.ParseResults;
+import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -9,17 +11,20 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginBase;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
-public abstract class PaperCommandBridge<P> extends CommandAPICommand<PaperCommandSource<P>> implements CommandExecutor, TabCompleter {
+public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> extends CommandAPICommand<PaperCommandSource<P>> implements CommandBridge<Player, P>, CommandExecutor, TabCompleter {
+    @Getter
+    private final PL plugin;
 
-    public PaperCommandBridge(String label) {
+    public AbstractPaperCommandBridge(PL plugin, String label) {
         super(label);
-        Server server = this.getPlugin().getServer();
+        this.plugin = plugin;
+        Server server = plugin.getServer();
         Objects.requireNonNull(server.getPluginCommand(label)).setExecutor(this);
     }
 
@@ -63,8 +68,4 @@ public abstract class PaperCommandBridge<P> extends CommandAPICommand<PaperComma
         }
     }
 
-    protected abstract boolean hasPermission(P player, String permission);
-    protected abstract PluginBase getPlugin();
-    protected abstract void sendMessage(P player, TextComponent message);
-    protected abstract P getCustomPlayer(Player bukkitPlayer);
 }

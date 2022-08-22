@@ -49,7 +49,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "de.placeblock"
             artifactId = "CommandAPI"
-            version = "1.1.1"
+            version = "1.2.1"
 
             from(components["java"])
         }

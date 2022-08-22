@@ -1,4 +1,4 @@
-package de.placeblock.commandapi.bungee;
+package de.placeblock.commandapi.bridge.waterfall;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
