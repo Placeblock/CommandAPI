@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> extends Command implements CommandBridge<ProxiedPlayer, P>, TabExecutor {
+public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> extends Command implements CommandBridge<ProxiedPlayer, P, CommandSender, WaterfallCommandSource<P>>, TabExecutor {
     @Getter
     private final CommandAPICommand<WaterfallCommandSource<P>> commandAPICommand;
 
@@ -113,5 +113,4 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         return this.commandAPICommand.getSuggestions(parseResults);
     }
 
-    public abstract LiteralArgumentBuilder<WaterfallCommandSource<P>> generateCommand(LiteralArgumentBuilder<WaterfallCommandSource<P>> literalArgumentBuilder);
 }

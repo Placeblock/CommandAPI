@@ -1,12 +1,12 @@
 package de.placeblock.commandapi.bridge.waterfall;
 
+import de.placeblock.commandapi.bridge.CommandSource;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.CommandSender;
 
 @Getter
-@RequiredArgsConstructor
-public class WaterfallCommandSource<P> {
-    private final P player;
-    private final CommandSender sender;
+public class WaterfallCommandSource<P> extends CommandSource<P, CommandSender> {
+    public WaterfallCommandSource(P player, CommandSender sender) {
+        super(player, sender);
+    }
 }
