@@ -35,7 +35,7 @@ dependencies {
     compileOnly("io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.24")
     testCompileOnly("org.projectlombok:lombok:1.18.24")
-    compileOnly("io.schark:ScharkDesign:1.1.1")
+    compileOnly("io.schark:ScharkDesign:1.2.0")
     compileOnly("net.kyori:adventure-platform-bungeecord:4.1.2")
     testCompileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     testCompileOnly("io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT")
@@ -49,7 +49,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "de.placeblock"
             artifactId = "CommandAPI"
-            version = "1.2.1"
+            version = "1.2.2"
 
             from(components["java"])
         }
