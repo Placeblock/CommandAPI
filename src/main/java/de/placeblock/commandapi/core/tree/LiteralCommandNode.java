@@ -8,7 +8,7 @@ import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.exception.InvalidCommandException;
 import de.placeblock.commandapi.core.util.StringRange;
 import de.placeblock.commandapi.core.util.StringReader;
-import io.schark.design.Texts;
+import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 

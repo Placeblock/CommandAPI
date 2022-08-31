@@ -2,7 +2,7 @@ package de.placeblock.commandapi.core.util;
 
 import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import io.schark.design.Texts;
+import io.schark.design.texts.Texts;
 import net.kyori.adventure.text.TextComponent;
 
 @SuppressWarnings("unused")

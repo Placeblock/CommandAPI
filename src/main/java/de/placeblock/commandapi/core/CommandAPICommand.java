@@ -14,7 +14,7 @@ import de.placeblock.commandapi.core.tree.ArgumentCommandNode;
 import de.placeblock.commandapi.core.tree.CommandNode;
 import de.placeblock.commandapi.core.tree.LiteralCommandNode;
 import de.placeblock.commandapi.core.util.StringReader;
-import io.schark.design.Texts;
+import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;

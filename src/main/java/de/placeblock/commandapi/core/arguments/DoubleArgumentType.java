@@ -4,7 +4,7 @@ import de.placeblock.commandapi.core.context.CommandContext;
 import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.util.StringReader;
-import io.schark.design.Texts;
+import io.schark.design.texts.Texts;
 
 public class DoubleArgumentType<S> implements ArgumentType<S, Double> {
     private final double minimum;

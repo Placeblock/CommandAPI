@@ -1,6 +1,6 @@
 package de.placeblock.commandapi.core.exception;
 
-import io.schark.design.Texts;
+import io.schark.design.texts.Texts;
 
 public class InvalidCommandException extends CommandException {
 

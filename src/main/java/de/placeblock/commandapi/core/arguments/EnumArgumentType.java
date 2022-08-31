@@ -4,7 +4,7 @@ import de.placeblock.commandapi.core.context.CommandContext;
 import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.util.StringReader;
-import io.schark.design.Texts;
+import io.schark.design.texts.Texts;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 
-group = "de.placeblock.CommandAPI"
-version = "1.0.0"
+group = "de.placeblock"
+version = "1.2.2"
 description = "API for an easier use of Commands"
 
 
@@ -35,7 +35,7 @@ dependencies {
     compileOnly("io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.24")
     testCompileOnly("org.projectlombok:lombok:1.18.24")
-    compileOnly("io.schark:ScharkDesign:1.1.1")
+    compileOnly("io.schark:ScharkDesign:1.3.3")
     compileOnly("net.kyori:adventure-platform-bungeecord:4.1.2")
     testCompileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     testCompileOnly("io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT")
@@ -47,9 +47,9 @@ dependencies {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "de.placeblock"
-            artifactId = "CommandAPI"
-            version = "1.2.1"
+            groupId = project.group as String?
+            artifactId = project.name
+            version = project.version as String?
 
             from(components["java"])
         }
