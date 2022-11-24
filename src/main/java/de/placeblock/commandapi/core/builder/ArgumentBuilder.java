@@ -56,9 +56,9 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
         return getThis();
     }
 
-    public T asynchronous(boolean recursive) {
-        this.async = true;
-        this.recursiveAsync = recursive;
+    public T setAsync(boolean async, boolean recursive) {
+        this.async = async;
+        this.recursiveAsync = async && recursive;
         return getThis();
     }
 

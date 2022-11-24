@@ -1,6 +1,6 @@
 
 group = "de.placeblock"
-version = "1.2.4-BETA"
+version = "1.2.4-BETAb"
 description = "API for an easier use of Commands"
 
 

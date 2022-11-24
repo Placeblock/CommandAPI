@@ -48,7 +48,7 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         this.commandAPICommand = new CommandAPICommand<>(label) {
             @Override
             public LiteralArgumentBuilder<WaterfallCommandSource<P>> generateCommand(LiteralArgumentBuilder<WaterfallCommandSource<P>> literalArgumentBuilder) {
-                return AbstractWaterfallCommandBridge.this.generateCommand(literalArgumentBuilder);
+                return AbstractWaterfallCommandBridge.this.generateCommand(literalArgumentBuilder.setAsync(true, true));
             }
             @Override
             public boolean hasSourcePermission(WaterfallCommandSource<P> source, String permission) {
