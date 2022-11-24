@@ -26,12 +26,19 @@ public abstract class CommandNode<S> {
     @Setter
     private Command<S> command;
 
-    public CommandNode(String name, TextComponent description, List<String> permissions, Command<S> command, Predicate<S> requirement) {
+    @Getter
+    private final boolean async;
+    @Getter
+    private final boolean recursiveAsync;
+
+    public CommandNode(String name, TextComponent description, List<String> permissions, Command<S> command, Predicate<S> requirement, boolean async, boolean recursiveAsync) {
         this.name = name;
         this.description = description;
         this.permissions = permissions;
         this.command = command;
         this.requirement = requirement;
+        this.async = async;
+        this.recursiveAsync = recursiveAsync;
     }
 
     public void addChild(final CommandNode<S> node) {

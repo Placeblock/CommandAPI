@@ -86,7 +86,18 @@ public abstract class CommandAPICommand<S> {
             System.out.println("Running Parsed Command:");
         }
         String command = parse.getReader().getString();
-        lastChild.getCommand().run(lastChild.build(command));
+        CommandNode<S> firstNode = parse.getContext().getNode();
+        if (firstNode.isAsync() || firstNode.isRecursiveAsync()) {
+            new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    lastChild.getCommand().run(lastChild.build(command));
+                }
+            }.start();
+        } else {
+            lastChild.getCommand().run(lastChild.build(command));
+        }
     }
 
     public ParseResults<S> parse(S source, String command) {

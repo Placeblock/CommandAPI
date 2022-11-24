@@ -19,10 +19,12 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
         this.type = type;
     }
 
+    @SuppressWarnings("unused")
     public static <S, T> RequiredArgumentBuilder<S, T> argument(String name, ArgumentType<S, T> type) {
         return new RequiredArgumentBuilder<>(name, type);
     }
 
+    @SuppressWarnings("unused")
     public RequiredArgumentBuilder<S, T> suggests(Function<String, List<String>> customSuggestions) {
         this.customSuggestions = customSuggestions;
         return getThis();
@@ -34,7 +36,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 
     public ArgumentCommandNode<S, T> build() {
-        final ArgumentCommandNode<S, T> result = new ArgumentCommandNode<>(getName(), getDescription(), getPermissions(), getCommand(), getType(), getRequirement(), getCustomSuggestions());
+        final ArgumentCommandNode<S, T> result = new ArgumentCommandNode<>(getName(), getDescription(), getPermissions(), getCommand(), getType(), getRequirement(), getCustomSuggestions(), isAsync(), isRecursiveAsync());
 
         for (final CommandNode<S> argument : getChildren()) {
             result.addChild(argument);

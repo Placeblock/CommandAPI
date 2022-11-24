@@ -50,6 +50,18 @@ public class CommandContextBuilder<S> {
         return currentCCB;
     }
 
+    @SuppressWarnings("unused")
+    public boolean hasRecursiveAsyncNode() {
+        CommandContextBuilder<S> currentCCB = this;
+        while (currentCCB != null) {
+            if (currentCCB.getNode().isRecursiveAsync()) {
+                return true;
+            }
+            currentCCB = currentCCB.getChild();
+        }
+        return false;
+    }
+
     public CommandContextBuilder<S> withCommand(Command<S> command) {
         this.command = command;
         return this;

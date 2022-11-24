@@ -20,8 +20,8 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final ArgumentType<S, T> type;
     private final Function<String, List<String>> customSuggestions;
 
-    public ArgumentCommandNode(String name, TextComponent description, List<String> permissions, Command<S> command, ArgumentType<S, T> type, Predicate<S> requirement, Function<String, List<String>> customSuggestions) {
-        super(name, description, permissions, command, requirement);
+    public ArgumentCommandNode(String name, TextComponent description, List<String> permissions, Command<S> command, ArgumentType<S, T> type, Predicate<S> requirement, Function<String, List<String>> customSuggestions, boolean async, boolean recursiveAsync) {
+        super(name, description, permissions, command, requirement, async, recursiveAsync);
         this.type = type;
         this.customSuggestions = customSuggestions;
     }

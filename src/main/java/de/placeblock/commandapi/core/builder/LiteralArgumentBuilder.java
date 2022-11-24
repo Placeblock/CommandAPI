@@ -16,6 +16,7 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
         super(name);
     }
 
+    @SuppressWarnings("unused")
     public static <S> LiteralArgumentBuilder<S> literal(String name) {
         return new LiteralArgumentBuilder<>(name);
     }
@@ -25,6 +26,7 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
         return this;
     }
 
+    @SuppressWarnings("unused")
     public LiteralArgumentBuilder<S> withAlias(String alias) {
         this.aliases.add(alias);
         if (CommandAPI.DEBUG_MODE) {
@@ -36,7 +38,7 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
 
     @Override
     public LiteralCommandNode<S> build() {
-        final LiteralCommandNode<S> result = new LiteralCommandNode<>(getName(), getDescription(), getAliases(), getPermissions(), getCommand(), getRequirement());
+        final LiteralCommandNode<S> result = new LiteralCommandNode<>(getName(), getDescription(), getAliases(), getPermissions(), getCommand(), getRequirement(), isAsync(), isRecursiveAsync());
 
         for (final CommandNode<S> child : this.getChildren()) {
             result.addChild(child);

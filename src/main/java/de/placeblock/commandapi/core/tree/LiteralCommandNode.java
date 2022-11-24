@@ -20,8 +20,8 @@ import java.util.function.Predicate;
 public class LiteralCommandNode<S> extends CommandNode<S> {
     private final List<String> aliases;
 
-    public LiteralCommandNode(String label, TextComponent description, List<String> aliases, List<String> permissions, Command<S> command, Predicate<S> requirement) {
-        super(label, description, permissions, command, requirement);
+    public LiteralCommandNode(String label, TextComponent description, List<String> aliases, List<String> permissions, Command<S> command, Predicate<S> requirement, boolean async, boolean recursiveAsync) {
+        super(label, description, permissions, command, requirement, async, recursiveAsync);
         this.aliases = aliases;
     }
 

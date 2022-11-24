@@ -4,7 +4,6 @@ import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.tree.CommandNode;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +18,8 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private final List<CommandNode<S>> children = new ArrayList<>();
     private Command<S> command;
     private Predicate<S> requirement = s -> true;
+    private boolean async = false;
+    private boolean recursiveAsync = false;
 
     protected ArgumentBuilder(String name) {
         this.name = name;
@@ -52,6 +53,12 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
 
     public T requires(final Predicate<S> requirement) {
         this.requirement = requirement;
+        return getThis();
+    }
+
+    public T asynchronous(boolean recursive) {
+        this.async = true;
+        this.recursiveAsync = recursive;
         return getThis();
     }
 
