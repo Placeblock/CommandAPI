@@ -25,17 +25,38 @@ public abstract class TreeCommand<S> {
 
     public void parseRecursive(ParseContext<S> context) {
         int oldcursor = context.getCursor();
+
+        // Parse the current Command
         this.parse(context);
-        if (context.getCursor() > oldcursor) {
-            context.setCursor(context.getCursor() + 1);
-            oldcursor = context.getCursor();
-            for (TreeCommand<S> child : this.children) {
-                child.parse(context);
-                if (context.getCursor() > oldcursor) break;
-            }
+
+        // Stop if nothing has changed = couldn't parse
+        if (context.getCursor() <= oldcursor) return;
+
+        // Skip whitespace
+        context.setCursor(context.getCursor() + 1);
+
+        // Only move forward if we haven't reached the end already
+        if (context.getCursor() >= context.getText().length()) return;
+
+        // Parse Children
+        oldcursor = context.getCursor();
+        for (TreeCommand<S> child : this.children) {
+            child.parseRecursive(context);
+            //Break if one child was successful
+            if (context.getCursor() > oldcursor) break;
         }
     }
 
     public abstract List<String> getSuggestions(ParseContext<S> context);
 
+    public void print(int round) {
+        System.out.println(" ".repeat(round*5) + this.getName());
+        System.out.println(" ".repeat(round*5) + this.getDescription());
+        System.out.println(" ".repeat(round*5) + this.getRun());
+        System.out.println(" ".repeat(round*5) + this.getPermissions());
+        System.out.println(" ".repeat(round*5) + this.getChildren().size());
+        for (TreeCommand<S> child : this.children) {
+            child.print(round + 1);
+        }
+    }
 }

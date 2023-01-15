@@ -16,7 +16,7 @@ public class Util {
                 return i;
             }
         }
-        return i-cursor;
+        return i;
     }
 
 }

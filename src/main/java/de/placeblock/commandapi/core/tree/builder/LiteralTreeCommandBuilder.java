@@ -15,7 +15,7 @@ public class LiteralTreeCommandBuilder<S> extends TreeCommandBuilder<S> {
     }
 
     @Override
-    TreeCommand<S> build() {
+    public TreeCommand<S> build() {
         return new LiteralTreeCommand<>(
             this.getName(),
             this.getChildren().stream().map(TreeCommandBuilder::build).toList(),

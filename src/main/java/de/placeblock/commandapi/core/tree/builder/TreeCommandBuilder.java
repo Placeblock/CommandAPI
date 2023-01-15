@@ -22,7 +22,7 @@ public abstract class TreeCommandBuilder<S> {
     private final List<TreeCommandBuilder<S>> children = new ArrayList<>();
     private Consumer<S> run = null;
     private TextComponent description;
-    private List<String> permissions = new ArrayList<>();
+    private final List<String> permissions = new ArrayList<>();
 
     public TreeCommandBuilder<S> literal(String name, Consumer<LiteralTreeCommandBuilder<S>> callback) {
         LiteralTreeCommandBuilder<S> literalTreeCommandBuilder = new LiteralTreeCommandBuilder<>(name);
@@ -53,6 +53,6 @@ public abstract class TreeCommandBuilder<S> {
         return this;
     }
 
-    abstract TreeCommand<S> build();
+    public abstract TreeCommand<S> build();
 
 }

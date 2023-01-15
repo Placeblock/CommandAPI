@@ -27,12 +27,11 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
         if (result != null) {
             context.addParameter(this.getName(), result);
             context.setLastParsedCommand(this);
-            context.setCursor(context.getCursor());
         }
     }
 
     @Override
-    List<String> getSuggestions(ParseContext<S> context) {
+    public List<String> getSuggestions(ParseContext<S> context) {
         return this.parameter.getSuggestions(context);
     }
 }

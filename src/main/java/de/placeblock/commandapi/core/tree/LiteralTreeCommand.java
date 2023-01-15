@@ -31,7 +31,7 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
     }
 
     @Override
-    List<String> getSuggestions(ParseContext<S> context) {
+    public List<String> getSuggestions(ParseContext<S> context) {
         if (this.getName().startsWith(context.getText().substring(context.getCursor()).trim())) {
             return List.of(this.getName());
         } else {
