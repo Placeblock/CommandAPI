@@ -1,6 +1,6 @@
 package de.placeblock.commandapi.core;
 
-import de.placeblock.commandapi.core.tree.LiteralCommand;
+import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -9,12 +9,11 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public class Command {
+public class Command<S> {
 
-    private final LiteralCommand base;
+    private final LiteralTreeCommandBuilder<S> base;
 
     public void parse(String text) {
-
     }
 
 }

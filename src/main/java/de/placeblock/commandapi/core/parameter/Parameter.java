@@ -1,12 +1,14 @@
 package de.placeblock.commandapi.core.parameter;
 
+import java.util.List;
+
 /**
  * Author: Placeblock
  */
-public interface Parameter<T> {
+public interface Parameter<S, T> {
 
     T parse();
 
-    T getSuggestions();
+    List<String> getSuggestions(S );
 
 }
