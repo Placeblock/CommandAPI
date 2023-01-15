@@ -1,6 +1,6 @@
 
 group = "de.placeblock"
-version = "1.2.4-BETAb"
+version = "1.2.5"
 description = "API for an easier use of Commands"
 
 
@@ -36,7 +36,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.24")
     testCompileOnly("org.projectlombok:lombok:1.18.24")
     compileOnly("io.schark:ScharkDesign:1.3.3")
-    compileOnly("net.kyori:adventure-platform-bungeecord:4.1.2")
+    compileOnly("net.kyori:adventure-platform-bungeecord:4.2.0")
     testCompileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     testCompileOnly("io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")

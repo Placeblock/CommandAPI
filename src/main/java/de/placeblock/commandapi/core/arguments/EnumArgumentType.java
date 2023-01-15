@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class EnumArgumentType<S, E extends Enum<E> & CommandEnum> implements ArgumentType<S, E> {
+public class EnumArgumentType<S, E extends Enum<E>> implements ArgumentType<S, E> {
     private final Class<E> enumClass;
     private final E[] enumValues;
 
@@ -29,7 +29,12 @@ public class EnumArgumentType<S, E extends Enum<E> & CommandEnum> implements Arg
     public List<String> listSuggestions(CommandContext<S> context, String partial) {
         ArrayList<String> suggestions = new ArrayList<>();
         for (E enumValue : this.enumValues) {
-            String displayName = enumValue.getDisplayName();
+            String displayName;
+            if (enumValue instanceof CommandEnum commandEnumValue) {
+                displayName = commandEnumValue.getDisplayName();
+            } else {
+                displayName = enumValue.name();
+            }
             if (displayName.toLowerCase().startsWith(partial.toLowerCase())) {
                 suggestions.add(displayName);
             }
