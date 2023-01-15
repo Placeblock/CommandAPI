@@ -4,7 +4,9 @@ import de.placeblock.commandapi.core.tree.TreeCommand;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.kyori.adventure.text.TextComponent;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +20,8 @@ public class ParseContext<S> {
     private final String text;
     private final S source;
     private final Map<String, Object> parameters = new HashMap<>();
+    @Setter
+    private TextComponent error;
     @Setter
     private TreeCommand<S> lastParsedCommand;
     @Setter

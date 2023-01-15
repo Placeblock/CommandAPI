@@ -1,6 +1,7 @@
 package de.placeblock.commandapi;
 
 import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +18,9 @@ public class ParseTest {
         ParseContext<String> context = parseTestCommand.parse("party remove 22 ", "TestPlayer");
         assert context.getCursor() == 16;
         assert context.getLastParsedCommand() instanceof ParameterTreeCommand<?,?>;
+        context = parseTestCommand.parse("party", "TestPlayer");
+        assert context.getCursor() == 6;
+        assert context.getLastParsedCommand() instanceof LiteralTreeCommand<String>;
     }
 
     @Test
@@ -28,7 +32,6 @@ public class ParseTest {
         assert parseTestCommand.getSuggestions(context).isEmpty();
         context = parseTestCommand.parse("party add awd", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).isEmpty();
-        // Fails
         context = parseTestCommand.parse("party remove awd", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).isEmpty();
         context = parseTestCommand.parse("party remove ", "TestPlayer");

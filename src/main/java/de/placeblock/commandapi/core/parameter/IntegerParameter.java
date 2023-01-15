@@ -2,6 +2,7 @@ package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.Util;
 import de.placeblock.commandapi.core.parser.ParseContext;
+import io.schark.design.texts.Texts;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class IntegerParameter<S> implements Parameter<S, Integer> {
             context.setCursor(nextWordIndex);
             return number;
         } catch (NumberFormatException ignored) {
-
+            context.setError(Texts.inferior("Du musst eine <color:negative>Zahl angeben"));
         }
         return null;
     }

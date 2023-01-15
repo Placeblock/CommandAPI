@@ -25,9 +25,14 @@ public class Command<S> {
         return parseContext;
     }
 
+    public void execute(ParseContext<S> context) {
+        
+    }
+
     public List<String> getSuggestions(ParseContext<S> parseContext) {
         String text = parseContext.getText();
-        if (parseContext.getCursor() > text.length()) return new ArrayList<>();
+        if (parseContext.getCursor() > text.length()
+            || parseContext.getError() != null) return new ArrayList<>();
         String wrongInformation = text.substring(parseContext.getCursor());
         if (!wrongInformation.contains(" ")) {
             TreeCommand<S> lastParsedCommand = parseContext.getLastParsedCommand();

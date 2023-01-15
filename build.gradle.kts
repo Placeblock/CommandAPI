@@ -42,7 +42,9 @@ dependencies {
     testCompileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     testCompileOnly("io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT")
     testImplementation("net.kyori:adventure-platform-bungeecord:4.2.0")
+    testImplementation("net.kyori:adventure-text-minimessage:4.11.0")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
+    testImplementation("io.schark:ScharkDesign:1.3.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
