@@ -15,35 +15,37 @@ public class ParseTest {
     @Test
     public void testParse() {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
-        ParseContext<String> context = parseTestCommand.parse("party remove 22 ", "TestPlayer");
-        assert context.getCursor() == 16;
+        ParseContext<String> context = parseTestCommand.parse("testcommandparse remove 22 ", "TestPlayer");
+        assert context.getCursor() == 27;
         assert context.getLastParsedCommand() instanceof ParameterTreeCommand<?,?>;
-        context = parseTestCommand.parse("party", "TestPlayer");
-        assert context.getCursor() == 6;
+        context = parseTestCommand.parse("testcommandparse", "TestPlayer");
+        assert context.getCursor() == 17;
         assert context.getLastParsedCommand() instanceof LiteralTreeCommand<String>;
     }
 
     @Test
     public void testSuggestions() {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
-        ParseContext<String> context = parseTestCommand.parse("party remove", "TestPlayer");
+        ParseContext<String> context = parseTestCommand.parse("testcommandparse remove", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).isEmpty();
-        context = parseTestCommand.parse("party remove  ", "TestPlayer");
+        context = parseTestCommand.parse("testcommandparse remove  ", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).isEmpty();
-        context = parseTestCommand.parse("party add awd", "TestPlayer");
+        context = parseTestCommand.parse("testcommandparse add awd", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).isEmpty();
-        context = parseTestCommand.parse("party remove awd", "TestPlayer");
+        context = parseTestCommand.parse("testcommandparse remove awd", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).isEmpty();
-        context = parseTestCommand.parse("party remove ", "TestPlayer");
+        context = parseTestCommand.parse("testcommandparse remove ", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).contains("0");
-        context = parseTestCommand.parse("party rem", "TestPlayer");
+        context = parseTestCommand.parse("testcommandparse rem", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).contains("remove");
-        context = parseTestCommand.parse("party ", "TestPlayer");
+        context = parseTestCommand.parse("testcommandparse ", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).containsAll(List.of("remove", "add"));
-        context = parseTestCommand.parse("par", "TestPlayer");
-        assert parseTestCommand.getSuggestions(context).contains("party");
+        context = parseTestCommand.parse("testcommandparse", "TestPlayer");
+        assert parseTestCommand.getSuggestions(context).isEmpty();
+        context = parseTestCommand.parse("testcommandp", "TestPlayer");
+        assert parseTestCommand.getSuggestions(context).contains("testcommandparse");
         context = parseTestCommand.parse("", "TestPlayer");
-        assert parseTestCommand.getSuggestions(context).contains("party");
+        assert parseTestCommand.getSuggestions(context).contains("testcommandparse");
     }
 
 }
