@@ -1,5 +1,7 @@
 package de.placeblock.commandapi.core.parameter;
 
+import de.placeblock.commandapi.core.parser.ParseContext;
+
 import java.util.List;
 
 /**
@@ -7,8 +9,8 @@ import java.util.List;
  */
 public interface Parameter<S, T> {
 
-    T parse();
+    T parse(ParseContext<S> context);
 
-    List<String> getSuggestions(S );
+    List<String> getSuggestions(ParseContext<S> context);
 
 }

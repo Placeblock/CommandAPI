@@ -31,7 +31,7 @@ public abstract class TreeCommandBuilder<S> {
         return this;
     }
 
-    public <T> TreeCommandBuilder<S> parameter(String name, Parameter<T> parameter, Consumer<ParameterTreeCommandBuilder<S, T>> callback) {
+    public <T> TreeCommandBuilder<S> parameter(String name, Parameter<S, T> parameter, Consumer<ParameterTreeCommandBuilder<S, T>> callback) {
         ParameterTreeCommandBuilder<S, T> parameterTreeCommandBuilder = new ParameterTreeCommandBuilder<>(name, parameter);
         this.children.add(parameterTreeCommandBuilder);
         callback.accept(parameterTreeCommandBuilder);

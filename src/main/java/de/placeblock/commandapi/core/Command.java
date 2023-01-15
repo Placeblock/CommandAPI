@@ -1,8 +1,13 @@
 package de.placeblock.commandapi.core;
 
-import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
+import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
+import de.placeblock.commandapi.core.tree.TreeCommand;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Author: Placeblock
@@ -11,9 +16,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Command<S> {
 
-    private final LiteralTreeCommandBuilder<S> base;
+    private final LiteralTreeCommand<S> base;
 
-    public void parse(String text) {
+    public ParseContext<S> parse(String text, S source) {
+        ParseContext<S> parseContext = new ParseContext<>(text, source);
+        this.base.parseRecursive(parseContext);
+        return parseContext;
+    }
+
+    public List<String> getSuggestions(ParseContext<S> parseContext) {
+        TreeCommand<S> lastParsedCommand = parseContext.getLastParsedCommand();
+        if (parseContext.getCursor() >= parseContext.getText().length()) {
+            return new ArrayList<>();
+        }
+        List<String> suggestions = new ArrayList<>();
+        for (TreeCommand<S> child : lastParsedCommand.getChildren()) {
+            suggestions.addAll(child.getSuggestions(parseContext));
+        }
+        return suggestions;
     }
 
 }
