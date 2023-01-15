@@ -24,15 +24,19 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
     }
 
     @Override
-    void parse(ParseContext<S> context) {
-        if (context.getText().length() < context.getCursor()+this.getName().length()) return;
+    boolean parse(ParseContext<S> context) {
+        if (context.getText().length() < context.getCursor()+this.getName().length()) {
+            return false;
+        }
         int nextWordIndex = Util.readWord(context);
-        if (nextWordIndex == 0) return;
+        if (nextWordIndex == 0) return false;
         String nextWord = context.getText().substring(context.getCursor(), nextWordIndex);
         if (nextWord.equalsIgnoreCase(this.getName())) {
             context.setCursor(nextWordIndex);
             context.setLastParsedCommand(this);
+            return true;
         }
+        return false;
     }
 
     @Override

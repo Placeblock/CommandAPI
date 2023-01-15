@@ -23,12 +23,14 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
     }
 
     @Override
-    void parse(ParseContext<S> context) {
+    boolean parse(ParseContext<S> context) {
         T result = this.parameter.parse(context);
         if (result != null) {
             context.addParameter(this.getName(), result);
             context.setLastParsedCommand(this);
+            return true;
         }
+        return false;
     }
 
     @Override

@@ -24,39 +24,38 @@ public abstract class TreeCommand<S> {
     private final String permission;
     private final Consumer<ParseContext<S>> run;
 
-    abstract void parse(ParseContext<S> context);
+    abstract boolean parse(ParseContext<S> context);
 
-    public void parseRecursive(ParseContext<S> context) {
-        int oldcursor = context.getCursor();
-
+    public boolean parseRecursive(ParseContext<S> context) {
         // Check Permissions
-        if (this.hasNoPermission(context.getSource())) return;
+        if (this.hasNoPermission(context.getSource())) return false;
 
         // Parse the current Command
-        this.parse(context);
-
-        // Stop if nothing has changed = couldn't parse
-        if (context.getCursor() <= oldcursor) return;
-
-        // Skip whitespace
-        context.setCursor(context.getCursor() + 1);
+        if (!this.parse(context)) return false;
 
         // Only move forward if we haven't reached the end already
-        if (context.getCursor() >= context.getText().length()) return;
+        if (context.getCursor() + 1 >= context.getText().length()) return true;
 
         // Parse Children
-        oldcursor = context.getCursor();
         for (TreeCommand<S> child : this.children) {
-            child.parseRecursive(context);
-            //Break if one child was successful
-            if (context.getCursor() > oldcursor) break;
+            int oldcursor = context.getCursor();
+
+            // Skip white space
+            context.setCursor(context.getCursor() + 1);
+
+            if (child.parseRecursive(context)) {
+                return true;
+            } else {
+                context.setCursor(oldcursor);
+            }
         }
+        return true;
     }
 
     public List<List<TreeCommand<S>>> getBranches(S source) {
         List<List<TreeCommand<S>>> branches = new ArrayList<>();
         if (this.children.size() == 0) {
-            return List.of(List.of(this));
+            return new ArrayList<>(List.of(new ArrayList<>(List.of(this))));
         }
         for (TreeCommand<S> child : this.children) {
             if (child.hasNoPermission(source)) continue;

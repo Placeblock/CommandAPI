@@ -2,6 +2,7 @@ package de.placeblock.commandapi.core;
 
 import de.placeblock.commandapi.core.parser.ParseContext;
 import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
+import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import io.schark.design.texts.Texts;
@@ -46,24 +47,26 @@ public abstract class Command<S> {
             this.sendMessage(context.getSource(), context.getError());
             return;
         }
-        if (context.getCursor() > context.getText().length()
-            || context.getText().substring(context.getCursor()).trim().equals("")) {
-            context.getLastParsedCommand().getRun().accept(context);
+        TreeCommand<S> lastParsedCommand = context.getLastParsedCommand();
+        if (lastParsedCommand != null && context.getText().substring(context.getCursor()).equals("") && lastParsedCommand.getRun() != null) {
+            lastParsedCommand.getRun().accept(context);
         } else {
             this.sendMessage(context.getSource(), this.generateHelpMessage(context.getSource()));
         }
     }
 
     public List<String> getSuggestions(ParseContext<S> parseContext) {
+        if (parseContext.getError() != null) return new ArrayList<>();
         String text = parseContext.getText();
-        if (parseContext.getCursor() > text.length()
-            || parseContext.getError() != null) return new ArrayList<>();
+        TreeCommand<S> lastParsedCommand = parseContext.getLastParsedCommand();
+        if (lastParsedCommand == null) {
+            return this.base.getSuggestions(parseContext);
+        }
         String wrongInformation = text.substring(parseContext.getCursor());
-        if (!wrongInformation.contains(" ")) {
-            TreeCommand<S> lastParsedCommand = parseContext.getLastParsedCommand();
-            if (lastParsedCommand == null) {
-                return this.base.getSuggestions(parseContext);
-            }
+        if (wrongInformation.equals("") && lastParsedCommand instanceof ParameterTreeCommand<S,?> parameterTreeCommand) {
+            return parameterTreeCommand.getSuggestions(parseContext);
+        }
+        if (wrongInformation.startsWith(" ") && !wrongInformation.substring(1).contains(" ")) {
             List<String> suggestions = new ArrayList<>();
             for (TreeCommand<S> child : lastParsedCommand.getChildren()) {
                 suggestions.addAll(child.getSuggestions(parseContext));

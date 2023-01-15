@@ -1,9 +1,6 @@
-
-group = "de.placeblock"
+group = "de.placeblock.commandapi"
 version = "2.0.0"
 description = "API for an easier use of Commands"
-
-
 
 plugins {
   `java-library`

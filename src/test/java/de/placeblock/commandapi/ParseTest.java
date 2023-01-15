@@ -16,10 +16,10 @@ public class ParseTest {
     public void testParse() {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         ParseContext<String> context = parseTestCommand.parse("testcommandparse remove 22 ", "TestPlayer");
-        assert context.getCursor() == 27;
+        assert context.getCursor() == 26;
         assert context.getLastParsedCommand() instanceof ParameterTreeCommand<?,?>;
         context = parseTestCommand.parse("testcommandparse", "TestPlayer");
-        assert context.getCursor() == 17;
+        assert context.getCursor() == 16;
         assert context.getLastParsedCommand() instanceof LiteralTreeCommand<String>;
     }
 
@@ -46,6 +46,9 @@ public class ParseTest {
         assert parseTestCommand.getSuggestions(context).contains("testcommandparse");
         context = parseTestCommand.parse("", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).contains("testcommandparse");
+        context = parseTestCommand.parse("testcommandparse remove 123", "TestPlayer");
+        assert parseTestCommand.getSuggestions(context).contains("3");
+        assert context.getParameter("amount", Integer.class) == 123;
     }
 
 }
