@@ -5,14 +5,23 @@ import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Author: Placeblock
  */
 @Getter
-public class LiteralTreeCommandBuilder<S> extends TreeCommandBuilder<S> {
+public class LiteralTreeCommandBuilder<S> extends TreeCommandBuilder<S, LiteralTreeCommandBuilder<S>> {
+    private final List<String> aliases = new ArrayList<>();
 
     public LiteralTreeCommandBuilder(String name) {
         super(name);
+    }
+
+    @Override
+    protected LiteralTreeCommandBuilder<S> getThis() {
+        return this;
     }
 
     @Override
@@ -23,7 +32,8 @@ public class LiteralTreeCommandBuilder<S> extends TreeCommandBuilder<S> {
             this.getChildren().stream().map(treeCommand -> treeCommand.build(command)).toList(),
             this.getDescription(),
             this.getPermission(),
-            this.getRun()
+            this.getRun(),
+            this.aliases
         );
     }
 }

@@ -10,13 +10,18 @@ import lombok.Getter;
  * Author: Placeblock
  */
 @Getter
-public class ParameterTreeCommandBuilder<S, T> extends TreeCommandBuilder<S> {
+public class ParameterTreeCommandBuilder<S, T> extends TreeCommandBuilder<S, ParameterTreeCommandBuilder<S, T>> {
 
     private final Parameter<S, T> parameter;
 
     public ParameterTreeCommandBuilder(String name, Parameter<S, T> parameter) {
         super(name);
         this.parameter = parameter;
+    }
+
+    @Override
+    protected ParameterTreeCommandBuilder<S, T> getThis() {
+        return this;
     }
 
     @Override

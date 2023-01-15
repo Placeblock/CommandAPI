@@ -3,10 +3,9 @@ package de.placeblock.commandapi.core;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
-import de.placeblock.commandapi.core.tree.builder.TreeCommandBuilder;
+import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 
@@ -17,14 +16,13 @@ import java.util.List;
  * Author: Placeblock
  */
 @Getter
-@RequiredArgsConstructor
 public abstract class Command<S> {
 
     private final LiteralTreeCommand<S> base;
     private final TextComponent prefix;
 
-    public Command() {
-        TreeCommand<S> baseCommand = this.getCommandBuilder().build(this);
+    public Command(String label) {
+        TreeCommand<S> baseCommand = this.generateCommand(new LiteralTreeCommandBuilder<>(label)).build(this);
         if (!(baseCommand instanceof LiteralTreeCommand<S> literalTreeCommand)) {
             throw new IllegalArgumentException("You can only use LiteralTreeCommandBuilder as root");
         }
@@ -32,7 +30,7 @@ public abstract class Command<S> {
         this.prefix = Texts.subPrefix(Texts.primary(this.base.getName())).append(Component.space());
     }
 
-    public abstract TreeCommandBuilder<S> getCommandBuilder();
+    public abstract LiteralTreeCommandBuilder<S> generateCommand(LiteralTreeCommandBuilder<S> builder);
 
     public abstract boolean hasPermission(S source, String permission);
     public abstract void sendMessage(S source, TextComponent message);

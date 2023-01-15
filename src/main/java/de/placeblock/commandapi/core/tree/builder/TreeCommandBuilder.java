@@ -15,43 +15,46 @@ import java.util.function.Consumer;
 /**
  * Author: Placeblock
  */
+@SuppressWarnings("ALL")
 @Getter
 @RequiredArgsConstructor
-public abstract class TreeCommandBuilder<S> {
+public abstract class TreeCommandBuilder<S, CT extends TreeCommandBuilder<S, CT>> {
 
     private final String name;
-    private final List<TreeCommandBuilder<S>> children = new ArrayList<>();
+    private final List<TreeCommandBuilder<S, ?>> children = new ArrayList<>();
     private Consumer<ParseContext<S>> run = null;
     private TextComponent description;
     private String permission;
 
-    public TreeCommandBuilder<S> literal(String name, Consumer<LiteralTreeCommandBuilder<S>> callback) {
+    protected abstract CT getThis();
+
+    public CT literal(String name, Consumer<LiteralTreeCommandBuilder<S>> callback) {
         LiteralTreeCommandBuilder<S> literalTreeCommandBuilder = new LiteralTreeCommandBuilder<>(name);
         this.children.add(literalTreeCommandBuilder);
         callback.accept(literalTreeCommandBuilder);
-        return this;
+        return getThis();
     }
 
-    public <T> TreeCommandBuilder<S> parameter(String name, Parameter<S, T> parameter, Consumer<ParameterTreeCommandBuilder<S, T>> callback) {
-        ParameterTreeCommandBuilder<S, T> parameterTreeCommandBuilder = new ParameterTreeCommandBuilder<>(name, parameter);
+    public <T> CT parameter(String name, Parameter<S, T> parameter, Consumer<ParameterTreeCommandBuilder<S, T>> callback) {
+        ParameterTreeCommandBuilder<S,  T> parameterTreeCommandBuilder = new ParameterTreeCommandBuilder<>(name, parameter);
         this.children.add(parameterTreeCommandBuilder);
         callback.accept(parameterTreeCommandBuilder);
-        return this;
+        return getThis();
     }
 
-    public TreeCommandBuilder<S> run(Consumer<ParseContext<S>> callback) {
+    public CT run(Consumer<ParseContext<S>> callback) {
         this.run = callback;
-        return this;
+        return getThis();
     }
 
-    public TreeCommandBuilder<S> description(TextComponent description) {
+    public CT description(TextComponent description) {
         this.description = description;
-        return this;
+        return getThis();
     }
 
-    public TreeCommandBuilder<S> permission(String permission) {
+    public CT permission(String permission) {
         this.permission = permission;
-        return this;
+        return getThis();
     }
 
     public abstract TreeCommand<S> build(Command<S> command);

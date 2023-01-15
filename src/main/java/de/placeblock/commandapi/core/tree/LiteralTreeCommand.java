@@ -3,6 +3,7 @@ package de.placeblock.commandapi.core.tree;
 import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.Util;
 import de.placeblock.commandapi.core.parser.ParseContext;
+import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.ArrayList;
@@ -12,11 +13,14 @@ import java.util.function.Consumer;
 /**
  * Author: Placeblock
  */
+@Getter
 public class LiteralTreeCommand<S> extends TreeCommand<S> {
+    private final List<String> aliases;
 
     public LiteralTreeCommand(Command<S> command, String name, List<TreeCommand<S>> children, TextComponent description,
-                              String permission, Consumer<ParseContext<S>> run) {
+                              String permission, Consumer<ParseContext<S>> run, List<String> aliases) {
         super(command, name, children, description, permission, run);
+        this.aliases = aliases;
     }
 
     @Override
