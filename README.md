@@ -1,4 +1,4 @@
-# CommandAPI
+# CommandAPI (< 2.0.0)
 API for an easier Command use on Minecraft Servers (BungeeCord, Spigot, ...).
 
 ### 🔴IMPORTANT🔴 Please read the whole documentation to prevent mistakes and to answer unanswered questions
