@@ -1,5 +1,6 @@
 package de.placeblock.commandapi.core.tree;
 
+import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.Util;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import net.kyori.adventure.text.TextComponent;
@@ -13,9 +14,9 @@ import java.util.function.Consumer;
  */
 public class LiteralTreeCommand<S> extends TreeCommand<S> {
 
-    public LiteralTreeCommand(String name, List<TreeCommand<S>> children, TextComponent description,
-                              List<String> permissions, Consumer<S> run) {
-        super(name, children, description, permissions, run);
+    public LiteralTreeCommand(Command<S> command, String name, List<TreeCommand<S>> children, TextComponent description,
+                              String permission, Consumer<ParseContext<S>> run) {
+        super(command, name, children, description, permission, run);
     }
 
     @Override

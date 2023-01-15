@@ -1,5 +1,6 @@
 package de.placeblock.commandapi.core.tree.builder;
 
+import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import lombok.Getter;
@@ -15,12 +16,13 @@ public class LiteralTreeCommandBuilder<S> extends TreeCommandBuilder<S> {
     }
 
     @Override
-    public TreeCommand<S> build() {
+    public TreeCommand<S> build(Command<S> command) {
         return new LiteralTreeCommand<>(
+            command,
             this.getName(),
-            this.getChildren().stream().map(TreeCommandBuilder::build).toList(),
+            this.getChildren().stream().map(treeCommand -> treeCommand.build(command)).toList(),
             this.getDescription(),
-            this.getPermissions(),
+            this.getPermission(),
             this.getRun()
         );
     }

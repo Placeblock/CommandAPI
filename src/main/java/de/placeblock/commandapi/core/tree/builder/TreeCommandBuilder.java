@@ -1,6 +1,8 @@
 package de.placeblock.commandapi.core.tree.builder;
 
+import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.parameter.Parameter;
+import de.placeblock.commandapi.core.parser.ParseContext;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +18,12 @@ import java.util.function.Consumer;
 @Getter
 @RequiredArgsConstructor
 public abstract class TreeCommandBuilder<S> {
-    S source;
 
     private final String name;
     private final List<TreeCommandBuilder<S>> children = new ArrayList<>();
-    private Consumer<S> run = null;
+    private Consumer<ParseContext<S>> run = null;
     private TextComponent description;
-    private final List<String> permissions = new ArrayList<>();
+    private String permission;
 
     public TreeCommandBuilder<S> literal(String name, Consumer<LiteralTreeCommandBuilder<S>> callback) {
         LiteralTreeCommandBuilder<S> literalTreeCommandBuilder = new LiteralTreeCommandBuilder<>(name);
@@ -38,7 +39,7 @@ public abstract class TreeCommandBuilder<S> {
         return this;
     }
 
-    public TreeCommandBuilder<S> run(Consumer<S> callback) {
+    public TreeCommandBuilder<S> run(Consumer<ParseContext<S>> callback) {
         this.run = callback;
         return this;
     }
@@ -49,10 +50,10 @@ public abstract class TreeCommandBuilder<S> {
     }
 
     public TreeCommandBuilder<S> permission(String permission) {
-        this.permissions.add(permission);
+        this.permission = permission;
         return this;
     }
 
-    public abstract TreeCommand<S> build();
+    public abstract TreeCommand<S> build(Command<S> command);
 
 }

@@ -1,5 +1,6 @@
 package de.placeblock.commandapi.core.tree.builder;
 
+import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
@@ -19,12 +20,13 @@ public class ParameterTreeCommandBuilder<S, T> extends TreeCommandBuilder<S> {
     }
 
     @Override
-    public TreeCommand<S> build() {
-        return new ParameterTreeCommand<S, T>(
+    public TreeCommand<S> build(Command<S> command) {
+        return new ParameterTreeCommand<>(
+            command,
             this.getName(),
-            this.getChildren().stream().map(TreeCommandBuilder::build).toList(),
+            this.getChildren().stream().map(treeCommand -> treeCommand.build(command)).toList(),
             this.getDescription(),
-            this.getPermissions(),
+            this.getPermission(),
             this.getRun(),
             this.getParameter()
         );

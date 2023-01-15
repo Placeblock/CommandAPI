@@ -1,10 +1,12 @@
 package de.placeblock.commandapi.core.tree;
 
+import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.TextComponent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -15,16 +17,20 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public abstract class TreeCommand<S> {
 
+    private final Command<S> command;
     private final String name;
     private final List<TreeCommand<S>> children;
     private final TextComponent description;
-    private final List<String> permissions;
-    private final Consumer<S> run;
+    private final String permission;
+    private final Consumer<ParseContext<S>> run;
 
     abstract void parse(ParseContext<S> context);
 
     public void parseRecursive(ParseContext<S> context) {
         int oldcursor = context.getCursor();
+
+        // Check Permissions
+        if (this.hasNoPermission(context.getSource())) return;
 
         // Parse the current Command
         this.parse(context);
@@ -47,16 +53,26 @@ public abstract class TreeCommand<S> {
         }
     }
 
-    public abstract List<String> getSuggestions(ParseContext<S> context);
-
-    public void print(int round) {
-        System.out.println(" ".repeat(round*5) + this.getName());
-        System.out.println(" ".repeat(round*5) + this.getDescription());
-        System.out.println(" ".repeat(round*5) + this.getRun());
-        System.out.println(" ".repeat(round*5) + this.getPermissions());
-        System.out.println(" ".repeat(round*5) + this.getChildren().size());
-        for (TreeCommand<S> child : this.children) {
-            child.print(round + 1);
+    public List<List<TreeCommand<S>>> getBranches(S source) {
+        List<List<TreeCommand<S>>> branches = new ArrayList<>();
+        if (this.children.size() == 0) {
+            return List.of(List.of(this));
         }
+        for (TreeCommand<S> child : this.children) {
+            if (child.hasNoPermission(source)) continue;
+            List<List<TreeCommand<S>>> childBranches = child.getBranches(source);
+            for (List<TreeCommand<S>> childBranch : childBranches) {
+                childBranch.add(0, this);
+                branches.add(childBranch);
+            }
+        }
+        return branches;
     }
+
+    public boolean hasNoPermission(S source) {
+        if (this.permission == null) return false;
+        return !this.command.hasPermission(source, this.permission);
+    }
+
+    public abstract List<String> getSuggestions(ParseContext<S> context);
 }

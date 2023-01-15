@@ -1,5 +1,6 @@
 package de.placeblock.commandapi.core.tree;
 
+import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import lombok.Getter;
@@ -15,9 +16,9 @@ import java.util.function.Consumer;
 public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
     private final Parameter<S, T> parameter;
 
-    public ParameterTreeCommand(String name, List<TreeCommand<S>> children, TextComponent description,
-                                List<String> permissions, Consumer<S> run, Parameter<S, T> parameter) {
-        super(name, children, description, permissions, run);
+    public ParameterTreeCommand(Command<S> command, String name, List<TreeCommand<S>> children, TextComponent description,
+                                String permission, Consumer<ParseContext<S>> run, Parameter<S, T> parameter) {
+        super(command, name, children, description, permission, run);
         this.parameter = parameter;
     }
 
