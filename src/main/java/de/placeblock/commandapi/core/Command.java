@@ -1,5 +1,6 @@
 package de.placeblock.commandapi.core;
 
+import de.placeblock.commandapi.core.tree.LiteralCommand;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -8,11 +9,12 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public class CommandExecutor<C, P> {
-    private final C console;
-    private final P player;
+public class Command {
 
-    public boolean isPlayer() {
-        return this.player != null;
+    private final LiteralCommand base;
+
+    public void parse(String text) {
+
     }
+
 }
