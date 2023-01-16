@@ -7,6 +7,7 @@ import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import de.placeblock.commandapi.core.parser.StringReader;
+import io.schark.design.colors.Colors;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -90,32 +91,22 @@ public abstract class Command<S> {
 
     public TextComponent generateHelpMessage(S source) {
         List<List<TreeCommand<S>>> branches = this.getBase().getBranches(source);
-        TextComponent helpMessage = Texts.headline(this.getBase().getName().toUpperCase()).append(Component.newline());
+        TextComponent helpMessage = Component.newline()
+            .append(Texts.headline(this.getBase().getName().toUpperCase()).append(Component.newline()));
         for (List<TreeCommand<S>> branch : branches) {
-            StringBuilder branchCommand;
+            StringBuilder branchCommand = new StringBuilder("/");
             TextComponent branchMessage = Texts.primary("/");
-            branchMessage = branchMessage.append(Texts.primary(branch.get(0).getName()));
-            branchCommand = new StringBuilder("/" + branch.get(0).getName());
-            for (int i = 1; i < branch.size(); i++) {
+            for (int i = 0; i < branch.size(); i++) {
                 TreeCommand<S> treeCommand = branch.get(i);
-                branchMessage = branchMessage.append(Component.space()).append(treeCommand.getHelpComponent());
-                branchCommand.append(" ").append(treeCommand.getName());
+                TextComponent treeCommandMessage = treeCommand.getHelpComponent().color(i == 0 ? Colors.PRIMARY : Colors.INFERIOR);
+                treeCommandMessage = treeCommandMessage.hoverEvent(HoverEvent.showText(treeCommand.getDescription()));
+                branchMessage = branchMessage.append(treeCommandMessage).append(Component.space());
+                branchCommand.append(treeCommand.getName()).append(" ");
             }
             branchMessage = branchMessage.clickEvent(ClickEvent.suggestCommand(branchCommand.toString()));
-            TextComponent lastDescription = this.getLastDescription(branch);
-            if (lastDescription != null) {
-                branchMessage = branchMessage.hoverEvent(HoverEvent.showText(lastDescription));
-            }
             helpMessage = helpMessage.append(branchMessage.append(Component.newline()));
         }
         return helpMessage;
-    }
-
-    public TextComponent getLastDescription(List<TreeCommand<S>> branch) {
-        for (TreeCommand<S> treeCommand : branch) {
-            if (treeCommand.getDescription() != null) return treeCommand.getDescription();
-        }
-        return null;
     }
 
 }
