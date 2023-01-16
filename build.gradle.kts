@@ -1,4 +1,4 @@
-group = "de.placeblock.commandapi"
+group = "de.placeblock"
 version = "2.0.0a"
 description = "API for an easier use of Commands"
 

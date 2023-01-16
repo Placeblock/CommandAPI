@@ -95,8 +95,11 @@ public abstract class Command<S> {
 
         if (wrongInformation.startsWith(" ") && !wrongInformation.substring(1).contains(" ")) {
             List<String> suggestions = new ArrayList<>();
+            context.getReader().skip();
             for (TreeCommand<S> child : lastParsedCommand.getChildren()) {
+                int cursor = context.getReader().getCursor();
                 suggestions.addAll(child.getSuggestions(context));
+                context.getReader().setCursor(cursor);
             }
             return suggestions;
         }

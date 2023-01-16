@@ -35,7 +35,6 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
 
     @Override
     public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, E> command) {
-        context.getReader().skip();
         String partial = context.getReader().readUnquotedString();
         ArrayList<String> suggestions = new ArrayList<>();
         for (E enumValue : this.enumValues) {
