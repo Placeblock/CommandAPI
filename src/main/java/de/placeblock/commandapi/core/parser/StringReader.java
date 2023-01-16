@@ -1,4 +1,4 @@
-package de.placeblock.commandapi.core.util;
+package de.placeblock.commandapi.core.parser;
 
 
 import de.placeblock.commandapi.core.exception.CommandException;

@@ -39,19 +39,19 @@ public abstract class TreeCommand<S> {
         context.addParsedCommand(this);
 
         // Only move forward if we haven't reached the end already
-        if (context.getCursor() + 1 >= context.getText().length()) return true;
+        if (context.getReader().canRead(1)) return true;
 
         // Parse Children
         for (TreeCommand<S> child : this.children) {
-            int oldcursor = context.getCursor();
+            int oldcursor = context.getReader().getCursor();
 
             // Skip white space
-            context.setCursor(context.getCursor() + 1);
+            context.getReader().skip();
 
             if (child.parseRecursive(context)) {
                 return true;
             } else {
-                context.setCursor(oldcursor);
+                context.getReader().setCursor(oldcursor);
             }
         }
         return true;

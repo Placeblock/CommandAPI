@@ -1,7 +1,6 @@
 package de.placeblock.commandapi.core.parser;
 
 import de.placeblock.commandapi.core.exception.CommandException;
-import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +18,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ParseContext<S> {
 
-    private final String text;
+    private final StringReader reader;
     private final S source;
     private final Map<String, Object> parameters = new HashMap<>();
     @Setter
     private Map<TreeCommand<S>, CommandException> errors = new HashMap<>();
     @Setter
     private List<TreeCommand<S>> parsedCommands = new ArrayList<>();
-    @Setter
-    private int cursor = 0;
 
     public TreeCommand<S> getLastParsedCommand() {
         if (this.parsedCommands.size() == 0) return null;

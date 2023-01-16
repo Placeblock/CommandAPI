@@ -1,7 +1,6 @@
 package de.placeblock.commandapi.core.tree;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.util.Util;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
@@ -26,22 +25,16 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
 
     @Override
     boolean parse(ParseContext<S> context) {
-        if (context.getText().length() < context.getCursor()+this.getName().length()) {
+        if (context.getReader().getRemainingLength() > this.getName().length()) {
             return false;
         }
-        int nextWordIndex = Util.readWord(context);
-        if (nextWordIndex == 0) return false;
-        String nextWord = context.getText().substring(context.getCursor(), nextWordIndex);
-        if (nextWord.equalsIgnoreCase(this.getName())) {
-            context.setCursor(nextWordIndex);
-            return true;
-        }
-        return false;
+        String nextWord = context.getReader().readUnquotedString();
+        return nextWord.equalsIgnoreCase(this.getName());
     }
 
     @Override
     public List<String> getSuggestions(ParseContext<S> context) {
-        if (!this.getName().startsWith(context.getText().substring(context.getCursor()).trim())
+        if (!this.getName().startsWith(context.getReader().getRemaining().trim())
             || this.hasNoPermission(context.getSource())) {
             return new ArrayList<>();
         }

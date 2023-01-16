@@ -6,13 +6,13 @@ import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
+import de.placeblock.commandapi.core.parser.StringReader;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.TextDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ public abstract class Command<S> {
     public abstract void sendMessage(S source, TextComponent message);
 
     public ParseContext<S> parse(String text, S source) {
-        ParseContext<S> parseContext = new ParseContext<>(text, source);
+        ParseContext<S> parseContext = new ParseContext<>(new StringReader(text), source);
         this.base.parseRecursive(parseContext);
         return parseContext;
     }
@@ -58,7 +58,7 @@ public abstract class Command<S> {
                     return;
                 }
             }
-            if (context.getText().substring(context.getCursor()).equals("") && lastParsedCommand.getRun() != null) {
+            if (context.getReader().getRemaining().equals("") && lastParsedCommand.getRun() != null) {
                 lastParsedCommand.getRun().accept(context);
                 return;
             }
@@ -67,12 +67,11 @@ public abstract class Command<S> {
     }
 
     public List<String> getSuggestions(ParseContext<S> context) {
-        String text = context.getText();
         TreeCommand<S> lastParsedCommand = context.getLastParsedCommand();
         if (lastParsedCommand == null) {
             return this.base.getSuggestions(context);
         }
-        String wrongInformation = text.substring(context.getCursor());
+        String wrongInformation = context.getReader().getRemaining();
         if (wrongInformation.equals("") && lastParsedCommand instanceof ParameterTreeCommand<S,?> parameterTreeCommand) {
             return parameterTreeCommand.getSuggestions(context);
         }
