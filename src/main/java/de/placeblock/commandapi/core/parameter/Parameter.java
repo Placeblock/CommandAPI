@@ -1,7 +1,9 @@
 package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -9,8 +11,8 @@ import java.util.List;
  */
 public interface Parameter<S, T> {
 
-    T parse(ParseContext<S> context);
+    T parse(ParseContext<S> context, ParameterTreeCommand<S, T> command);
 
-    List<String> getSuggestions(ParseContext<S> context);
+    List<String> getSuggestions(ParseContext<S> context, @Nullable ParameterTreeCommand<S, T> command);
 
 }

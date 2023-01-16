@@ -2,9 +2,11 @@ package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.Util;
 import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import io.schark.design.texts.Texts;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ import java.util.List;
 public class IntegerParameter<S> implements Parameter<S, Integer> {
 
     @Override
-    public Integer parse(ParseContext<S> context) {
+    public Integer parse(ParseContext<S> context, ParameterTreeCommand<S, Integer> command) {
         int nextWordIndex = Util.readWord(context);
         String integerWord = context.getText().substring(context.getCursor(), nextWordIndex);
         try {
@@ -22,14 +24,19 @@ public class IntegerParameter<S> implements Parameter<S, Integer> {
             context.setCursor(nextWordIndex);
             return number;
         } catch (NumberFormatException ignored) {
-            context.setError(Texts.inferior("Du musst eine <color:negative>Zahl angeben"));
+            context.getErrors().put(this, Texts.inferior("Du musst eine <color:negative>Zahl angeben"));
         }
         return null;
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> context) {
-        return List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+    public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, Integer> command) {
+        List<String> suggestions = new ArrayList<>();
+        Integer parsedParameter = command != null ? context.getParameter(command.getName(), Integer.class) : null;
+        for (int i = 0; i < 10; i++) {
+            suggestions.add((parsedParameter != null ? parsedParameter.toString() : "") + i);
+        }
+        return suggestions;
     }
 
 }

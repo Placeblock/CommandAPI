@@ -2,7 +2,9 @@ package de.placeblock.commandapi;
 
 import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.parameter.IntegerParameter;
+import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
+import de.placeblock.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
 import net.kyori.adventure.text.TextComponent;
 
 /**
@@ -16,16 +18,26 @@ public class ParseTestCommand extends Command<String> {
     @Override
     public LiteralTreeCommandBuilder<String> generateCommand(LiteralTreeCommandBuilder<String> builder) {
         return builder
-            .literal("add", addCommand -> addCommand
+        .then(
+            literal("add")
+                .run(ctx -> {
+
+                })
+        ).then(
+            literal("remove").then(
+                parameter("amount", new IntegerParameter<>())
                 .run(ctx -> {
 
                 }))
-            .literal("remove", addCommand -> addCommand
-                .parameter("amount", new IntegerParameter<>(), amountParameter -> amountParameter
-                    .run(ctx -> {
-
-                    }))
         );
+    }
+
+    private static LiteralTreeCommandBuilder<String> literal(String name) {
+        return new LiteralTreeCommandBuilder<>(name);
+    }
+
+    private static ParameterTreeCommandBuilder<String, ?> parameter(String name, Parameter<String, ?> parameter) {
+        return new ParameterTreeCommandBuilder<>(name, parameter);
     }
 
     @Override

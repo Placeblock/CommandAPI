@@ -45,8 +45,9 @@ public abstract class Command<S> {
     }
 
     public void execute(ParseContext<S> context) {
-        if (context.getError() != null) {
-            this.sendMessage(context.getSource(), context.getError());
+        TextComponent lastParsedError = context.getLastParsedError();
+        if (lastParsedError != null) {
+            this.sendMessage(context.getSource(), lastParsedError);
             return;
         }
         TreeCommand<S> lastParsedCommand = context.getLastParsedCommand();
@@ -57,21 +58,24 @@ public abstract class Command<S> {
         }
     }
 
-    public List<String> getSuggestions(ParseContext<S> parseContext) {
-        if (parseContext.getError() != null) return new ArrayList<>();
-        String text = parseContext.getText();
-        TreeCommand<S> lastParsedCommand = parseContext.getLastParsedCommand();
+    public List<String> getSuggestions(ParseContext<S> context) {
+        String text = context.getText();
+        TreeCommand<S> lastParsedCommand = context.getLastParsedCommand();
         if (lastParsedCommand == null) {
-            return this.base.getSuggestions(parseContext);
+            return this.base.getSuggestions(context);
         }
-        String wrongInformation = text.substring(parseContext.getCursor());
+        String wrongInformation = text.substring(context.getCursor());
         if (wrongInformation.equals("") && lastParsedCommand instanceof ParameterTreeCommand<S,?> parameterTreeCommand) {
-            return parameterTreeCommand.getSuggestions(parseContext);
+            return parameterTreeCommand.getSuggestions(context);
         }
         if (wrongInformation.startsWith(" ") && !wrongInformation.substring(1).contains(" ")) {
             List<String> suggestions = new ArrayList<>();
             for (TreeCommand<S> child : lastParsedCommand.getChildren()) {
-                suggestions.addAll(child.getSuggestions(parseContext));
+                if (child instanceof ParameterTreeCommand<S,?> parameterTreeCommand
+                    && context.getErrors().containsKey(parameterTreeCommand.getParameter())) {
+                    continue;
+                }
+                suggestions.addAll(child.getSuggestions(context));
             }
             return suggestions;
         }
@@ -87,8 +91,10 @@ public abstract class Command<S> {
             branchMessage = branchMessage.append(Texts.primary(branch.get(0).getName()));
             branchCommand = new StringBuilder("/" + branch.get(0).getName());
             for (int i = 1; i < branch.size(); i++) {
-                branchMessage = branchMessage.append(Texts.inferior(" " + branch.get(i).getName()));
-                branchCommand.append(branch.get(i).getName());
+                TreeCommand<S> treeCommand = branch.get(i);
+                boolean isParam = treeCommand instanceof ParameterTreeCommand<S, ?>;
+                branchMessage = branchMessage.append(Texts.inferior(" " + (isParam ? "<" : "") + treeCommand.getName() + (isParam ? ">" : "")));
+                branchCommand.append(" ").append(treeCommand.getName());
             }
             branchMessage = branchMessage.clickEvent(ClickEvent.suggestCommand(branchCommand.toString()));
             TextComponent lastDescription = this.getLastDescription(branch);

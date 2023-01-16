@@ -1,7 +1,6 @@
 package de.placeblock.commandapi.core.tree.builder;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import lombok.Getter;
@@ -28,17 +27,8 @@ public abstract class TreeCommandBuilder<S, CT extends TreeCommandBuilder<S, CT>
 
     protected abstract CT getThis();
 
-    public CT literal(String name, Consumer<LiteralTreeCommandBuilder<S>> callback) {
-        LiteralTreeCommandBuilder<S> literalTreeCommandBuilder = new LiteralTreeCommandBuilder<>(name);
-        this.children.add(literalTreeCommandBuilder);
-        callback.accept(literalTreeCommandBuilder);
-        return getThis();
-    }
-
-    public <T> CT parameter(String name, Parameter<S, T> parameter, Consumer<ParameterTreeCommandBuilder<S, T>> callback) {
-        ParameterTreeCommandBuilder<S,  T> parameterTreeCommandBuilder = new ParameterTreeCommandBuilder<>(name, parameter);
-        this.children.add(parameterTreeCommandBuilder);
-        callback.accept(parameterTreeCommandBuilder);
+    public CT then(TreeCommandBuilder<S, ?> builder) {
+        this.children.add(builder);
         return getThis();
     }
 

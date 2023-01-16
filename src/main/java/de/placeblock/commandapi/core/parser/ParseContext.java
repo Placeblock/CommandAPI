@@ -1,5 +1,7 @@
 package de.placeblock.commandapi.core.parser;
 
+import de.placeblock.commandapi.core.parameter.Parameter;
+import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ public class ParseContext<S> {
     private final S source;
     private final Map<String, Object> parameters = new HashMap<>();
     @Setter
-    private TextComponent error;
+    private Map<Parameter<S, ?>, TextComponent> errors = new HashMap<>();
     @Setter
     private TreeCommand<S> lastParsedCommand;
     @Setter
@@ -33,6 +35,14 @@ public class ParseContext<S> {
 
     public <T> T getParameter(String name, Class<T> type) {
         return type.cast(this.parameters.get(name));
+    }
+
+    public TextComponent getLastParsedError() {
+        if (this.lastParsedCommand == null) return null;
+        if (this.lastParsedCommand instanceof ParameterTreeCommand<S, ?> parameterTreeCommand && this.getErrors().containsKey(parameterTreeCommand.getParameter())) {
+            return this.getErrors().get(parameterTreeCommand.getParameter());
+        }
+        return null;
     }
 
 }

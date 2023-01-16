@@ -13,7 +13,7 @@ public class BuildTest {
     @Test()
     public void buildTest() {
         TreeCommand<String> parseTestCommand = new BuildTestCommand().getBase();
-        assert parseTestCommand.getChildren().size() == 1;
+        assert parseTestCommand.getChildren().size() == 2;
         assert parseTestCommand.getName().equals("testcommandbuild");
         assert parseTestCommand.getDescription() == null;
         assert parseTestCommand.getPermission() == null;

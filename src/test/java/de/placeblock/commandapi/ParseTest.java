@@ -47,7 +47,7 @@ public class ParseTest {
         context = parseTestCommand.parse("", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).contains("testcommandparse");
         context = parseTestCommand.parse("testcommandparse remove 123", "TestPlayer");
-        assert parseTestCommand.getSuggestions(context).contains("3");
+        assert parseTestCommand.getSuggestions(context).contains("1231");
         assert context.getParameter("amount", Integer.class) == 123;
     }
 

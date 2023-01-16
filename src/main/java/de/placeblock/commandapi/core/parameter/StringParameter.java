@@ -1,6 +1,7 @@
 package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import lombok.Getter;
 import org.bukkit.command.CommandException;
 
@@ -23,12 +24,12 @@ public class StringParameter<S> implements Parameter<S, String> {
     }
 
     @Override
-    public String parse(ParseContext<S> context) throws CommandException {
+    public String parse(ParseContext<S> context, ParameterTreeCommand<S, String> command) throws CommandException {
         return null;
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> context) {
+    public List<String> getSuggestions(ParseContext<S> context , ParameterTreeCommand<S, String> command) {
         return new ArrayList<>();
     }
 }

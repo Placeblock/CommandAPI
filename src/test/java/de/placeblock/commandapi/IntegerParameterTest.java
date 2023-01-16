@@ -14,7 +14,7 @@ public class IntegerParameterTest {
         IntegerParameter<String> integerParameter = new IntegerParameter<>();
         ParseContext<String> parseContext = new ParseContext<>("awdawd 123   ", "TestSource");
         parseContext.setCursor(7);
-        Integer result = integerParameter.parse(parseContext);
+        Integer result = integerParameter.parse(parseContext, null);
         System.out.println(result);
         assert result != 0;
     }
