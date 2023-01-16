@@ -26,6 +26,10 @@ public class ParseContext<S> {
     @Setter
     private List<TreeCommand<S>> parsedCommands = new ArrayList<>();
 
+    public ParseContext(String text, S source) {
+        this(new StringReader(text), source);
+    }
+
     public TreeCommand<S> getLastParsedCommand() {
         if (this.parsedCommands.size() == 0) return null;
         return this.parsedCommands.get(this.parsedCommands.size() - 1);

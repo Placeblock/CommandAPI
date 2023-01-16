@@ -72,9 +72,12 @@ public abstract class Command<S> {
             return this.base.getSuggestions(context);
         }
         String wrongInformation = context.getReader().getRemaining();
+
+        // We want to display autocompletion of parameters even if they are valid
         if (wrongInformation.equals("") && lastParsedCommand instanceof ParameterTreeCommand<S,?> parameterTreeCommand) {
             return parameterTreeCommand.getSuggestions(context);
         }
+
         if (wrongInformation.startsWith(" ") && !wrongInformation.substring(1).contains(" ")) {
             List<String> suggestions = new ArrayList<>();
             for (TreeCommand<S> child : lastParsedCommand.getChildren()) {

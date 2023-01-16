@@ -16,11 +16,11 @@ public class ParseTest {
     public void testParse() {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         ParseContext<String> context = parseTestCommand.parse("testcommandparse remove 22 ", "TestPlayer");
-        assert context.getCursor() == 26;
+        assert context.getReader().getCursor() == 26;
         assert context.getParsedCommands().size() != 0;
         assert context.getLastParsedCommand() instanceof ParameterTreeCommand<?,?>;
         context = parseTestCommand.parse("testcommandparse", "TestPlayer");
-        assert context.getCursor() == 16;
+        assert context.getReader().getCursor() == 16;
         assert context.getParsedCommands().size() != 0;
         assert context.getLastParsedCommand() instanceof LiteralTreeCommand<String>;
     }
@@ -31,12 +31,16 @@ public class ParseTest {
         ParseContext<String> context = parseTestCommand.parse("testcommandparse remove", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).isEmpty();
         context = parseTestCommand.parse("testcommandparse remove  ", "TestPlayer");
+        System.out.println(context.getReader().debugString());
         assert parseTestCommand.getSuggestions(context).isEmpty();
         context = parseTestCommand.parse("testcommandparse add awd", "TestPlayer");
+        System.out.println(context.getReader().debugString());
         assert parseTestCommand.getSuggestions(context).isEmpty();
         context = parseTestCommand.parse("testcommandparse remove awd", "TestPlayer");
+        System.out.println(context.getReader().debugString());
         assert parseTestCommand.getSuggestions(context).isEmpty();
         context = parseTestCommand.parse("testcommandparse remove ", "TestPlayer");
+        System.out.println(context.getReader().debugString());
         assert parseTestCommand.getSuggestions(context).contains("0");
         context = parseTestCommand.parse("testcommandparse rem", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).contains("remove");

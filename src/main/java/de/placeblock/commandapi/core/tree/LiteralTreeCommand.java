@@ -25,7 +25,7 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
 
     @Override
     boolean parse(ParseContext<S> context) {
-        if (context.getReader().getRemainingLength() > this.getName().length()) {
+        if (context.getReader().getRemainingLength() < this.getName().length()) {
             return false;
         }
         String nextWord = context.getReader().readUnquotedString();

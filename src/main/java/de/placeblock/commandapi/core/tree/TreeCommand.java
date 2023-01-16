@@ -39,7 +39,7 @@ public abstract class TreeCommand<S> {
         context.addParsedCommand(this);
 
         // Only move forward if we haven't reached the end already
-        if (context.getReader().canRead(1)) return true;
+        if (!context.getReader().canRead(1)) return true;
 
         // Parse Children
         for (TreeCommand<S> child : this.children) {
