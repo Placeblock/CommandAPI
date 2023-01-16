@@ -1,9 +1,9 @@
-package de.placeblock.commandapi.util;
+package de.placeblock.commandapi.core.util;
 
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import de.placeblock.commandapi.core.exception.CommandException;
+import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import io.schark.design.texts.Texts;
-import org.bukkit.command.CommandException;
 
 @SuppressWarnings("unused")
 public class StringReader {

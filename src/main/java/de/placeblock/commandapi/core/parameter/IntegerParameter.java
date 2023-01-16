@@ -1,6 +1,7 @@
 package de.placeblock.commandapi.core.parameter;
 
-import de.placeblock.commandapi.util.Util;
+import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.util.Util;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import io.schark.design.texts.Texts;
@@ -24,7 +25,7 @@ public class IntegerParameter<S> implements Parameter<S, Integer> {
             context.setCursor(nextWordIndex);
             return number;
         } catch (NumberFormatException ignored) {
-            context.getErrors().put(this, Texts.inferior("Du musst eine <color:negative>Zahl angeben"));
+            context.getErrors().put(command, new CommandSyntaxException(Texts.inferior("Du musst eine <color:negative>Zahl angeben")));
         }
         return null;
     }

@@ -1,6 +1,7 @@
 package de.placeblock.commandapi.core.tree;
 
 import de.placeblock.commandapi.core.Command;
+import de.placeblock.commandapi.core.exception.CommandNoPermissionException;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +29,14 @@ public abstract class TreeCommand<S> {
 
     public boolean parseRecursive(ParseContext<S> context) {
         // Check Permissions
-        if (this.hasNoPermission(context.getSource())) return false;
+        if (this.hasNoPermission(context.getSource())) {
+            context.addError(this, new CommandNoPermissionException());
+            return false;
+        }
 
         // Parse the current Command
         if (!this.parse(context)) return false;
+        context.addParsedCommand(this);
 
         // Only move forward if we haven't reached the end already
         if (context.getCursor() + 1 >= context.getText().length()) return true;

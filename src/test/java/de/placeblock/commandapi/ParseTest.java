@@ -17,9 +17,11 @@ public class ParseTest {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         ParseContext<String> context = parseTestCommand.parse("testcommandparse remove 22 ", "TestPlayer");
         assert context.getCursor() == 26;
+        assert context.getParsedCommands().size() != 0;
         assert context.getLastParsedCommand() instanceof ParameterTreeCommand<?,?>;
         context = parseTestCommand.parse("testcommandparse", "TestPlayer");
         assert context.getCursor() == 16;
+        assert context.getParsedCommands().size() != 0;
         assert context.getLastParsedCommand() instanceof LiteralTreeCommand<String>;
     }
 

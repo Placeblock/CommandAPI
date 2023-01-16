@@ -7,6 +7,7 @@ import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -28,7 +29,6 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
         T result = this.parameter.parse(context, this);
         if (result != null) {
             context.addParameter(this.getName(), result);
-            context.setLastParsedCommand(this);
             return true;
         }
         return false;
@@ -36,6 +36,9 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
 
     @Override
     public List<String> getSuggestions(ParseContext<S> context) {
+        if (context.getErrors().containsKey(this) || this.hasNoPermission(context.getSource())) {
+            return new ArrayList<>();
+        }
         return this.parameter.getSuggestions(context, this);
     }
 

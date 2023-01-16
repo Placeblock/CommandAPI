@@ -1,5 +1,6 @@
 package de.placeblock.commandapi.core;
 
+import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
@@ -11,9 +12,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.TextDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author: Placeblock
@@ -45,17 +48,22 @@ public abstract class Command<S> {
     }
 
     public void execute(ParseContext<S> context) {
-        TextComponent lastParsedError = context.getLastParsedError();
-        if (lastParsedError != null) {
-            this.sendMessage(context.getSource(), lastParsedError);
-            return;
-        }
+        S source = context.getSource();
         TreeCommand<S> lastParsedCommand = context.getLastParsedCommand();
-        if (lastParsedCommand != null && context.getText().substring(context.getCursor()).equals("") && lastParsedCommand.getRun() != null) {
-            lastParsedCommand.getRun().accept(context);
-        } else {
-            this.sendMessage(context.getSource(), this.generateHelpMessage(context.getSource()));
+        if (lastParsedCommand != null) {
+            Map<TreeCommand<S>, CommandException> errors = context.getErrors();
+            for (TreeCommand<S> errTreeCommand : errors.keySet()) {
+                if (lastParsedCommand.getChildren().contains(errTreeCommand)) {
+                   this.sendMessage(source, errors.get(errTreeCommand).getTextMessage());
+                    return;
+                }
+            }
+            if (context.getText().substring(context.getCursor()).equals("") && lastParsedCommand.getRun() != null) {
+                lastParsedCommand.getRun().accept(context);
+                return;
+            }
         }
+        this.sendMessage(source, this.generateHelpMessage(source));
     }
 
     public List<String> getSuggestions(ParseContext<S> context) {
@@ -71,10 +79,6 @@ public abstract class Command<S> {
         if (wrongInformation.startsWith(" ") && !wrongInformation.substring(1).contains(" ")) {
             List<String> suggestions = new ArrayList<>();
             for (TreeCommand<S> child : lastParsedCommand.getChildren()) {
-                if (child instanceof ParameterTreeCommand<S,?> parameterTreeCommand
-                    && context.getErrors().containsKey(parameterTreeCommand.getParameter())) {
-                    continue;
-                }
                 suggestions.addAll(child.getSuggestions(context));
             }
             return suggestions;
@@ -92,7 +96,7 @@ public abstract class Command<S> {
             branchCommand = new StringBuilder("/" + branch.get(0).getName());
             for (int i = 1; i < branch.size(); i++) {
                 TreeCommand<S> treeCommand = branch.get(i);
-                branchMessage = branchMessage.append(treeCommand.getHelpComponent());
+                branchMessage = branchMessage.append(Component.space()).append(treeCommand.getHelpComponent());
                 branchCommand.append(" ").append(treeCommand.getName());
             }
             branchMessage = branchMessage.clickEvent(ClickEvent.suggestCommand(branchCommand.toString()));
