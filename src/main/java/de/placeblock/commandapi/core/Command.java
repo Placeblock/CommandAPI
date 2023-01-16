@@ -18,6 +18,8 @@ import net.kyori.adventure.text.event.HoverEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Author: Placeblock
@@ -28,6 +30,7 @@ public abstract class Command<S> {
     private final LiteralTreeCommand<S> base;
     private final TextComponent prefix;
     private final boolean async;
+    private final ExecutorService threadPool;
 
     public Command(String label, boolean async) {
         TreeCommand<S> baseCommand = this.generateCommand(new LiteralTreeCommandBuilder<>(label)).build(this);
@@ -37,6 +40,11 @@ public abstract class Command<S> {
         this.base = literalTreeCommand;
         this.prefix = Texts.subPrefix(Texts.primary(this.base.getName())).append(Component.space());
         this.async = async;
+        if (this.async) {
+            this.threadPool = Executors.newFixedThreadPool(4);
+        } else {
+            this.threadPool = null;
+        }
     }
 
     public abstract LiteralTreeCommandBuilder<S> generateCommand(LiteralTreeCommandBuilder<S> builder);
@@ -63,7 +71,7 @@ public abstract class Command<S> {
             }
             if (context.getReader().getRemaining().equals("") && lastParsedCommand.getRun() != null) {
                 if (this.isAsync()) {
-                    new Thread(() -> lastParsedCommand.getRun().accept(context));
+                    this.threadPool.execute(() -> lastParsedCommand.getRun().accept(context));
                 } else {
                     lastParsedCommand.getRun().accept(context);
                 }
