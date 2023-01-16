@@ -25,11 +25,14 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
 
     @Override
     boolean parse(ParseContext<S> context) {
-        if (context.getReader().getRemainingLength() < this.getName().length()) {
+        int remainingLength = context.getReader().getRemainingLength();
+        if (remainingLength < this.getName().length() &&
+            !this.aliases.stream().map(alias -> remainingLength < alias.length()).toList().contains(false)) {
             return false;
         }
         String nextWord = context.getReader().readUnquotedString();
-        return nextWord.equalsIgnoreCase(this.getName());
+        return nextWord.equalsIgnoreCase(this.getName()) ||
+            this.aliases.stream().map(alias -> alias.equalsIgnoreCase(nextWord)).toList().size() > 0;
     }
 
     @Override
