@@ -56,4 +56,9 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
     public TextComponent getHelpComponent() {
         return Texts.inferior("[" + this.getName() + "]");
     }
+
+    @Override
+    public TextComponent getHelpExtraDescription() {
+        return null;
+    }
 }

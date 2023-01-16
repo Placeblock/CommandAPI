@@ -37,12 +37,12 @@ public abstract class TreeCommandBuilder<S, CT extends TreeCommandBuilder<S, CT>
         return getThis();
     }
 
-    public CT description(TextComponent description) {
+    public CT withDescription(TextComponent description) {
         this.description = description;
         return getThis();
     }
 
-    public CT permission(String permission) {
+    public CT withPermission(String permission) {
         this.permission = permission;
         return getThis();
     }

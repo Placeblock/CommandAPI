@@ -47,4 +47,10 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
     public TextComponent getHelpComponent() {
         return Texts.inferior(this.getName());
     }
+
+    @Override
+    public TextComponent getHelpExtraDescription() {
+        if (this.aliases.size() == 0) return null;
+        return Texts.inferior("Alias: " + String.join(", ", this.aliases));
+    }
 }

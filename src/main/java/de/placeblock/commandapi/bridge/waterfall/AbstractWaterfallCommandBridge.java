@@ -42,10 +42,10 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         }
     }
 
-    public AbstractWaterfallCommandBridge(PL plugin, String label) {
+    public AbstractWaterfallCommandBridge(PL plugin, String label, boolean async) {
         super(label);
         this.plugin = plugin;
-        this.command = new de.placeblock.commandapi.core.Command<>(label) {
+        this.command = new de.placeblock.commandapi.core.Command<>(label, async) {
             @Override
             public LiteralTreeCommandBuilder<WaterfallCommandSource<P>> generateCommand(LiteralTreeCommandBuilder<WaterfallCommandSource<P>> builder) {
                 return AbstractWaterfallCommandBridge.this.generateCommand(builder);

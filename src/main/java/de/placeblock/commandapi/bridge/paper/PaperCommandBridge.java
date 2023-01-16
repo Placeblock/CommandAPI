@@ -9,8 +9,8 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 @SuppressWarnings("unused")
 public abstract class PaperCommandBridge<PL extends JavaPlugin> extends AbstractPaperCommandBridge<PL, Player> {
-    public PaperCommandBridge(PL plugin, String label) {
-        super(plugin, label);
+    public PaperCommandBridge(PL plugin, String label, boolean async) {
+        super(plugin, label, async);
     }
 
     @Override

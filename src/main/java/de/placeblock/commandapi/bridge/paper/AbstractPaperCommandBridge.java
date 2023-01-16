@@ -23,11 +23,11 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
     @Getter
     private final PL plugin;
 
-    public AbstractPaperCommandBridge(PL plugin, String label) {
+    public AbstractPaperCommandBridge(PL plugin, String label, boolean async) {
         super(label);
         this.plugin = plugin;
 
-        this.command = new de.placeblock.commandapi.core.Command<>(label) {
+        this.command = new de.placeblock.commandapi.core.Command<>(label, async) {
             @Override
             public LiteralTreeCommandBuilder<PaperCommandSource<P>> generateCommand(LiteralTreeCommandBuilder<PaperCommandSource<P>> builder) {
                 return AbstractPaperCommandBridge.this.generateCommand(builder);

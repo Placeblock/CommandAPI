@@ -13,7 +13,7 @@ import static de.placeblock.commandapi.core.parameter.IntegerParameter.integer;
  */
 public class ParseTestCommand extends Command<String> {
     public ParseTestCommand() {
-        super("testcommandparse");
+        super("testcommandparse", false);
     }
 
     @Override

@@ -105,7 +105,10 @@ public abstract class Command<S> {
             for (int i = 0; i < branch.size(); i++) {
                 TreeCommand<S> treeCommand = branch.get(i);
                 TextComponent treeCommandMessage = treeCommand.getHelpComponent().color(i == 0 ? Colors.PRIMARY : Colors.INFERIOR);
-                treeCommandMessage = treeCommandMessage.hoverEvent(HoverEvent.showText(treeCommand.getDescription()));
+                TextComponent description = treeCommand.getDescription();
+                TextComponent extraDescription = treeCommand.getHelpExtraDescription();
+                if (extraDescription != null) description = description.append(Component.newline()).append(extraDescription);
+                treeCommandMessage = treeCommandMessage.hoverEvent(HoverEvent.showText(description));
                 branchMessage = branchMessage.append(treeCommandMessage).append(Component.space());
                 branchCommand.append(treeCommand.getName()).append(" ");
             }

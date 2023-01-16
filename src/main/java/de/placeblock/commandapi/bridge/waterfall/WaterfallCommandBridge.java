@@ -10,8 +10,8 @@ import net.md_5.bungee.api.plugin.Plugin;
 @SuppressWarnings("unused")
 public abstract class WaterfallCommandBridge<PL extends Plugin> extends AbstractWaterfallCommandBridge<PL, ProxiedPlayer> {
 
-    public WaterfallCommandBridge(PL plugin, String label) {
-        super(plugin, label);
+    public WaterfallCommandBridge(PL plugin, String label, boolean async) {
+        super(plugin, label, async);
     }
 
     @Override

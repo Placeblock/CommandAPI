@@ -24,6 +24,11 @@ public class LiteralTreeCommandBuilder<S> extends TreeCommandBuilder<S, LiteralT
         return this;
     }
 
+    public LiteralTreeCommandBuilder<S> withAlias(String alias) {
+        this.aliases.add(alias);
+        return this.getThis();
+    }
+
     @Override
     public TreeCommand<S> build(Command<S> command) {
         return new LiteralTreeCommand<>(

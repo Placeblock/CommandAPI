@@ -15,7 +15,7 @@ import static de.placeblock.commandapi.core.parameter.IntegerParameter.integer;
 public class BuildTestCommand extends Command<String> {
 
     public BuildTestCommand() {
-        super("testcommandbuild");
+        super("testcommandbuild", false);
     }
 
     @Override
