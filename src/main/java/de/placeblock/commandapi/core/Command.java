@@ -9,6 +9,8 @@ import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,16 +80,31 @@ public abstract class Command<S> {
 
     public TextComponent generateHelpMessage(S source) {
         List<List<TreeCommand<S>>> branches = this.getBase().getBranches(source);
-        TextComponent helpMessage = Texts.headline(this.getBase().getName().toUpperCase());
+        TextComponent helpMessage = Texts.headline(this.getBase().getName().toUpperCase()).append(Component.newline());
         for (List<TreeCommand<S>> branch : branches) {
+            StringBuilder branchCommand;
             TextComponent branchMessage = Texts.primary("/");
             branchMessage = branchMessage.append(Texts.primary(branch.get(0).getName()));
+            branchCommand = new StringBuilder("/" + branch.get(0).getName());
             for (int i = 1; i < branch.size(); i++) {
                 branchMessage = branchMessage.append(Texts.inferior(" " + branch.get(i).getName()));
+                branchCommand.append(branch.get(i).getName());
+            }
+            branchMessage = branchMessage.clickEvent(ClickEvent.suggestCommand(branchCommand.toString()));
+            TextComponent lastDescription = this.getLastDescription(branch);
+            if (lastDescription != null) {
+                branchMessage = branchMessage.hoverEvent(HoverEvent.showText(lastDescription));
             }
             helpMessage = helpMessage.append(branchMessage.append(Component.newline()));
         }
         return helpMessage;
+    }
+
+    public TextComponent getLastDescription(List<TreeCommand<S>> branch) {
+        for (TreeCommand<S> treeCommand : branch) {
+            if (treeCommand.getDescription() != null) return treeCommand.getDescription();
+        }
+        return null;
     }
 
 }
