@@ -77,7 +77,6 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
-        plugin.getProxy().getPluginManager().registerCommand(this.plugin, this);
     }
 
     @Override
@@ -108,4 +107,13 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         return this.command.getSuggestions(parseResults);
     }
 
+    @Override
+    public void register() {
+        this.plugin.getProxy().getPluginManager().registerCommand(this.plugin, this);
+    }
+
+    @Override
+    public void unregister() {
+        this.plugin.getProxy().getPluginManager().unregisterCommand(this);
+    }
 }

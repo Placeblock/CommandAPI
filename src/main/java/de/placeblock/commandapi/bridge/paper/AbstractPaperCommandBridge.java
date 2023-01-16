@@ -7,6 +7,7 @@ import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -52,8 +53,6 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
         };
 
         this.setAliases(this.command.getBase().getAliases());
-
-        plugin.getServer().getCommandMap().register(label, "commandapi", this);
     }
 
 
@@ -80,4 +79,14 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
         return this.command.getSuggestions(parseResults);
     }
 
+    @Override
+    public void register() {
+        this.plugin.getServer().getCommandMap().register(this.getLabel(), "commandapi", this);
+    }
+
+    @Override
+    public void unregister() {
+        this.unregister(this.plugin.getServer().getCommandMap());
+        this.plugin.getServer().getCommandMap().getKnownCommands().remove("commandapi:" + this.getLabel());
+    }
 }
