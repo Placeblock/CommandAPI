@@ -1,4 +1,4 @@
-package de.placeblock.commandapi.core;
+package de.placeblock.commandapi.util;
 
 import de.placeblock.commandapi.core.parser.ParseContext;
 

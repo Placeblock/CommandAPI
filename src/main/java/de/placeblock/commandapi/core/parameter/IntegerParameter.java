@@ -1,6 +1,6 @@
 package de.placeblock.commandapi.core.parameter;
 
-import de.placeblock.commandapi.core.Util;
+import de.placeblock.commandapi.util.Util;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import io.schark.design.texts.Texts;

@@ -1,7 +1,7 @@
 package de.placeblock.commandapi.core.tree;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.Util;
+import de.placeblock.commandapi.util.Util;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
