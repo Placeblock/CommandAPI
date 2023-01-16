@@ -27,14 +27,16 @@ public abstract class Command<S> {
 
     private final LiteralTreeCommand<S> base;
     private final TextComponent prefix;
+    private final boolean async;
 
-    public Command(String label) {
+    public Command(String label, boolean async) {
         TreeCommand<S> baseCommand = this.generateCommand(new LiteralTreeCommandBuilder<>(label)).build(this);
         if (!(baseCommand instanceof LiteralTreeCommand<S> literalTreeCommand)) {
             throw new IllegalArgumentException("You can only use LiteralTreeCommandBuilder as root");
         }
         this.base = literalTreeCommand;
         this.prefix = Texts.subPrefix(Texts.primary(this.base.getName())).append(Component.space());
+        this.async = async;
     }
 
     public abstract LiteralTreeCommandBuilder<S> generateCommand(LiteralTreeCommandBuilder<S> builder);
@@ -60,7 +62,11 @@ public abstract class Command<S> {
                 }
             }
             if (context.getReader().getRemaining().equals("") && lastParsedCommand.getRun() != null) {
-                lastParsedCommand.getRun().accept(context);
+                if (this.isAsync()) {
+                    new Thread(() -> lastParsedCommand.getRun().accept(context));
+                } else {
+                    lastParsedCommand.getRun().accept(context);
+                }
                 return;
             }
         }
