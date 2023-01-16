@@ -31,16 +31,12 @@ public class ParseTest {
         ParseContext<String> context = parseTestCommand.parse("testcommandparse remove", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).isEmpty();
         context = parseTestCommand.parse("testcommandparse remove  ", "TestPlayer");
-        System.out.println(context.getReader().debugString());
         assert parseTestCommand.getSuggestions(context).isEmpty();
         context = parseTestCommand.parse("testcommandparse add awd", "TestPlayer");
-        System.out.println(context.getReader().debugString());
         assert parseTestCommand.getSuggestions(context).isEmpty();
         context = parseTestCommand.parse("testcommandparse remove awd", "TestPlayer");
-        System.out.println(context.getReader().debugString());
         assert parseTestCommand.getSuggestions(context).isEmpty();
         context = parseTestCommand.parse("testcommandparse remove ", "TestPlayer");
-        System.out.println(context.getReader().debugString());
         assert parseTestCommand.getSuggestions(context).contains("0");
         context = parseTestCommand.parse("testcommandparse rem", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).contains("remove");
@@ -52,9 +48,9 @@ public class ParseTest {
         assert parseTestCommand.getSuggestions(context).contains("testcommandparse");
         context = parseTestCommand.parse("", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).contains("testcommandparse");
-        context = parseTestCommand.parse("testcommandparse remove 123", "TestPlayer");
-        assert parseTestCommand.getSuggestions(context).contains("1231");
-        assert context.getParameter("amount", Integer.class) == 123;
+        context = parseTestCommand.parse("testcommandparse remove 10", "TestPlayer");
+        assert parseTestCommand.getSuggestions(context).contains("100");
+        assert context.getParameter("amount", Integer.class) == 10;
     }
 
 }

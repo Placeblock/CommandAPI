@@ -7,6 +7,8 @@ import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import de.placeblock.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
 import net.kyori.adventure.text.TextComponent;
 
+import static de.placeblock.commandapi.core.parameter.IntegerParameter.integer;
+
 /**
  * Author: Placeblock
  */
@@ -20,7 +22,7 @@ public class BuildTestCommand extends Command<String> {
     public LiteralTreeCommandBuilder<String> generateCommand(LiteralTreeCommandBuilder<String> builder) {
         return builder
         .then(
-            parameter("amount", new IntegerParameter<>())
+            parameter("amount", integer(0, 100))
         ).then(
             literal("test").then(
                 literal("test2")

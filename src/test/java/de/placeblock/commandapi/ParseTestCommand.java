@@ -1,11 +1,12 @@
 package de.placeblock.commandapi;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.parameter.IntegerParameter;
 import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import de.placeblock.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
 import net.kyori.adventure.text.TextComponent;
+
+import static de.placeblock.commandapi.core.parameter.IntegerParameter.integer;
 
 /**
  * Author: Placeblock
@@ -25,7 +26,7 @@ public class ParseTestCommand extends Command<String> {
                 })
         ).then(
             literal("remove").then(
-                parameter("amount", new IntegerParameter<>())
+                parameter("amount", integer(0, 105))
                 .run(ctx -> {
 
                 }))

@@ -12,7 +12,7 @@ public class IntegerParameterTest {
 
     @Test()
     public void integerParameterTest() throws CommandException {
-        IntegerParameter<String> integerParameter = new IntegerParameter<>();
+        IntegerParameter<String> integerParameter = new IntegerParameter<>(0, 100);
         ParseContext<String> parseContext = new ParseContext<>("awdawd 123   ", "TestSource");
         parseContext.getReader().setCursor(7);
         Integer result = integerParameter.parse(parseContext, null);
