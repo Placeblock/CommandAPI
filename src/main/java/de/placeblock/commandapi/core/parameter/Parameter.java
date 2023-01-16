@@ -16,4 +16,8 @@ public interface Parameter<S, T> {
 
     List<String> getSuggestions(ParseContext<S> context, @Nullable ParameterTreeCommand<S, T> command);
 
+    default List<String> startsWith(List<String> list, String partial) {
+        return list.stream().filter(item -> item.startsWith(partial)).toList();
+    }
+
 }
