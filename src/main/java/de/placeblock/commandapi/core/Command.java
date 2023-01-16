@@ -92,8 +92,7 @@ public abstract class Command<S> {
             branchCommand = new StringBuilder("/" + branch.get(0).getName());
             for (int i = 1; i < branch.size(); i++) {
                 TreeCommand<S> treeCommand = branch.get(i);
-                boolean isParam = treeCommand instanceof ParameterTreeCommand<S, ?>;
-                branchMessage = branchMessage.append(Texts.inferior(" " + (isParam ? "<" : "") + treeCommand.getName() + (isParam ? ">" : "")));
+                branchMessage = branchMessage.append(treeCommand.getHelpComponent());
                 branchCommand.append(" ").append(treeCommand.getName());
             }
             branchMessage = branchMessage.clickEvent(ClickEvent.suggestCommand(branchCommand.toString()));

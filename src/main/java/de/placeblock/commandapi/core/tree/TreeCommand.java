@@ -74,4 +74,6 @@ public abstract class TreeCommand<S> {
     }
 
     public abstract List<String> getSuggestions(ParseContext<S> context);
+
+    public abstract TextComponent getHelpComponent();
 }

@@ -3,6 +3,7 @@ package de.placeblock.commandapi.core.tree;
 import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.parser.ParseContext;
+import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 
@@ -36,5 +37,10 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
     @Override
     public List<String> getSuggestions(ParseContext<S> context) {
         return this.parameter.getSuggestions(context, this);
+    }
+
+    @Override
+    public TextComponent getHelpComponent() {
+        return Texts.inferior("[" + this.getName() + "]");
     }
 }
