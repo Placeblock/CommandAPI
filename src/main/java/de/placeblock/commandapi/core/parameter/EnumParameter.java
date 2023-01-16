@@ -18,6 +18,11 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
     private final Class<E> enumClass;
     private final E[] enumValues;
 
+    @SuppressWarnings("unused")
+    public static <E extends Enum<E>> EnumParameter<?, E> enumparam(Class<E> enumClass, E[] enumValues) {
+        return new EnumParameter<>(enumClass, enumValues);
+    }
+
     @Override
     public E parse(ParseContext<S> context, ParameterTreeCommand<S, E> command) throws CommandException {
         String word = context.getReader().readUnquotedString();
