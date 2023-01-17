@@ -3,6 +3,7 @@ package de.placeblock.commandapi.core.parameter;
 import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.parser.ParsedParameter;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import io.schark.design.texts.Texts;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,10 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
     }
 
     @Override
-    public E parse(ParseContext<S> context, ParameterTreeCommand<S, E> command) throws CommandException {
+    public ParsedParameter<?> parse(ParseContext<S> context, ParameterTreeCommand<S, E> command) throws CommandException {
         String word = context.getReader().readUnquotedString();
         try {
-            return Enum.valueOf(enumClass, word.toUpperCase());
+            return new ParsedParameter<>(Enum.valueOf(enumClass, word.toUpperCase()), word);
         } catch (IllegalArgumentException ex) {
             throw new CommandSyntaxException(Texts.inferior("Das Argument <color:primary>" + word + " <color:negative>existiert nicht<color:inferior>."));
         }
@@ -35,6 +36,7 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
 
     @Override
     public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, E> command) {
+        if (context.hasError(command) && !context.isParsedToEnd()) return new ArrayList<>();
         String partial = context.getReader().readUnquotedString();
         ArrayList<String> suggestions = new ArrayList<>();
         for (E enumValue : this.enumValues) {

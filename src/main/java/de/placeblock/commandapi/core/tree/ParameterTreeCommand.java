@@ -4,6 +4,7 @@ import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.parser.ParsedParameter;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
@@ -28,9 +29,9 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
     @Override
     boolean parse(ParseContext<S> context) {
         try {
-            T result = this.parameter.parse(context, this);
-            if (result != null) {
-                context.addParameter(this.getName(), result);
+            ParsedParameter<?> result = this.parameter.parse(context, this);
+            context.addParameter(this.getName(), result);
+            if (result.getParsed() != null) {
                 return true;
             }
         } catch (CommandException e) {
@@ -41,11 +42,10 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
 
     @Override
     public List<String> getSuggestions(ParseContext<S> context) {
-        // If therre is an error we only want to send an empty arraylist if we are not at the beginning of the parameter:
+        // If there is an error we only want to send an empty arraylist if we are not at the beginning of the parameter:
         // test command |012
         // This fails because it cannot parse an empty string to an integer.
-        if ((context.getErrors().containsKey(this) && !context.getReader().getRemaining().trim().equals(""))
-            || this.hasNoPermission(context.getSource())) {
+        if (this.hasNoPermission(context.getSource())) {
             System.out.println("THIS IS THE ERROR");
             return new ArrayList<>();
         }

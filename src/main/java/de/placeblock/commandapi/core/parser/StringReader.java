@@ -3,6 +3,7 @@ package de.placeblock.commandapi.core.parser;
 
 import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.parameter.IntegerParameter;
 import io.schark.design.texts.Texts;
 
 @SuppressWarnings("unused")
@@ -99,7 +100,7 @@ public class StringReader {
         }
     }
 
-    public int readInt() throws CommandException {
+    public ParsedParameter<Integer> readInt() throws CommandException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
@@ -109,14 +110,14 @@ public class StringReader {
             throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Ganze Zahl <color:inferior>erwartet"));
         }
         try {
-            return Integer.parseInt(number);
+            return new ParsedParameter<>(Integer.parseInt(number), number);
         } catch (final NumberFormatException ex) {
             cursor = start;
             throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden"));
         }
     }
 
-    public long readLong() throws CommandException {
+    public ParsedParameter<Long> readLong() throws CommandException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
@@ -126,14 +127,14 @@ public class StringReader {
             throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>lange ganze Zahl <color:inferior>erwartet"));
         }
         try {
-            return Long.parseLong(number);
+            return new ParsedParameter<>(Long.parseLong(number), number);
         } catch (final NumberFormatException ex) {
             cursor = start;
             throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden"));
         }
     }
 
-    public double readDouble() throws CommandException {
+    public ParsedParameter<Double> readDouble() throws CommandException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
@@ -143,7 +144,7 @@ public class StringReader {
             throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet"));
         }
         try {
-            return Double.parseDouble(number);
+            return new ParsedParameter<>(Double.parseDouble(number), number);
         } catch (final NumberFormatException ex) {
             cursor = start;
             throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden"));

@@ -7,7 +7,6 @@ import de.placeblock.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
 import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
-import org.bukkit.entity.Player;
 
 /**
  * Author: Placeblock

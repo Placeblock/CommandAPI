@@ -20,7 +20,7 @@ public class ParseContext<S> {
 
     private final StringReader reader;
     private final S source;
-    private final Map<String, Object> parameters = new HashMap<>();
+    private final Map<String, ParsedParameter<?>> parameters = new HashMap<>();
     @Setter
     private Map<TreeCommand<S>, CommandException> errors = new HashMap<>();
     @Setter
@@ -35,8 +35,8 @@ public class ParseContext<S> {
         return this.parsedCommands.get(this.parsedCommands.size() - 1);
     }
 
-    public void addParameter(String name, Object value) {
-        this.parameters.put(name, value);
+    public void addParameter(String name, ParsedParameter<?> parameter) {
+        this.parameters.put(name, parameter);
     }
 
     public void addError(TreeCommand<S> command, CommandException exception) {this.errors.put(command, exception);}
@@ -44,7 +44,20 @@ public class ParseContext<S> {
     public void addParsedCommand(TreeCommand<S> command) {this.parsedCommands.add(command);}
 
     public <T> T getParameter(String name, Class<T> type) {
-        return type.cast(this.parameters.get(name));
+        if (!this.parameters.containsKey(name)) return null;
+        return type.cast(this.parameters.get(name).getParameter(type));
+    }
+
+    public ParsedParameter<?> getParsedParameter(String name) {
+        return this.parameters.get(name);
+    }
+
+    public boolean hasError(TreeCommand<S> command) {
+        return this.errors.containsKey(command);
+    }
+
+    public boolean isParsedToEnd() {
+        return this.getReader().getRemaining().trim().equals("");
     }
 
 }

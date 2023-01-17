@@ -1,11 +1,9 @@
 package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.exception.CommandException;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.parser.ParsedParameter;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
-import io.schark.design.texts.Texts;
-import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +11,10 @@ import java.util.List;
 /**
  * Author: Placeblock
  */
-@RequiredArgsConstructor
-public class IntegerParameter<S> implements Parameter<S, Integer> {
-    private final int min;
-    private final int max;
+public class IntegerParameter<S> extends NumberParameter<S, Integer> {
+    public IntegerParameter(int min, int max) {
+        super(min, max);
+    }
 
     public static <S> IntegerParameter<S> integer(int min, int max) {
         return new IntegerParameter<>(min, max);
@@ -27,15 +25,10 @@ public class IntegerParameter<S> implements Parameter<S, Integer> {
     }
 
     @Override
-    public Integer parse(ParseContext<S> context, ParameterTreeCommand<S, Integer> command) throws CommandException {
-        int result = context.getReader().readInt();
-        if (result < this.min) {
-            throw new CommandSyntaxException(Texts.inferior("Die angegebene Zahl <color:negative>"+result+" <color:inferior>ist <color:negative>zu klein<color:inferior>. Das Minimum ist <color:negative>" + this.min));
-        }
-        if (result > this.max) {
-            throw new CommandSyntaxException(Texts.inferior("Die angegebene Zahl <color:negative>"+result+" <color:inferior>ist <color:negative>zu groß<color:inferior>. Das Maximum ist <color:negative>" + this.max));
-        }
-        return result;
+    public ParsedParameter<?> parse(ParseContext<S> context, ParameterTreeCommand<S, Integer> command) throws CommandException {
+        Integer result = context.getReader().readInt();
+        this.checkNumber(result);
+        return new ParsedParameter<>(result, result.toString());
     }
 
     @Override
@@ -43,7 +36,7 @@ public class IntegerParameter<S> implements Parameter<S, Integer> {
         List<String> suggestions = new ArrayList<>();
         Integer parsedParameter = command != null ? context.getParameter(command.getName(), Integer.class) : null;
         // Suggest nothing if higher than maximum
-        if (parsedParameter != null && parsedParameter >= this.max) {
+        if ((parsedParameter != null && parsedParameter >= this.max) || (context.hasError(command) && !context.isParsedToEnd())) {
             return new ArrayList<>();
         }
         // Suggest only lower or equals than maximum
