@@ -1,5 +1,8 @@
 package de.placeblock.commandapi.bridge.paper;
 
+import de.placeblock.commandapi.core.parameter.Parameter;
+import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
+import de.placeblock.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,5 +29,13 @@ public abstract class PaperCommandBridge<PL extends JavaPlugin> extends Abstract
     @Override
     public Player getCustomPlayer(Player bukkitPlayer) {
         return bukkitPlayer;
+    }
+
+    public static LiteralTreeCommandBuilder<PaperCommandSource<Player>> literal(final String name) {
+        return new LiteralTreeCommandBuilder<>(name);
+    }
+
+    public static <S> ParameterTreeCommandBuilder<PaperCommandSource<Player>, S> parameter(final String name, Parameter<PaperCommandSource<Player>, S> parameter) {
+        return new ParameterTreeCommandBuilder<>(name, parameter);
     }
 }
