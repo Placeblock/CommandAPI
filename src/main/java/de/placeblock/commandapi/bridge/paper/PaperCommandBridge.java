@@ -35,7 +35,7 @@ public abstract class PaperCommandBridge<PL extends JavaPlugin> extends Abstract
         return new LiteralTreeCommandBuilder<>(name);
     }
 
-    public static <S> ParameterTreeCommandBuilder<PaperCommandSource<Player>, S> parameter(final String name, Parameter<PaperCommandSource<Player>, S> parameter) {
+    public static <T> ParameterTreeCommandBuilder<PaperCommandSource<Player>, T> parameter(final String name, Parameter<PaperCommandSource<Player>, T> parameter) {
         return new ParameterTreeCommandBuilder<>(name, parameter);
     }
 }

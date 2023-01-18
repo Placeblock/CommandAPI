@@ -19,7 +19,7 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
     private final E[] enumValues;
 
     @SuppressWarnings("unused")
-    public static <E extends Enum<E>> EnumParameter<?, E> enumparam(Class<E> enumClass, E[] enumValues) {
+    public static <S, E extends Enum<E>> EnumParameter<S, E> enumparam(Class<E> enumClass, E[] enumValues) {
         return new EnumParameter<>(enumClass, enumValues);
     }
 
