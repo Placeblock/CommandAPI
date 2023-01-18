@@ -24,51 +24,41 @@ public class DoubleParameterTest {
 
     @Test
     public void testDoubleParameterSuggestions() {
-        DoubleParameter<String> doubleParameter = new DoubleParameter<>(0D, 105.5D);
-
-        ParseContext<String> parseContext = new ParseContext<>("100", "TestSource");
-        List<String> result = doubleParameter.getSuggestions(parseContext, null);
+        ParseTestCommand parseTestCommand = new ParseTestCommand();
+        ParseContext<String> parseContext = parseTestCommand.parse("testcommandparse 100", "");
+        List<String> result = parseTestCommand.getSuggestions(parseContext);
         assert result.contains(".") && !result.contains("1001") && !result.contains("1");
 
-        parseContext = new ParseContext<>("100.", "TestSource");
-        result = doubleParameter.getSuggestions(parseContext, null);
+        parseContext = parseTestCommand.parse("testcommandparse 100.", "");
+        result = parseTestCommand.getSuggestions(parseContext);
         assert result.containsAll(List.of("100.1", "100.2", "100.9")) && !result.contains(".");
 
-        parseContext = new ParseContext<>("100..", "TestSource");
-        result = doubleParameter.getSuggestions(parseContext, null);
+        parseContext = parseTestCommand.parse("testcommandparse 100..", "");
+        result = parseTestCommand.getSuggestions(parseContext);
         assert result.isEmpty();
 
-        parseContext = new ParseContext<>("100..3", "TestSource");
-        result = doubleParameter.getSuggestions(parseContext, null);
+        parseContext = parseTestCommand.parse("testcommandparse 100..3", "");
+        result = parseTestCommand.getSuggestions(parseContext);
         assert result.isEmpty();
 
-        parseContext = new ParseContext<>("100.3", "TestSource");
-        result = doubleParameter.getSuggestions(parseContext, null);
+        parseContext = parseTestCommand.parse("testcommandparse 100.3", "");
+        result = parseTestCommand.getSuggestions(parseContext);
         assert result.containsAll(List.of("100.31", "100.32", "100.39"));
 
-        parseContext = new ParseContext<>("105.", "TestSource");
-        result = doubleParameter.getSuggestions(parseContext, null);
+        parseContext = parseTestCommand.parse("testcommandparse 105.", "");
+        result = parseTestCommand.getSuggestions(parseContext);
         assert result.containsAll(List.of("105.0", "105.1", "105.2", "105.3", "105.4", "105.5")) && !result.contains("105.6");
 
-        parseContext = new ParseContext<>("105.", "TestSource");
-        result = doubleParameter.getSuggestions(parseContext, null);
-        assert result.containsAll(List.of("105.0", "105.1", "105.2", "105.3", "105.4", "105.5")) && !result.contains("105.6");
-
-        parseContext = new ParseContext<>("..", "TestSource");
-        result = doubleParameter.getSuggestions(parseContext, null);
+        parseContext = parseTestCommand.parse("testcommandparse ..", "");
+        result = parseTestCommand.getSuggestions(parseContext);
         assert result.isEmpty();
 
-        parseContext = new ParseContext<>("..2", "TestSource");
-        result = doubleParameter.getSuggestions(parseContext, null);
+        parseContext = parseTestCommand.parse("testcommandparse ..2", "");
+        result = parseTestCommand.getSuggestions(parseContext);
         assert result.isEmpty();
 
-        parseContext = new ParseContext<>("..2", "TestSource");
-        result = doubleParameter.getSuggestions(parseContext, null);
-        assert result.isEmpty();
-
-        parseContext = new ParseContext<>(".", "TestSource");
-        result = doubleParameter.getSuggestions(parseContext, null);
-        System.out.println(result);
+        parseContext = parseTestCommand.parse("testcommandparse .", "");
+        result = parseTestCommand.getSuggestions(parseContext);
         assert result.containsAll(List.of(".1", ".2", ".3", ".0", ".9")) && !result.contains(".");
     }
 }
