@@ -1,10 +1,9 @@
 package de.placeblock.commandapi.core.tree;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.parser.ParsedParameter;
+import de.placeblock.commandapi.core.parser.ParsedValue;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
@@ -28,16 +27,9 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
 
     @Override
     boolean parse(ParseContext<S> context) {
-        try {
-            ParsedParameter<?> result = this.parameter.parse(context, this);
-            context.addParameter(this.getName(), result);
-            if (result.getParsed() != null) {
-                return true;
-            }
-        } catch (CommandException e) {
-            context.addError(this, e);
-        }
-        return false;
+        ParsedValue<?> result = this.parameter.parse(context, this);
+        context.addParameter(this.getName(), result);
+        return result.getParsed() != null;
     }
 
     @Override

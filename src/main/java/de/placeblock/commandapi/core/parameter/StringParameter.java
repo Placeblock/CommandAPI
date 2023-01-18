@@ -1,9 +1,7 @@
 package de.placeblock.commandapi.core.parameter;
 
-import com.mojang.brigadier.context.CommandContext;
-import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.parser.ParsedParameter;
+import de.placeblock.commandapi.core.parser.ParsedValue;
 import de.placeblock.commandapi.core.parser.StringReader;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import lombok.Getter;
@@ -37,18 +35,18 @@ public class StringParameter<S> implements Parameter<S, String> {
     }
 
     @Override
-    public ParsedParameter<?> parse(ParseContext<S> context, ParameterTreeCommand<S, String> command) throws CommandException {
+    public ParsedValue<?> parse(ParseContext<S> context, ParameterTreeCommand<S, String> command) {
         StringReader reader = context.getReader();
         String parsedText;
         if (type == StringType.GREEDY_PHRASE) {
-            parsedText = reader.getRemaining();
             reader.setCursor(reader.getTotalLength());
+            String remaining = reader.getRemaining();
+            return new ParsedValue<>(remaining, remaining, null);
         } else if (type == StringType.SINGLE_WORD) {
-            parsedText = reader.readUnquotedString();
+            return reader.readUnquotedString();
         } else {
-            parsedText = reader.readString();
+            return reader.readString();
         }
-        return new ParsedParameter<>(parsedText, parsedText);
     }
 
     @Override

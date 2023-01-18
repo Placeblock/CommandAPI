@@ -2,6 +2,7 @@ package de.placeblock.commandapi.core.tree;
 
 import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.parser.ParsedValue;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
@@ -30,9 +31,11 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
             !this.aliases.stream().map(alias -> remainingLength < alias.length()).toList().contains(false)) {
             return false;
         }
-        String nextWord = context.getReader().readUnquotedString();
-        return nextWord.equalsIgnoreCase(this.getName()) ||
-            this.aliases.stream().map(alias -> alias.equalsIgnoreCase(nextWord)).toList().size() > 0;
+        ParsedValue<String> nextWord = context.getReader().readUnquotedString();
+        String parsedWord = nextWord.getParsed();
+        if (parsedWord == null) return false;
+        return parsedWord.equalsIgnoreCase(this.getName()) ||
+            this.aliases.stream().map(alias -> alias.equalsIgnoreCase(parsedWord)).toList().size() > 0;
     }
 
     @Override

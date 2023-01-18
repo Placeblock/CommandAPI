@@ -1,15 +1,12 @@
 package de.placeblock.commandapi.core.parameter;
 
-import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.parser.ParsedParameter;
+import de.placeblock.commandapi.core.parser.ParsedValue;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Author: Placeblock
@@ -28,21 +25,22 @@ public class DoubleParameter<S> extends NumberParameter<S, Double> {
     }
 
     @Override
-    public ParsedParameter<?> parse(ParseContext<S> context, ParameterTreeCommand<S, Double> command) throws CommandException {
-        double result = context.getReader().readDouble();
-        this.checkNumber(result);
-        return result;
+    public ParsedValue<?> parse(ParseContext<S> context, ParameterTreeCommand<S, Double> command) {
+        ParsedValue<Double> result = context.getReader().readDouble();
+        return this.checkNumber(result);
     }
 
     @Override
     public List<String> getSuggestions(ParseContext<S> context, @Nullable ParameterTreeCommand<S, Double> command) {
         List<String> suggestions = new ArrayList<>();
-        Double parsedParameter = command != null ? context.getParameter(command.getName(), Double.class) : null;
-        String partial = context.getReader().readUnquotedString();
+        ParsedValue<Double> parsedParameter = command != null ? context.getParameter(command.getName(), Double.class) : null;
+        assert parsedParameter != null;
+        Double parsedValue = parsedParameter.getParsed();
+        String partial = parsedParameter.getString();
         System.out.println(partial);
         // Suggest nothing if higher than maximum
         // Suggest nothing if parsedParameter is < 0 and parsedParameter is smaller than min
-        if (parsedParameter != null && (parsedParameter >= this.max || (parsedParameter < 0 && parsedParameter < this.min))) {
+        if (parsedValue != null && (parsedValue >= this.max || (parsedValue < 0 && parsedValue < this.min))) {
             return new ArrayList<>();
         }
         if (!partial.contains(".")) {

@@ -3,7 +3,6 @@ package de.placeblock.commandapi.core.parser;
 
 import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parameter.IntegerParameter;
 import io.schark.design.texts.Texts;
 
 @SuppressWarnings("unused")
@@ -100,72 +99,78 @@ public class StringReader {
         }
     }
 
-    public ParsedParameter<Integer> readInt() throws CommandException {
+    public ParsedValue<Integer> readInt() {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
         }
         final String number = string.substring(start, cursor);
+        ParsedValue<Integer> parsed = new ParsedValue<>(number);
         if (number.isEmpty()) {
-            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Ganze Zahl <color:inferior>erwartet"));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Ganze Zahl <color:inferior>erwartet")));
         }
         try {
-            return new ParsedParameter<>(Integer.parseInt(number), number);
+            parsed.setParsed(Integer.parseInt(number));
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden"));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
         }
+        return parsed;
     }
 
-    public ParsedParameter<Long> readLong() throws CommandException {
+    public ParsedValue<Long> readLong() {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
         }
         final String number = string.substring(start, cursor);
+        ParsedValue<Long> parsed = new ParsedValue<>(number);
         if (number.isEmpty()) {
-            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>lange ganze Zahl <color:inferior>erwartet"));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>lange ganze Zahl <color:inferior>erwartet")));
         }
         try {
-            return new ParsedParameter<>(Long.parseLong(number), number);
+            parsed.setParsed(Long.parseLong(number));
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden"));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
         }
+        return parsed;
     }
 
-    public ParsedParameter<Double> readDouble() throws CommandException {
-        final int start = cursor;
+    public ParsedValue<Double> readDouble() {
+        final int start = this.cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
         }
-        final String number = string.substring(start, cursor);
+        final String number = this.string.substring(start, this.cursor);
+        ParsedValue<Double> parsed = new ParsedValue<>(number);
         if (number.isEmpty()) {
-            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet"));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet")));
         }
         try {
-            return new ParsedParameter<>(Double.parseDouble(number), number);
+            parsed.setParsed(Double.parseDouble(number));
         } catch (final NumberFormatException ex) {
-            cursor = start;
-            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden"));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
         }
+        return parsed;
     }
 
-    public float readFloat() throws CommandException {
-        final int start = cursor;
+    public ParsedValue<Float> readFloat() {
+        final int start = this.cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
         }
-        final String number = string.substring(start, cursor);
+        final String number = this.string.substring(start, this.cursor);
+        ParsedValue<Float> parsed = new ParsedValue<>(number);
         if (number.isEmpty()) {
-            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet"));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet")));
         }
         try {
-            return Float.parseFloat(number);
+            parsed.setParsed(Float.parseFloat(number));
         } catch (final NumberFormatException ex) {
-            cursor = start;
-            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden"));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
         }
+        return parsed;
     }
 
     public static boolean isAllowedInUnquotedString(final char c) {
@@ -176,29 +181,33 @@ public class StringReader {
             || c == '.' || c == '+';
     }
 
-    public String readUnquotedString() {
-        final int start = cursor;
+    public ParsedValue<String> readUnquotedString() {
+        final int start = this.cursor;
         while (canRead() && isAllowedInUnquotedString(peek())) {
             skip();
         }
-        return string.substring(start, cursor);
+        String unquotedString = this.string.substring(start, this.cursor);
+        return new ParsedValue<>(unquotedString, unquotedString, null);
     }
 
-    public String readQuotedString() throws CommandException {
+    public ParsedValue<String> readQuotedString() {
+        ParsedValue<String> parsedError = new ParsedValue<>(null, "", new CommandSyntaxException(Texts.negative("Anführungszeichen erwartet")));
         if (!canRead()) {
-            return "";
+            return parsedError;
         }
         final char next = peek();
         if (!isQuotedStringStart(next)) {
-            throw new CommandSyntaxException(Texts.negative("Anführungszeichen erwartet"));
+            return parsedError;
         }
         skip();
         return readStringUntil(next);
     }
 
-    public String readStringUntil(char terminator) throws CommandException {
+    public ParsedValue<String> readStringUntil(char terminator) {
         final StringBuilder result = new StringBuilder();
+        ParsedValue<String> parsed = new ParsedValue<>();
         boolean escaped = false;
+        boolean finished = false;
         while (canRead()) {
             final char c = read();
             if (escaped) {
@@ -207,23 +216,29 @@ public class StringReader {
                     escaped = false;
                 } else {
                     setCursor(getCursor() - 1);
-                    throw new CommandSyntaxException(Texts.negative("Falsches Zeichen '"+c+"' <color:inferior>im in Anführungszeichen gesetzten Text"));
+                    parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsches Zeichen '"+c+"' <color:inferior>im in Anführungszeichen gesetzten Text")));
+                    break;
                 }
             } else if (c == SYNTAX_ESCAPE) {
                 escaped = true;
             } else if (c == terminator) {
-                return result.toString();
+                finished = true;
+                break;
             } else {
                 result.append(c);
             }
         }
-        throw new CommandSyntaxException(Texts.negative("Schließendes Anführungszeichen erwartet"));
-
+        if (!finished) {
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Schließendes Anführungszeichen erwartet")));
+        } else {
+            parsed.setParsed(result.toString());
+        }
+        return parsed;
     }
 
-    public String readString() throws CommandException {
+    public ParsedValue<String> readString() {
         if (!canRead()) {
-            return "";
+            return new ParsedValue<>(null, "", new CommandSyntaxException(Texts.inferior("Leerer Text <color:inferior>kann nicht gelesen werden")));
         }
         final char next = peek();
         if (isQuotedStringStart(next)) {
@@ -233,21 +248,23 @@ public class StringReader {
         return readUnquotedString();
     }
 
-    public boolean readBoolean() throws CommandException {
-        final int start = cursor;
-        final String value = readString();
-        if (value.isEmpty()) {
-            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>true <color:inferior>oder <color:primary>false <color:inferior>erwartet"));
+    public ParsedValue<Boolean> readBoolean() {
+        final ParsedValue<String> value = readString();
+        ParsedValue<Boolean> parsed = new ParsedValue<>(null, value.getParsed(),
+            new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>true <color:inferior>oder <color:primary>false <color:inferior>erwartet")));
+        if (value.getParsed() == null) {
+            parsed.setSyntaxException(value.getSyntaxException());
+            return parsed;
         }
-
-        if (value.equals("true")) {
-            return true;
-        } else if (value.equals("false")) {
-            return false;
+        if (value.getParsed().equals("true")) {
+            parsed.setParsed(true);
+        } else if (value.getParsed().equals("false")) {
+            parsed.setParsed(false);
         } else {
-            cursor = start;
-            throw new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>true <color:inferior>oder <color:primary>false <color:inferior>erwartet, <color:negative>" + value + " <color:inferior>gefunden"));
+            return parsed;
         }
+        parsed.setSyntaxException(null);
+        return parsed;
     }
 
     public void expect(final char c) throws CommandException {

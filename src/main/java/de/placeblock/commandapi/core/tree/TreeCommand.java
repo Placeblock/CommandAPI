@@ -30,7 +30,7 @@ public abstract class TreeCommand<S> {
     public boolean parseRecursive(ParseContext<S> context) {
         // Check Permissions
         if (this.hasNoPermission(context.getSource())) {
-            context.addError(this, new CommandNoPermissionException());
+            context.setNoPermission(true);
             return false;
         }
 

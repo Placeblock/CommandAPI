@@ -1,7 +1,8 @@
 package de.placeblock.commandapi.core;
 
-import de.placeblock.commandapi.core.exception.CommandException;
+import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.parser.ParsedValue;
 import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
@@ -61,12 +62,19 @@ public abstract class Command<S> {
     public void execute(ParseContext<S> context) {
         S source = context.getSource();
         TreeCommand<S> lastParsedCommand = context.getLastParsedCommand();
+        // If the last parsed command is null we can skip the proccess
         if (lastParsedCommand != null) {
-            Map<TreeCommand<S>, CommandException> errors = context.getErrors();
-            for (TreeCommand<S> errTreeCommand : errors.keySet()) {
-                if (lastParsedCommand.getChildren().contains(errTreeCommand)) {
-                   this.sendMessage(source, errors.get(errTreeCommand).getTextMessage());
-                    return;
+            // We have to check Errors
+            Map<String, ParsedValue<?>> errors = context.getParameters();
+            List<String> lastParsedCommandChildrenNames = lastParsedCommand.getChildren().stream().map(TreeCommand::getName).toList();
+            for (String parameterName : errors.keySet()) {
+                // Only Errors at children of the last parsed command are important
+                if (lastParsedCommandChildrenNames.contains(parameterName)) {
+                    CommandSyntaxException syntaxException = errors.get(parameterName).getSyntaxException();
+                    if (syntaxException != null) {
+                        this.sendMessage(source, syntaxException.getTextMessage());
+                        return;
+                    }
                 }
             }
             if (context.getReader().getRemaining().equals("") && lastParsedCommand.getRun() != null) {

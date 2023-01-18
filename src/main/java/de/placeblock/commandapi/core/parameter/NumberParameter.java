@@ -1,6 +1,7 @@
 package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.parser.ParsedValue;
 import io.schark.design.texts.Texts;
 import lombok.RequiredArgsConstructor;
 
@@ -12,13 +13,15 @@ public abstract class NumberParameter<S, T extends Number> implements Parameter<
     protected final T min;
     protected final T max;
 
-    protected void checkNumber(T number) throws CommandSyntaxException {
-        double numberDouble = number.doubleValue();
+    protected ParsedValue<T> checkNumber(ParsedValue<T> parsed) {
+        if (parsed.getParsed() == null) return parsed;
+        double numberDouble = parsed.getParsed().doubleValue();
         if (numberDouble < this.min.doubleValue()) {
-            throw new CommandSyntaxException(Texts.inferior("Die angegebene Zahl <color:negative>"+number+" <color:inferior>ist <color:negative>zu klein<color:inferior>. Das Minimum ist <color:negative>" + this.min));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.inferior("Die angegebene Zahl <color:negative>"+parsed+" <color:inferior>ist <color:negative>zu klein<color:inferior>. Das Minimum ist <color:negative>" + this.min)));
         }
         if (numberDouble > this.max.doubleValue()) {
-            throw new CommandSyntaxException(Texts.inferior("Die angegebene Zahl <color:negative>"+number+" <color:inferior>ist <color:negative>zu groß<color:inferior>. Das Maximum ist <color:negative>" + this.max));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.inferior("Die angegebene Zahl <color:negative>"+parsed+" <color:inferior>ist <color:negative>zu groß<color:inferior>. Das Maximum ist <color:negative>" + this.max)));
         }
+        return parsed;
     }
 }
