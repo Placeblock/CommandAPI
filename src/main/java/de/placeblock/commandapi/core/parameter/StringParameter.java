@@ -23,11 +23,11 @@ public class StringParameter<S> implements Parameter<S, String> {
     }
 
     public static <S> StringParameter<S> word() {
-        return new StringParameter<S>(StringType.SINGLE_WORD);
+        return new StringParameter<>(StringType.SINGLE_WORD);
     }
 
     public static <S> StringParameter<S> string() {
-        return new StringParameter<S>(StringType.QUOTABLE_PHRASE);
+        return new StringParameter<>(StringType.QUOTABLE_PHRASE);
     }
 
     public static <S> StringParameter<S> greedyString() {
@@ -35,7 +35,7 @@ public class StringParameter<S> implements Parameter<S, String> {
     }
 
     @Override
-    public ParsedValue<?> parse(ParseContext<S> context, ParameterTreeCommand<S, String> command) {
+    public ParsedValue<String> parse(ParseContext<S> context, ParameterTreeCommand<S, String> command) {
         StringReader reader = context.getReader();
         String parsedText;
         if (type == StringType.GREEDY_PHRASE) {

@@ -25,7 +25,7 @@ public class DoubleParameter<S> extends NumberParameter<S, Double> {
     }
 
     @Override
-    public ParsedValue<?> parse(ParseContext<S> context, ParameterTreeCommand<S, Double> command) {
+    public ParsedValue<Double> parse(ParseContext<S> context, ParameterTreeCommand<S, Double> command) {
         ParsedValue<Double> result = context.getReader().readDouble();
         return this.checkNumber(result);
     }

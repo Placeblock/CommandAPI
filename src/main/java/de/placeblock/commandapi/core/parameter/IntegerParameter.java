@@ -24,7 +24,7 @@ public class IntegerParameter<S> extends NumberParameter<S, Integer> {
     }
 
     @Override
-    public ParsedValue<?> parse(ParseContext<S> context, ParameterTreeCommand<S, Integer> command) {
+    public ParsedValue<Integer> parse(ParseContext<S> context, ParameterTreeCommand<S, Integer> command) {
         ParsedValue<Integer> result = context.getReader().readInt();
         return this.checkNumber(result);
     }

@@ -1,29 +1,29 @@
 package de.placeblock.commandapi;
 
-import de.placeblock.commandapi.core.exception.CommandException;
 import de.placeblock.commandapi.core.parameter.DoubleParameter;
 import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.parser.ParsedValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Author: Placeblock
  */
 public class DoubleParameterTest {
-    public static final List<String> NUMBER_SUGGESTIONS = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9");
 
     @Test
-    public void testDoubleParameterParse() throws CommandException {
+    public void testDoubleParameterParse() {
         DoubleParameter<String> doubleParameter = new DoubleParameter<>(0D, 100D);
         ParseContext<String> parseContext = new ParseContext<>("awdawd 100   ", "TestSource");
         parseContext.getReader().setCursor(7);
-        Double result = doubleParameter.parse(parseContext, null);
-        assert result != 0;
+        ParsedValue<Double> result = doubleParameter.parse(parseContext, null);
+        assert !result.hasException() && Objects.equals(result.getParsed(), 100D);
     }
 
     @Test
-    public void testDoubleParameterSuggestions() throws CommandException {
+    public void testDoubleParameterSuggestions() {
         DoubleParameter<String> doubleParameter = new DoubleParameter<>(0D, 105.5D);
 
         ParseContext<String> parseContext = new ParseContext<>("100", "TestSource");

@@ -50,7 +50,7 @@ public class ParseTest {
         assert parseTestCommand.getSuggestions(context).contains("testcommandparse");
         context = parseTestCommand.parse("testcommandparse remove 10", "TestPlayer");
         assert parseTestCommand.getSuggestions(context).contains("100");
-        assert context.getParameter("amount", Integer.class) == 10;
+        assert context.getParameter("amount", Integer.class).getParsed() == 10;
     }
 
 }
