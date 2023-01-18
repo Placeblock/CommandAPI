@@ -3,7 +3,6 @@ package de.placeblock.commandapi.core.parameter;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import de.placeblock.commandapi.core.parser.ParsedValue;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,7 @@ public class DoubleParameter<S> extends NumberParameter<S, Double> {
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> context, @Nullable ParameterTreeCommand<S, Double> command) {
+    public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, Double> command) {
         List<String> suggestions = new ArrayList<>();
         ParsedValue<Double> parsedParameter = command != null ? context.getParameter(command.getName(), Double.class) : null;
         System.out.println(parsedParameter);

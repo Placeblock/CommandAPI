@@ -5,7 +5,6 @@ import de.placeblock.commandapi.core.parser.ParsedValue;
 import de.placeblock.commandapi.core.parser.StringReader;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +49,7 @@ public class StringParameter<S> implements Parameter<S, String> {
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> context, @Nullable ParameterTreeCommand<S, String> command) {
+    public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, String> command) {
         return new ArrayList<>();
     }
 }
