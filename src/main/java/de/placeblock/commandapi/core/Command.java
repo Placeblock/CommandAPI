@@ -64,16 +64,18 @@ public abstract class Command<S> {
         TreeCommand<S> lastParsedCommand = context.getLastParsedCommand();
         // If the last parsed command is null we can skip the proccess
         if (lastParsedCommand != null) {
-            // We have to check Errors
-            Map<String, ParsedValue<?>> errors = context.getParameters();
-            List<String> lastParsedCommandChildrenNames = lastParsedCommand.getChildren().stream().map(TreeCommand::getName).toList();
-            for (String parameterName : errors.keySet()) {
-                // Only Errors at children of the last parsed command are important
-                if (lastParsedCommandChildrenNames.contains(parameterName)) {
-                    CommandSyntaxException syntaxException = errors.get(parameterName).getSyntaxException();
-                    if (syntaxException != null) {
-                        this.sendMessage(source, syntaxException.getTextMessage());
-                        return;
+            // We have to check Errors if string wasn't parsed to the end
+            if (context.isNotParsedToEnd()) {
+                Map<String, ParsedValue<?>> errors = context.getParameters();
+                List<String> lastParsedCommandChildrenNames = lastParsedCommand.getChildren().stream().map(TreeCommand::getName).toList();
+                for (String parameterName : errors.keySet()) {
+                    // Only Errors at children of the last parsed command are important
+                    if (lastParsedCommandChildrenNames.contains(parameterName)) {
+                        CommandSyntaxException syntaxException = errors.get(parameterName).getSyntaxException();
+                        if (syntaxException != null) {
+                            this.sendMessage(source, syntaxException.getTextMessage());
+                            return;
+                        }
                     }
                 }
             }
@@ -124,10 +126,15 @@ public abstract class Command<S> {
             for (int i = 0; i < branch.size(); i++) {
                 TreeCommand<S> treeCommand = branch.get(i);
                 TextComponent treeCommandMessage = treeCommand.getHelpComponent().color(i == 0 ? Colors.PRIMARY : Colors.INFERIOR);
+                TextComponent hoverText = Component.empty();
                 TextComponent description = treeCommand.getDescription();
                 TextComponent extraDescription = treeCommand.getHelpExtraDescription();
-                if (extraDescription != null) description = description.append(Component.newline()).append(extraDescription);
-                treeCommandMessage = treeCommandMessage.hoverEvent(HoverEvent.showText(description));
+                if (description != null) hoverText = hoverText.append(description);
+                if (description != null && extraDescription != null) hoverText = hoverText.append(Component.newline());
+                if (extraDescription != null) hoverText = hoverText.append(extraDescription);
+                if (description != null || extraDescription != null) {
+                    treeCommandMessage = treeCommandMessage.hoverEvent(HoverEvent.showText(hoverText));
+                }
                 branchMessage = branchMessage.append(treeCommandMessage).append(Component.space());
                 branchCommand.append(treeCommand.getName()).append(" ");
             }

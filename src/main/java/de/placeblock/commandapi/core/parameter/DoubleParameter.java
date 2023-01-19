@@ -33,18 +33,14 @@ public class DoubleParameter<S> extends NumberParameter<S, Double> {
     public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, Double> command) {
         List<String> suggestions = new ArrayList<>();
         ParsedValue<Double> parsedParameter = command != null ? context.getParameter(command.getName(), Double.class) : null;
-        System.out.println(parsedParameter);
         assert parsedParameter != null;
         Double parsedValue = parsedParameter.getValue();
         String partial = parsedParameter.getString();
-        System.out.println("HEHEHEHA");
-        System.out.println(partial);
         // Suggest nothing if higher than maximum
         // Suggest nothing if parsedParameter is < 0 and parsedParameter is smaller than min
         if (parsedValue != null && (parsedValue >= this.max || (parsedValue < 0 && parsedValue < this.min))) {
             return new ArrayList<>();
         }
-        System.out.println("Partial: '" + partial + "'");
         if (!partial.contains(".")) {
             suggestions.add(".");
         }

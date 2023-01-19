@@ -1,5 +1,5 @@
 group = "de.placeblock"
-version = "2.0.1b"
+version = "2.0.1c"
 description = "API for an easier use of Commands"
 
 plugins {

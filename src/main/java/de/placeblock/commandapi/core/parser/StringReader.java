@@ -85,10 +85,6 @@ public class StringReader {
         cursor++;
     }
 
-    public static boolean isAllowedNumber(final char c) {
-        return c >= '0' && c <= '9' || c == '.' || c == '-';
-    }
-
     public static boolean isQuotedStringStart(char c) {
         return c == SYNTAX_DOUBLE_QUOTE || c == SYNTAX_SINGLE_QUOTE;
     }
@@ -100,75 +96,73 @@ public class StringReader {
     }
 
     public ParsedValue<Integer> readInt() {
-        final int start = cursor;
-        while (canRead() && isAllowedNumber(peek())) {
-            skip();
+        final ParsedValue<String> parsedNumber = this.readUnquotedString();
+        if (parsedNumber.isInvalid()) {
+            return new ParsedValue<>(null, parsedNumber.getString(), parsedNumber.getSyntaxException());
         }
-        final String number = string.substring(start, cursor);
-        ParsedValue<Integer> parsed = new ParsedValue<>(number);
-        if (number.isEmpty()) {
+        String numberString = parsedNumber.getValue();
+        ParsedValue<Integer> parsed = new ParsedValue<>(numberString);
+        if (numberString.isEmpty()) {
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Ganze Zahl <color:inferior>erwartet")));
         }
         try {
-            parsed.setValue(Integer.parseInt(number));
+            parsed.setValue(Integer.parseInt(numberString));
         } catch (final NumberFormatException ex) {
-            cursor = start;
-            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Ganze Zahl <color:inferior>erwartet, <color:negative>" + parsedNumber.getString() + " <color:inferior>gefunden")));
         }
         return parsed;
     }
 
     public ParsedValue<Long> readLong() {
-        final int start = cursor;
-        while (canRead() && isAllowedNumber(peek())) {
-            skip();
+        final ParsedValue<String> parsedNumber = this.readUnquotedString();
+        if (parsedNumber.isInvalid()) {
+            return new ParsedValue<>(null, parsedNumber.getString(), parsedNumber.getSyntaxException());
         }
-        final String number = string.substring(start, cursor);
-        ParsedValue<Long> parsed = new ParsedValue<>(number);
-        if (number.isEmpty()) {
-            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>lange ganze Zahl <color:inferior>erwartet")));
+        String numberString = parsedNumber.getValue();
+        ParsedValue<Long> parsed = new ParsedValue<>(numberString);
+        if (numberString.isEmpty()) {
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Lange ganze Zahl <color:inferior>erwartet")));
         }
         try {
-            parsed.setValue(Long.parseLong(number));
+            parsed.setValue(Long.parseLong(numberString));
         } catch (final NumberFormatException ex) {
-            cursor = start;
-            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Lange ganze Zahl <color:inferior>erwartet, <color:negative>" + parsedNumber.getString() + " <color:inferior>gefunden")));
         }
         return parsed;
     }
 
     public ParsedValue<Double> readDouble() {
-        final int start = this.cursor;
-        while (canRead() && isAllowedNumber(peek())) {
-            skip();
+        final ParsedValue<String> parsedNumber = this.readUnquotedString();
+        if (parsedNumber.isInvalid()) {
+            return new ParsedValue<>(null, parsedNumber.getString(), parsedNumber.getSyntaxException());
         }
-        final String number = this.string.substring(start, this.cursor);
-        ParsedValue<Double> parsed = new ParsedValue<>(number);
-        if (number.isEmpty()) {
+        String numberString = parsedNumber.getValue();
+        ParsedValue<Double> parsed = new ParsedValue<>(numberString);
+        if (numberString.isEmpty()) {
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet")));
         }
         try {
-            parsed.setValue(Double.parseDouble(number));
+            parsed.setValue(Double.parseDouble(numberString));
         } catch (final NumberFormatException ex) {
-            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + parsedNumber.getString() + " <color:inferior>gefunden")));
         }
         return parsed;
     }
 
     public ParsedValue<Float> readFloat() {
-        final int start = this.cursor;
-        while (canRead() && isAllowedNumber(peek())) {
-            skip();
+        final ParsedValue<String> parsedNumber = this.readUnquotedString();
+        if (parsedNumber.isInvalid()) {
+            return new ParsedValue<>(null, parsedNumber.getString(), parsedNumber.getSyntaxException());
         }
-        final String number = this.string.substring(start, this.cursor);
-        ParsedValue<Float> parsed = new ParsedValue<>(number);
-        if (number.isEmpty()) {
+        String numberString = parsedNumber.getValue();
+        ParsedValue<Float> parsed = new ParsedValue<>(numberString);
+        if (numberString.isEmpty()) {
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet")));
         }
         try {
-            parsed.setValue(Float.parseFloat(number));
+            parsed.setValue(Float.parseFloat(numberString));
         } catch (final NumberFormatException ex) {
-            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
+            parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + parsedNumber.getString() + " <color:inferior>gefunden")));
         }
         return parsed;
     }
@@ -238,7 +232,7 @@ public class StringReader {
 
     public ParsedValue<String> readString() {
         if (!canRead()) {
-            return new ParsedValue<>(null, "", new CommandSyntaxException(Texts.inferior("Leerer Text <color:inferior>kann nicht gelesen werden")));
+            return new ParsedValue<>(null, "", new CommandSyntaxException(Texts.inferior("Leerer Text <color:negative>kann nicht gelesen werden")));
         }
         final char next = peek();
         if (isQuotedStringStart(next)) {

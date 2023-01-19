@@ -34,7 +34,7 @@ public class ParsedValue<T> {
         return this.syntaxException != null;
     }
 
-    public boolean isValid() {
-        return this.syntaxException == null && this.value == null;
+    public boolean isInvalid() {
+        return this.syntaxException != null || this.value == null;
     }
 }

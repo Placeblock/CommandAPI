@@ -38,7 +38,6 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
         // test command |012
         // This fails because it cannot parse an empty string to an integer.
         if (this.hasNoPermission(context.getSource())) {
-            System.out.println("THIS IS THE ERROR");
             return new ArrayList<>();
         }
         return this.parameter.getSuggestions(context, this);

@@ -26,7 +26,7 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
     @Override
     public ParsedValue<E> parse(ParseContext<S> context, ParameterTreeCommand<S, E> command) {
         ParsedValue<String> word = context.getReader().readUnquotedString();
-        if (!word.isValid()) {
+        if (word.isInvalid()) {
             return new ParsedValue<>(null, word.getString(), word.getSyntaxException());
         }
         try {
