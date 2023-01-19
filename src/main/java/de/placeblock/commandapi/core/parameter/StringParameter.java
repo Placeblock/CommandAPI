@@ -1,9 +1,11 @@
 package de.placeblock.commandapi.core.parameter;
 
+import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import de.placeblock.commandapi.core.parser.ParsedValue;
 import de.placeblock.commandapi.core.parser.StringReader;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
+import io.schark.design.texts.Texts;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -38,8 +40,11 @@ public class StringParameter<S> implements Parameter<S, String> {
         StringReader reader = context.getReader();
         String parsedText;
         if (type == StringType.GREEDY_PHRASE) {
-            reader.setCursor(reader.getTotalLength());
             String remaining = reader.getRemaining();
+            reader.setCursor(reader.getTotalLength());
+            if (remaining.equals("")) {
+                return new ParsedValue<>(null, "", new CommandSyntaxException(Texts.inferior("Ein <color:primary>leerer String <color:inferior>ist als greedy Argument <color:negative>nicht erlaubt")));
+            }
             return new ParsedValue<>(remaining, remaining, null);
         } else if (type == StringType.SINGLE_WORD) {
             return reader.readUnquotedString();

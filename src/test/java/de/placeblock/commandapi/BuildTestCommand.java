@@ -1,7 +1,6 @@
 package de.placeblock.commandapi;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.parameter.IntegerParameter;
 import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import de.placeblock.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
