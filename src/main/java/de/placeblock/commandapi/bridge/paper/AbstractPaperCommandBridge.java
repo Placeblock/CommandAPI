@@ -6,12 +6,13 @@ import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author: Placeblock
@@ -86,7 +87,10 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
 
     @Override
     public void unregister() {
-        this.unregister(this.plugin.getServer().getCommandMap());
-        this.plugin.getServer().getCommandMap().getKnownCommands().remove("commandapi:" + this.getLabel());
+        CommandMap commandMap = this.plugin.getServer().getCommandMap();
+        this.unregister(commandMap);
+        Map<String, Command> knownCommands = commandMap.getKnownCommands();
+        knownCommands.remove("commandapi:" + this.getLabel());
+        knownCommands.remove(this.getLabel());
     }
 }
