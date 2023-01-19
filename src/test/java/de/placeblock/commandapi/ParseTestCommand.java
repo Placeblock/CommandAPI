@@ -7,6 +7,7 @@ import de.placeblock.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
 import net.kyori.adventure.text.TextComponent;
 
 import static de.placeblock.commandapi.core.parameter.DoubleParameter.doubleParam;
+import static de.placeblock.commandapi.core.parameter.EnumParameter.enumparam;
 import static de.placeblock.commandapi.core.parameter.IntegerParameter.integer;
 
 /**
@@ -21,10 +22,9 @@ public class ParseTestCommand extends Command<String> {
     public LiteralTreeCommandBuilder<String> generateCommand(LiteralTreeCommandBuilder<String> builder) {
         return builder
         .then(
-            literal("add")
-                .run(ctx -> {
-
-                })
+            literal("add").then(
+                parameter("material", enumparam(TestEnum.class, TestEnum.values()))
+            )
         ).then(
             literal("remove").then(
                 parameter("amount", integer(0, 105))
