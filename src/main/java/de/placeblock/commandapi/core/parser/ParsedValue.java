@@ -14,7 +14,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class ParsedValue<T> {
-    private T parsed;
+    private T value;
     private String string;
     private CommandSyntaxException syntaxException;
 
@@ -23,11 +23,11 @@ public class ParsedValue<T> {
     }
 
     public T getParameter() {
-        return parsed;
+        return value;
     }
 
     public <CT>  CT getParameter(Class<CT> type) {
-        return type.cast(parsed);
+        return type.cast(value);
     }
 
     public boolean hasException() {
@@ -35,6 +35,6 @@ public class ParsedValue<T> {
     }
 
     public boolean isValid() {
-        return this.syntaxException == null && this.parsed == null;
+        return this.syntaxException == null && this.value == null;
     }
 }

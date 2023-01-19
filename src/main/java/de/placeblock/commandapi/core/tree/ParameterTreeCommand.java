@@ -29,7 +29,7 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
     boolean parse(ParseContext<S> context) {
         ParsedValue<?> result = this.parameter.parse(context, this);
         context.addParameter(this.getName(), result);
-        return result.getParsed() != null;
+        return result.getValue() != null;
     }
 
     @Override

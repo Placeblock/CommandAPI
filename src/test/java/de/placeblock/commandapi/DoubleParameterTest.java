@@ -19,7 +19,7 @@ public class DoubleParameterTest {
         ParseContext<String> parseContext = new ParseContext<>("awdawd 100   ", "TestSource");
         parseContext.getReader().setCursor(7);
         ParsedValue<Double> result = doubleParameter.parse(parseContext, null);
-        assert !result.hasException() && Objects.equals(result.getParsed(), 100D);
+        assert !result.hasException() && Objects.equals(result.getValue(), 100D);
     }
 
     @Test

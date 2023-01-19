@@ -30,7 +30,7 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
             return new ParsedValue<>(null, word.getString(), word.getSyntaxException());
         }
         try {
-            E enumValue = Enum.valueOf(enumClass, word.getParsed().toUpperCase());
+            E enumValue = Enum.valueOf(enumClass, word.getValue().toUpperCase());
             return new ParsedValue<>(enumValue, word.getString(), null);
         } catch (IllegalArgumentException ex) {
             return new ParsedValue<>(null, word.getString(), new CommandSyntaxException(Texts.inferior("Das Argument <color:primary>" + word + " <color:negative>existiert nicht<color:inferior>.")));

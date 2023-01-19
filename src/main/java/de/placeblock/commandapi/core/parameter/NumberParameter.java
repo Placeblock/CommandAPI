@@ -14,8 +14,8 @@ public abstract class NumberParameter<S, T extends Number> implements Parameter<
     protected final T max;
 
     protected ParsedValue<T> checkNumber(ParsedValue<T> parsed) {
-        if (parsed.getParsed() == null) return parsed;
-        double numberDouble = parsed.getParsed().doubleValue();
+        if (parsed.getValue() == null) return parsed;
+        double numberDouble = parsed.getValue().doubleValue();
         if (numberDouble < this.min.doubleValue()) {
             parsed.setSyntaxException(new CommandSyntaxException(Texts.inferior("Die angegebene Zahl <color:negative>"+parsed+" <color:inferior>ist <color:negative>zu klein<color:inferior>. Das Minimum ist <color:negative>" + this.min)));
         }

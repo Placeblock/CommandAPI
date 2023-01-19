@@ -32,7 +32,7 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
             return false;
         }
         ParsedValue<String> nextWord = context.getReader().readUnquotedString();
-        String parsedWord = nextWord.getParsed();
+        String parsedWord = nextWord.getValue();
         if (parsedWord == null) return false;
         return parsedWord.equalsIgnoreCase(this.getName()) ||
             this.aliases.stream().map(alias -> alias.equalsIgnoreCase(parsedWord)).toList().size() > 0;

@@ -35,7 +35,7 @@ public class DoubleParameter<S> extends NumberParameter<S, Double> {
         ParsedValue<Double> parsedParameter = command != null ? context.getParameter(command.getName(), Double.class) : null;
         System.out.println(parsedParameter);
         assert parsedParameter != null;
-        Double parsedValue = parsedParameter.getParsed();
+        Double parsedValue = parsedParameter.getValue();
         String partial = parsedParameter.getString();
         System.out.println("HEHEHEHA");
         System.out.println(partial);

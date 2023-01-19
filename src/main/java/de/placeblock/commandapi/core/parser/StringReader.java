@@ -110,7 +110,7 @@ public class StringReader {
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Ganze Zahl <color:inferior>erwartet")));
         }
         try {
-            parsed.setParsed(Integer.parseInt(number));
+            parsed.setValue(Integer.parseInt(number));
         } catch (final NumberFormatException ex) {
             cursor = start;
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
@@ -129,7 +129,7 @@ public class StringReader {
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>lange ganze Zahl <color:inferior>erwartet")));
         }
         try {
-            parsed.setParsed(Long.parseLong(number));
+            parsed.setValue(Long.parseLong(number));
         } catch (final NumberFormatException ex) {
             cursor = start;
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
@@ -148,7 +148,7 @@ public class StringReader {
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet")));
         }
         try {
-            parsed.setParsed(Double.parseDouble(number));
+            parsed.setValue(Double.parseDouble(number));
         } catch (final NumberFormatException ex) {
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
         }
@@ -166,7 +166,7 @@ public class StringReader {
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet")));
         }
         try {
-            parsed.setParsed(Float.parseFloat(number));
+            parsed.setValue(Float.parseFloat(number));
         } catch (final NumberFormatException ex) {
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>Kommazahl <color:inferior>erwartet, <color:negative>" + number + " <color:inferior>gefunden")));
         }
@@ -231,7 +231,7 @@ public class StringReader {
         if (!finished) {
             parsed.setSyntaxException(new CommandSyntaxException(Texts.negative("Schließendes Anführungszeichen erwartet")));
         } else {
-            parsed.setParsed(result.toString());
+            parsed.setValue(result.toString());
         }
         return parsed;
     }
@@ -250,16 +250,16 @@ public class StringReader {
 
     public ParsedValue<Boolean> readBoolean() {
         final ParsedValue<String> value = readString();
-        ParsedValue<Boolean> parsed = new ParsedValue<>(null, value.getParsed(),
+        ParsedValue<Boolean> parsed = new ParsedValue<>(null, value.getValue(),
             new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>true <color:inferior>oder <color:primary>false <color:inferior>erwartet")));
-        if (value.getParsed() == null) {
+        if (value.getValue() == null) {
             parsed.setSyntaxException(value.getSyntaxException());
             return parsed;
         }
-        if (value.getParsed().equals("true")) {
-            parsed.setParsed(true);
-        } else if (value.getParsed().equals("false")) {
-            parsed.setParsed(false);
+        if (value.getValue().equals("true")) {
+            parsed.setValue(true);
+        } else if (value.getValue().equals("false")) {
+            parsed.setValue(false);
         } else {
             return parsed;
         }

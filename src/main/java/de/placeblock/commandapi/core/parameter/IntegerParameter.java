@@ -34,7 +34,7 @@ public class IntegerParameter<S> extends NumberParameter<S, Integer> {
         List<String> suggestions = new ArrayList<>();
         ParsedValue<Integer> parsedParameter = command != null ? context.getParameter(command.getName(), Integer.class) : null;
         assert parsedParameter != null;
-        Integer parsedValue = parsedParameter.getParsed();
+        Integer parsedValue = parsedParameter.getValue();
         // Suggest nothing if higher than maximum
         if ((parsedValue != null && parsedValue >= this.max) || (parsedParameter.hasException() && context.isNotParsedToEnd())) {
             return new ArrayList<>();
