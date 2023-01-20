@@ -49,6 +49,17 @@ public class ParseContext<S> {
         return (ParsedValue<T>) this.parameters.get(name);
     }
 
+    public <T> T getParameterValue(String name, Class<T> type) {
+        ParsedValue<T> parsedValue = this.getParameter(name, type);
+        if (parsedValue.isInvalid()) return null;
+        return parsedValue.getValue();
+    }
+
+    public <T> T getParameterValueOrDefault(String name, Class<T> type, T defaultValue) {
+        T value = this.getParameterValue(name, type);
+        return value != null ? value : defaultValue;
+    }
+
     public boolean isNotParsedToEnd() {
         return !this.getReader().getRemaining().trim().equals("");
     }
