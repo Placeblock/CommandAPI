@@ -21,7 +21,7 @@ public class ParseContext<S> {
     private final S source;
     private final Map<String, ParsedValue<?>> parameters = new HashMap<>();
     @Setter
-    private boolean noPermission = true;
+    private boolean noPermission = false;
     @Setter
     private List<TreeCommand<S>> parsedCommands = new ArrayList<>();
 

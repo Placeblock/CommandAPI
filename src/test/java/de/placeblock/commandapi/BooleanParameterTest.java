@@ -49,7 +49,6 @@ public class BooleanParameterTest {
 
         parseContext = parseTestCommand.parse("testcommandparse bool falsea", "");
         result = parseTestCommand.getSuggestions(parseContext);
-        System.out.println(result);
         assert result.isEmpty();
     }
 

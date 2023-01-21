@@ -1,7 +1,6 @@
 package de.placeblock.commandapi.core.tree;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.exception.CommandNoPermissionException;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +32,7 @@ public abstract class TreeCommand<S> {
             context.setNoPermission(true);
             return false;
         }
+        context.setNoPermission(false);
 
         // Parse the current Command
         if (!this.parse(context)) return false;

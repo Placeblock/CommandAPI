@@ -62,6 +62,10 @@ public abstract class Command<S> {
     public void execute(ParseContext<S> context) {
         S source = context.getSource();
         TreeCommand<S> lastParsedCommand = context.getLastParsedCommand();
+        if (context.isNoPermission()) {
+            this.sendMessage(source, Texts.INSUFFICIENT_PERMISSIONS);
+            return;
+        }
         // If the last parsed command is null we can skip the proccess
         if (lastParsedCommand != null) {
             // We have to check Errors if string wasn't parsed to the end
@@ -79,7 +83,7 @@ public abstract class Command<S> {
                     }
                 }
             }
-            if (context.getReader().getRemaining().equals("") && lastParsedCommand.getRun() != null) {
+            if (context.getReader().getRemaining().trim().equals("") && lastParsedCommand.getRun() != null) {
                 if (this.isAsync()) {
                     this.threadPool.execute(() -> lastParsedCommand.getRun().accept(context));
                 } else {
