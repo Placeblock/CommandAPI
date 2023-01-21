@@ -59,8 +59,8 @@ public abstract class TreeCommand<S> {
 
     public List<List<TreeCommand<S>>> getBranches(S source) {
         List<List<TreeCommand<S>>> branches = new ArrayList<>();
-        if (this.children.size() == 0) {
-            return new ArrayList<>(List.of(new ArrayList<>(List.of(this))));
+        if (this.children.size() == 0 || this.getRun() != null) {
+            branches.add(new ArrayList<>(List.of(this)));
         }
         for (TreeCommand<S> child : this.children) {
             if (child.hasNoPermission(source)) continue;
