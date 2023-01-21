@@ -51,7 +51,7 @@ public class ParseContext<S> {
 
     public <T> T getParameterValue(String name, Class<T> type) {
         ParsedValue<T> parsedValue = this.getParameter(name, type);
-        if (parsedValue.isInvalid()) return null;
+        if (parsedValue == null || parsedValue.isInvalid()) return null;
         return parsedValue.getValue();
     }
 
