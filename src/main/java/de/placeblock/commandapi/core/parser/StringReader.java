@@ -244,7 +244,7 @@ public class StringReader {
 
     public ParsedValue<Boolean> readBoolean() {
         final ParsedValue<String> value = readString();
-        ParsedValue<Boolean> parsed = new ParsedValue<>(null, value.getValue(),
+        ParsedValue<Boolean> parsed = new ParsedValue<>(null, value.getString(),
             new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:primary>true <color:inferior>oder <color:primary>false <color:inferior>erwartet")));
         if (value.getValue() == null) {
             parsed.setSyntaxException(value.getSyntaxException());

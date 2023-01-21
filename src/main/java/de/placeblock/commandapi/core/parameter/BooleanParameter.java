@@ -21,6 +21,7 @@ public class BooleanParameter<S> implements Parameter<S, Boolean>{
 
     @Override
     public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, Boolean> command) {
-        return this.startsWith(List.of("true", "false"), context.getParameter(command.getName()).getString());
+        String partial = context.getParameter(command.getName()).getString();
+        return this.startsWith(List.of("true", "false"), partial);
     }
 }
