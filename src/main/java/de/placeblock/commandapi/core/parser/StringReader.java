@@ -167,17 +167,9 @@ public class StringReader {
         return parsed;
     }
 
-    public static boolean isAllowedInUnquotedString(final char c) {
-        return c >= '0' && c <= '9'
-            || c >= 'A' && c <= 'Z'
-            || c >= 'a' && c <= 'z'
-            || c == '_' || c == '-'
-            || c == '.' || c == '+';
-    }
-
     public ParsedValue<String> readUnquotedString() {
         final int start = this.cursor;
-        while (canRead() && isAllowedInUnquotedString(peek())) {
+        while (canRead() && peek() != ' ') {
             skip();
         }
         String unquotedString = this.string.substring(start, this.cursor);
