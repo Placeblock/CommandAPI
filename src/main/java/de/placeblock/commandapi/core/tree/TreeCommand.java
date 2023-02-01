@@ -27,23 +27,35 @@ public abstract class TreeCommand<S> {
     abstract boolean parse(ParseContext<S> context);
 
     public boolean parseRecursive(ParseContext<S> context) {
+        Command.LOGGER.info("Parsing Command: " + this.name);
+        Command.LOGGER.info("Current Reader: '" + context.getReader().debugString() + "'");
         // Check Permissions
         if (this.hasNoPermission(context.getSource())) {
             context.setNoPermission(true);
+            Command.LOGGER.info("The player has no Permission to execute this commmand. Skipping.");
             return false;
         }
         context.setNoPermission(false);
 
         // Parse the current Command
-        if (!this.parse(context)) return false;
+        if (!this.parse(context)) {
+            Command.LOGGER.info("Couldn't parse Command.");
+            return false;
+        }
+        Command.LOGGER.info("Parsed Command: " + this.name);
+        Command.LOGGER.info("Current Reader: '" + context.getReader().debugString() + "'");
         context.addParsedCommand(this);
 
         // Only move forward if we haven't reached the end already
-        if (!context.getReader().canRead(1)) return true;
+        if (!context.getReader().canRead(1)) {
+            Command.LOGGER.info("Reader has no more text to read.");
+            return true;
+        }
 
         // Parse Children
         for (TreeCommand<S> child : this.children) {
             int oldcursor = context.getReader().getCursor();
+            Command.LOGGER.info("Parsing Child: " + child.getName());
 
             // Skip white space
             context.getReader().skip();

@@ -21,12 +21,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Author: Placeblock
  */
 @Getter
 public abstract class Command<S> {
+
+    public static Logger LOGGER;
+
+    static {
+        LOGGER = Logger.getLogger("commandapi");
+        LOGGER.setLevel(Level.WARNING);
+    }
 
     private final LiteralTreeCommand<S> base;
     private final TextComponent prefix;
@@ -60,9 +69,13 @@ public abstract class Command<S> {
     }
 
     public void execute(ParseContext<S> context) {
+        Command.LOGGER.info("Executing Command:");
+        Command.LOGGER.info("Current Reader: '" + context.getReader().debugString() + "'");
         S source = context.getSource();
         TreeCommand<S> lastParsedCommand = context.getLastParsedCommand();
+        Command.LOGGER.info("Last Parsed Command: " + (lastParsedCommand == null ? "null" : lastParsedCommand.getName()));
         if (context.isNoPermission()) {
+            Command.LOGGER.info("No permission to execute Command. Skipping.");
             this.sendMessage(source, Texts.INSUFFICIENT_PERMISSIONS);
             return;
         }
@@ -70,6 +83,7 @@ public abstract class Command<S> {
         if (lastParsedCommand != null) {
             // We have to check Errors if string wasn't parsed to the end
             if (context.isNotParsedToEnd()) {
+                Command.LOGGER.info("No permission to execute Command. Skipping.");
                 Map<String, ParsedValue<?>> errors = context.getParameters();
                 List<String> lastParsedCommandChildrenNames = lastParsedCommand.getChildren().stream().map(TreeCommand::getName).toList();
                 for (String parameterName : errors.keySet()) {
@@ -77,6 +91,7 @@ public abstract class Command<S> {
                     if (lastParsedCommandChildrenNames.contains(parameterName)) {
                         CommandSyntaxException syntaxException = errors.get(parameterName).getSyntaxException();
                         if (syntaxException != null) {
+                            Command.LOGGER.info("Found SyntaxException on children of last parsed Command.");
                             this.sendMessage(source, syntaxException.getTextMessage());
                             return;
                         }
@@ -84,6 +99,7 @@ public abstract class Command<S> {
                 }
             }
             if (context.getReader().getRemaining().trim().equals("") && lastParsedCommand.getRun() != null) {
+                Command.LOGGER.info("Checks passed. Executing.");
                 if (this.isAsync()) {
                     this.threadPool.execute(() -> lastParsedCommand.getRun().accept(context));
                 } else {
@@ -92,6 +108,7 @@ public abstract class Command<S> {
                 return;
             }
         }
+        Command.LOGGER.info("Something failed. Help Message.");
         this.sendMessage(source, this.generateHelpMessage(source));
     }
 
