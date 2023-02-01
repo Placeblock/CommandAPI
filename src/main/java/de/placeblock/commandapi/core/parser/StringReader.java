@@ -173,7 +173,13 @@ public class StringReader {
             skip();
         }
         String unquotedString = this.string.substring(start, this.cursor);
-        return new ParsedValue<>(unquotedString, unquotedString, null);
+        ParsedValue<String> parsedValue = new ParsedValue<>(unquotedString);
+        if (unquotedString.equals("")) {
+            parsedValue.setSyntaxException(new CommandSyntaxException(Texts.negative("Falsche Eingabe. <color:inferior>Leerer Text nicht möglich.")));
+        } else {
+            parsedValue.setValue(unquotedString);
+        }
+        return parsedValue;
     }
 
     public ParsedValue<String> readQuotedString() {

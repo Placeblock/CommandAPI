@@ -46,11 +46,8 @@ public class StringParameter<S> implements Parameter<S, String> {
                 return new ParsedValue<>(null, "", new CommandSyntaxException(Texts.inferior("Ein <color:primary>leerer String <color:inferior>ist als greedy Argument <color:negative>nicht erlaubt")));
             }
             return new ParsedValue<>(remaining, remaining, null);
-        } else if (type == StringType.SINGLE_WORD) {
-            return reader.readUnquotedString();
-        } else {
-            return reader.readString();
         }
+        return this.type == StringType.SINGLE_WORD ? reader.readUnquotedString() : reader.readString();
     }
 
     @Override
