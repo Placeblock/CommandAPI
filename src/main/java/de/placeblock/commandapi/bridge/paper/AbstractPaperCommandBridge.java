@@ -1,39 +1,42 @@
 package de.placeblock.commandapi.bridge.paper;
 
 import de.placeblock.commandapi.bridge.CommandBridge;
-import de.placeblock.commandapi.core.CommandAPICommand;
-import de.placeblock.commandapi.core.builder.LiteralArgumentBuilder;
-import de.placeblock.commandapi.core.context.ParseResults;
+import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
+import java.util.Map;
 
+/**
+ * Author: Placeblock
+ */
 @SuppressWarnings("unused")
 public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> extends Command implements CommandBridge<Player, P, CommandSender, PaperCommandSource<P>> {
     @Getter
-    private final CommandAPICommand<PaperCommandSource<P>> commandAPICommand;
+    private final de.placeblock.commandapi.core.Command<PaperCommandSource<P>> command;
 
     @Getter
     private final PL plugin;
 
-    public AbstractPaperCommandBridge(PL plugin, String label) {
+    public AbstractPaperCommandBridge(PL plugin, String label, boolean async) {
         super(label);
         this.plugin = plugin;
 
-        this.commandAPICommand = new CommandAPICommand<>(label) {
+        this.command = new de.placeblock.commandapi.core.Command<>(label, async) {
             @Override
-            public LiteralArgumentBuilder<PaperCommandSource<P>> generateCommand(LiteralArgumentBuilder<PaperCommandSource<P>> literalArgumentBuilder) {
-                return AbstractPaperCommandBridge.this.generateCommand(literalArgumentBuilder);
+            public LiteralTreeCommandBuilder<PaperCommandSource<P>> generateCommand(LiteralTreeCommandBuilder<PaperCommandSource<P>> builder) {
+                return AbstractPaperCommandBridge.this.generateCommand(builder);
             }
+
             @Override
-            public boolean hasSourcePermission(PaperCommandSource<P> source, String permission) {
+            public boolean hasPermission(PaperCommandSource<P> source, String permission) {
                 if (source.getPlayer() != null) {
                     return AbstractPaperCommandBridge.this.hasPermission(source.getPlayer(), permission);
                 }
@@ -41,8 +44,8 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
             }
 
             @Override
-            public void sendSourceMessage(PaperCommandSource<P> source, TextComponent message) {
-                if (source.getPlayer() != null) {
+            public void sendMessage(PaperCommandSource<P> source, TextComponent message) {
+                if (source.isPlayer()) {
                     AbstractPaperCommandBridge.this.sendMessage(source.getPlayer(), message);
                 } else {
                     source.getSender().sendMessage(message);
@@ -50,9 +53,7 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
             }
         };
 
-        this.setAliases(this.commandAPICommand.getCommandNode().getAliases());
-
-        plugin.getServer().getCommandMap().register(label, "commandapi", this);
+        this.setAliases(this.command.getBase().getAliases());
     }
 
 
@@ -63,8 +64,8 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
             lobbyPlayer = this.getCustomPlayer(player);
         }
         PaperCommandSource<P> source = new PaperCommandSource<>(lobbyPlayer, sender);
-        ParseResults<PaperCommandSource<P>> parseResults = this.commandAPICommand.parse(source, commandLabel + " " + String.join(" ", args));
-        this.commandAPICommand.execute(parseResults);
+        ParseContext<PaperCommandSource<P>> parseResults = this.command.parse(commandLabel + " " + String.join(" ", args), source);
+        this.command.execute(parseResults);
         return true;
     }
 
@@ -75,8 +76,21 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
         if (sender instanceof Player player) {
             customPlayer = this.getCustomPlayer(player);
         }
-        ParseResults<PaperCommandSource<P>> parseResults = this.commandAPICommand.parse(new PaperCommandSource<>(customPlayer, sender), buffer);
-        return this.commandAPICommand.getSuggestions(parseResults);
+        ParseContext<PaperCommandSource<P>> parseResults = this.command.parse(buffer, new PaperCommandSource<>(customPlayer, sender));
+        return this.command.getSuggestions(parseResults);
     }
 
+    @Override
+    public void register() {
+        this.plugin.getServer().getCommandMap().register(this.getLabel(), "commandapi", this);
+    }
+
+    @Override
+    public void unregister() {
+        CommandMap commandMap = this.plugin.getServer().getCommandMap();
+        this.unregister(commandMap);
+        Map<String, Command> knownCommands = commandMap.getKnownCommands();
+        knownCommands.remove("commandapi:" + this.getLabel());
+        knownCommands.remove(this.getLabel());
+    }
 }

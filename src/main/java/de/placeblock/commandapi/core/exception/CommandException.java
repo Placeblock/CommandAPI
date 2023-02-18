@@ -1,8 +1,10 @@
 package de.placeblock.commandapi.core.exception;
 
-import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 
+/**
+ * Author: Placeblock
+ */
 public class CommandException extends Exception {
 
     private final TextComponent message;

@@ -1,10 +1,8 @@
 package de.placeblock.commandapi.bridge.waterfall;
 
-import de.placeblock.commandapi.CommandAPI;
 import de.placeblock.commandapi.bridge.CommandBridge;
-import de.placeblock.commandapi.core.CommandAPICommand;
-import de.placeblock.commandapi.core.builder.LiteralArgumentBuilder;
-import de.placeblock.commandapi.core.context.ParseResults;
+import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
@@ -17,14 +15,16 @@ import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Author: Placeblock
+ */
 @SuppressWarnings("unused")
 public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> extends Command implements CommandBridge<ProxiedPlayer, P, CommandSender, WaterfallCommandSource<P>>, TabExecutor {
     @Getter
-    private final CommandAPICommand<WaterfallCommandSource<P>> commandAPICommand;
+    private final de.placeblock.commandapi.core.Command<WaterfallCommandSource<P>> command;
 
     @Getter
     private final PL plugin;
@@ -42,16 +42,17 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         }
     }
 
-    public AbstractWaterfallCommandBridge(PL plugin, String label) {
+    public AbstractWaterfallCommandBridge(PL plugin, String label, boolean async) {
         super(label);
         this.plugin = plugin;
-        this.commandAPICommand = new CommandAPICommand<>(label) {
+        this.command = new de.placeblock.commandapi.core.Command<>(label, async) {
             @Override
-            public LiteralArgumentBuilder<WaterfallCommandSource<P>> generateCommand(LiteralArgumentBuilder<WaterfallCommandSource<P>> literalArgumentBuilder) {
-                return AbstractWaterfallCommandBridge.this.generateCommand(literalArgumentBuilder.setAsync(true, true));
+            public LiteralTreeCommandBuilder<WaterfallCommandSource<P>> generateCommand(LiteralTreeCommandBuilder<WaterfallCommandSource<P>> builder) {
+                return AbstractWaterfallCommandBridge.this.generateCommand(builder);
             }
+
             @Override
-            public boolean hasSourcePermission(WaterfallCommandSource<P> source, String permission) {
+            public boolean hasPermission(WaterfallCommandSource<P> source, String permission) {
                 if (source.getPlayer() != null) {
                     return AbstractWaterfallCommandBridge.this.hasPermission(source.getPlayer(), permission);
                 }
@@ -59,8 +60,8 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
             }
 
             @Override
-            public void sendSourceMessage(WaterfallCommandSource<P> source, TextComponent message) {
-                if (source.getPlayer() != null) {
+            public void sendMessage(WaterfallCommandSource<P> source, TextComponent message) {
+                if (source.isPlayer()) {
                     AbstractWaterfallCommandBridge.this.sendMessage(source.getPlayer(), message);
                 } else {
                     source.getSender().sendMessage(BungeeComponentSerializer.get().serialize(message));
@@ -72,16 +73,10 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         try {
             Field aliasField = Command.class.getDeclaredField("aliases");
             long fieldOffset = unsafe.objectFieldOffset(aliasField);
-            unsafe.putObject(this, fieldOffset, this.commandAPICommand.getCommandNode().getAliases().toArray(new String[0]));
+            unsafe.putObject(this, fieldOffset, this.command.getBase().getAliases().toArray(new String[0]));
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
-        if (CommandAPI.DEBUG_MODE) {
-            System.out.println("Registered Waterfall Command with Aliases: " + this.commandAPICommand.getCommandNode().getAliases());
-            System.out.println("The following Aliases are registered: " + Arrays.toString(this.getAliases()));
-        }
-
-        plugin.getProxy().getPluginManager().registerCommand(this.plugin, this);
     }
 
     @Override
@@ -94,8 +89,8 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         List<String> nodes = new ArrayList<>();
         Collections.addAll(nodes, this.getName());
         Collections.addAll(nodes, args);
-        ParseResults<WaterfallCommandSource<P>> parseResults = this.commandAPICommand.parse(source, String.join(" ", nodes));
-        this.commandAPICommand.execute(parseResults);
+        ParseContext<WaterfallCommandSource<P>> parseResults = this.command.parse(String.join(" ", nodes), source);
+        this.command.execute(parseResults);
     }
 
     @Override
@@ -108,9 +103,17 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         if (sender instanceof ProxiedPlayer player) {
             customPlayer = this.getCustomPlayer(player);
         }
-        ParseResults<WaterfallCommandSource<P>> parseResults = this.commandAPICommand.parse(new WaterfallCommandSource<>(customPlayer, sender), buffer);
-        parseResults.getContext().print(0);
-        return this.commandAPICommand.getSuggestions(parseResults);
+        ParseContext<WaterfallCommandSource<P>> parseResults = this.command.parse(buffer, new WaterfallCommandSource<>(customPlayer, sender));
+        return this.command.getSuggestions(parseResults);
     }
 
+    @Override
+    public void register() {
+        this.plugin.getProxy().getPluginManager().registerCommand(this.plugin, this);
+    }
+
+    @Override
+    public void unregister() {
+        this.plugin.getProxy().getPluginManager().unregisterCommand(this);
+    }
 }
