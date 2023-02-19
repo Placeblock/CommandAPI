@@ -40,13 +40,12 @@ public class ParseTest {
         context = parseTestCommand.parse("testcommandparse remove  ", "TestPlayer", true);
         assert parseTestCommand.getSuggestions(context).isEmpty();
         context = parseTestCommand.parse("testcommandparse add awd", "TestPlayer", true);
-        assert parseTestCommand.getSuggestions(context).isEmpty();
+        List<String> suggestions = parseTestCommand.getSuggestions(context);
+        System.out.println(suggestions);
+        assert suggestions.isEmpty();
         context = parseTestCommand.parse("testcommandparse remove awd", "TestPlayer", true);
         assert parseTestCommand.getSuggestions(context).isEmpty();
-        System.out.println("ASSERTION ERRORRRRRRRRRR RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
         context = parseTestCommand.parse("testcommandparse remove ", "TestPlayer", true);
-        System.out.println(context.getLastParsedCommand().getName());
-        System.out.println(context.isNoPermission());
         assert parseTestCommand.getSuggestions(context).contains("0");
         context = parseTestCommand.parse("testcommandparse rem", "TestPlayer", true);
         assert parseTestCommand.getSuggestions(context).contains("remove");

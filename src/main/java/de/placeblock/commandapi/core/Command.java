@@ -118,23 +118,27 @@ public abstract class Command<S> {
             return this.base.getSuggestions(context);
         }
         String wrongInformation = context.getReader().getRemaining();
-        System.out.println(context.getReader().debugString());
-        System.out.println(context.getLastParsedCommand().getName());
+        Command.LOGGER.info(context.getReader().debugString());
+        Command.LOGGER.info("Last Parsed Command: " + lastParsedCommand.getName());
+        Command.LOGGER.info("Wrong Information: " + wrongInformation);
 
-        // We want to display autocompletion of parameters even if they are valid
-        if (wrongInformation.equals("") && lastParsedCommand instanceof ParameterTreeCommand<S,?> parameterTreeCommand) {
-            return parameterTreeCommand.getSuggestions(context);
+        // We want to display autocompletion of even if parameters are valid
+        // For this we have to set the cursor to before the parameter
+        boolean isLastParsedCommandParameter = wrongInformation.equals("") && lastParsedCommand instanceof ParameterTreeCommand<S,?>;
+        if (isLastParsedCommandParameter) {
+            String lastParsedCommandString = context.getParameter(lastParsedCommand.getName()).getString();
+            context.getReader().setCursor(context.getReader().getCursor()-lastParsedCommandString.length());
+            lastParsedCommand = context.getParsedCommands().get(context.getParsedCommands().size()-2);
         }
-        if (wrongInformation.startsWith(" ") && !wrongInformation.substring(1).contains(" ")) {
+
+        if (isLastParsedCommandParameter || (wrongInformation.startsWith(" ") && !wrongInformation.substring(1).contains(" "))) {
             List<String> suggestions = new ArrayList<>();
             context.getReader().skip();
+            int cursor = context.getReader().getCursor();
             for (TreeCommand<S> child : lastParsedCommand.getChildren()) {
-                System.out.println(child.getName());
-                int cursor = context.getReader().getCursor();
                 suggestions.addAll(child.getSuggestions(context));
                 context.getReader().setCursor(cursor);
             }
-            System.out.println(suggestions);
             return suggestions;
         }
         return new ArrayList<>();
@@ -145,10 +149,15 @@ public abstract class Command<S> {
         TextComponent helpMessage = Component.newline()
             .append(Texts.headline(this.getBase().getName().toUpperCase()).append(Component.newline()));
         for (List<TreeCommand<S>> branch : branches) {
+            // We only want to generate the branchCommand to the first Parameter
+            boolean parameterReached = false;
             StringBuilder branchCommand = new StringBuilder("/");
             TextComponent branchMessage = Texts.primary("/");
             for (int i = 0; i < branch.size(); i++) {
                 TreeCommand<S> treeCommand = branch.get(i);
+                if (treeCommand instanceof ParameterTreeCommand<?,?>) {
+                    parameterReached = true;
+                }
                 TextComponent treeCommandMessage = treeCommand.getHelpComponent().color(i == 0 ? Colors.PRIMARY : Colors.INFERIOR);
                 TextComponent hoverText = Component.empty();
                 TextComponent description = treeCommand.getDescription();
@@ -160,7 +169,9 @@ public abstract class Command<S> {
                     treeCommandMessage = treeCommandMessage.hoverEvent(HoverEvent.showText(hoverText));
                 }
                 branchMessage = branchMessage.append(treeCommandMessage).append(Component.space());
-                branchCommand.append(treeCommand.getName()).append(" ");
+                if (!parameterReached) {
+                    branchCommand.append(treeCommand.getName()).append(" ");
+                }
             }
             branchMessage = branchMessage.clickEvent(ClickEvent.suggestCommand(branchCommand.toString()));
             helpMessage = helpMessage.append(branchMessage.append(Component.newline()));
