@@ -12,18 +12,18 @@ public class EnumParameterTest {
     @Test
     public void testEnumParameterSuggestions() {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
-        ParseContext<String> parseContext = parseTestCommand.parse("testcommandparse add ", "");
+        ParseContext<String> parseContext = parseTestCommand.parse("testcommandparse add ", "", true);
         List<String> result = parseTestCommand.getSuggestions(parseContext);
         assert result.contains("TEST");
 
-        parseContext = parseTestCommand.parse("testcommandparse add T", "");
+        parseContext = parseTestCommand.parse("testcommandparse add T", "", true);
         result = parseTestCommand.getSuggestions(parseContext);
         assert result.contains("TEST");
 
-        parseContext = parseTestCommand.parse("testcommandparse add TEST", "");
+        parseContext = parseTestCommand.parse("testcommandparse add TEST", "", true);
         result = parseTestCommand.getSuggestions(parseContext);
         assert result.contains("TEST2");
-        parseContext = parseTestCommand.parse("testcommandparse add ABCD", "");
+        parseContext = parseTestCommand.parse("testcommandparse add ABCD", "", true);
         result = parseTestCommand.getSuggestions(parseContext);
         assert result.isEmpty();
     }

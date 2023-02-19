@@ -64,7 +64,7 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
             lobbyPlayer = this.getCustomPlayer(player);
         }
         PaperCommandSource<P> source = new PaperCommandSource<>(lobbyPlayer, sender);
-        ParseContext<PaperCommandSource<P>> parseResults = this.command.parse(commandLabel + " " + String.join(" ", args), source);
+        ParseContext<PaperCommandSource<P>> parseResults = this.command.parse(commandLabel + " " + String.join(" ", args), source, false);
         this.command.execute(parseResults);
         return true;
     }
@@ -76,7 +76,7 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
         if (sender instanceof Player player) {
             customPlayer = this.getCustomPlayer(player);
         }
-        ParseContext<PaperCommandSource<P>> parseResults = this.command.parse(buffer, new PaperCommandSource<>(customPlayer, sender));
+        ParseContext<PaperCommandSource<P>> parseResults = this.command.parse(buffer, new PaperCommandSource<>(customPlayer, sender), true);
         return this.command.getSuggestions(parseResults);
     }
 

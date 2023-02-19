@@ -89,7 +89,7 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         List<String> nodes = new ArrayList<>();
         Collections.addAll(nodes, this.getName());
         Collections.addAll(nodes, args);
-        ParseContext<WaterfallCommandSource<P>> parseResults = this.command.parse(String.join(" ", nodes), source);
+        ParseContext<WaterfallCommandSource<P>> parseResults = this.command.parse(String.join(" ", nodes), source, false);
         this.command.execute(parseResults);
     }
 
@@ -103,7 +103,7 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         if (sender instanceof ProxiedPlayer player) {
             customPlayer = this.getCustomPlayer(player);
         }
-        ParseContext<WaterfallCommandSource<P>> parseResults = this.command.parse(buffer, new WaterfallCommandSource<>(customPlayer, sender));
+        ParseContext<WaterfallCommandSource<P>> parseResults = this.command.parse(buffer, new WaterfallCommandSource<>(customPlayer, sender), true);
         return this.command.getSuggestions(parseResults);
     }
 

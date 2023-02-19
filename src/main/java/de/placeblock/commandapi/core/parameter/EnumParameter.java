@@ -26,6 +26,7 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
     @Override
     public ParsedValue<E> parse(ParseContext<S> context, ParameterTreeCommand<S, E> command) {
         ParsedValue<String> word = context.getReader().readUnquotedString();
+        System.out.println("'"+word.getValue()+"'");
         if (word.isInvalid()) {
             return new ParsedValue<>(null, word.getString(), word.getSyntaxException());
         }
@@ -40,7 +41,7 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
     @Override
     public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, E> command) {
         ParsedValue<E> parsedValue = context.getParameter(command.getName(), this.enumClass);
-        String partial = parsedValue.getString();
+        String partial = parsedValue == null ? "" : parsedValue.getString();
         ArrayList<String> suggestions = new ArrayList<>();
         for (E enumValue : this.enumValues) {
             String displayName;

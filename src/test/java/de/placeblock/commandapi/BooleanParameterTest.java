@@ -1,5 +1,6 @@
 package de.placeblock.commandapi;
 
+import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.parameter.BooleanParameter;
 import de.placeblock.commandapi.core.parser.ParseContext;
 import de.placeblock.commandapi.core.parser.ParsedValue;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
 
 /**
  * Author: Placeblock
@@ -38,16 +40,17 @@ public class BooleanParameterTest {
 
     @Test
     public void testBooleanParameterSuggestions() {
+        Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
-        ParseContext<String> parseContext = parseTestCommand.parse("testcommandparse bool t", "");
+        ParseContext<String> parseContext = parseTestCommand.parse("testcommandparse bool t", "", true);
         List<String> result = parseTestCommand.getSuggestions(parseContext);
         assert result.contains("true") && !result.contains("false");
 
-        parseContext = parseTestCommand.parse("testcommandparse bool f", "");
+        parseContext = parseTestCommand.parse("testcommandparse bool f", "", true);
         result = parseTestCommand.getSuggestions(parseContext);
         assert result.contains("false") && !result.contains("true");
 
-        parseContext = parseTestCommand.parse("testcommandparse bool falsea", "");
+        parseContext = parseTestCommand.parse("testcommandparse bool falsea", "", true);
         result = parseTestCommand.getSuggestions(parseContext);
         assert result.isEmpty();
     }

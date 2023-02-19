@@ -26,47 +26,78 @@ public abstract class TreeCommand<S> {
 
     abstract boolean parse(ParseContext<S> context);
 
-    public boolean parseRecursive(ParseContext<S> context) {
+
+    public ParseResult parseRecursive(ParseContext<S> context, boolean suggestion) {
+        ArrayList<TreeCommand<S>> parsedCommands = new ArrayList<>();
+        ParseResult parseResult = this.parseRecursive(context, parsedCommands, suggestion);
+        context.setParsedCommands(parsedCommands);
+        return parseResult;
+    }
+
+    private ParseResult parseRecursive(ParseContext<S> context, List<TreeCommand<S>> parsedCommands, boolean suggestion) {
         Command.LOGGER.info("Parsing Command: " + this.name);
-        Command.LOGGER.info("Current Reader: '" + context.getReader().debugString() + "'");
+        Command.LOGGER.info("Current Reader: " + context.getReader().debugString());
         // Check Permissions
         if (this.hasNoPermission(context.getSource())) {
             context.setNoPermission(true);
             Command.LOGGER.info("The player has no Permission to execute this commmand. Skipping.");
-            return false;
+            return ParseResult.NO_PERMISSION;
         }
         context.setNoPermission(false);
 
         // Parse the current Command
         if (!this.parse(context)) {
             Command.LOGGER.info("Couldn't parse Command.");
-            return false;
+            return ParseResult.PARSE_ERROR;
         }
         Command.LOGGER.info("Parsed Command: " + this.name);
-        Command.LOGGER.info("Current Reader: '" + context.getReader().debugString() + "'");
-        context.addParsedCommand(this);
+        Command.LOGGER.info("Current Reader: " + context.getReader().debugString());
+        parsedCommands.add(this);
 
         // Only move forward if we haven't reached the end already
-        if (!context.getReader().canRead(1)) {
+        if (!context.getReader().canRead(2)) {
             Command.LOGGER.info("Reader has no more text to read.");
-            return true;
+            return ParseResult.SUCCESS;
         }
 
+        int oldcursor = context.getReader().getCursor();
+        boolean childParsed = false;
         // Parse Children
         for (TreeCommand<S> child : this.children) {
-            int oldcursor = context.getReader().getCursor();
             Command.LOGGER.info("Parsing Child: " + child.getName());
 
             // Skip white space
             context.getReader().skip();
 
-            if (child.parseRecursive(context)) {
-                return true;
+            List<TreeCommand<S>> childParsedCommands = new ArrayList<>();
+            ParseResult childParseResult = child.parseRecursive(context, childParsedCommands, suggestion);
+            childParsed = true;
+            Command.LOGGER.info("Parse Result Of Child " + child.getName() + ": " + childParseResult);
+            if (suggestion ? childParseResult.isSuggestionSuccess() : childParseResult.isExecuteSuccess()) {
+                // We append the parsed child commands only if they were successful
+                parsedCommands.addAll(childParsedCommands);
+                return ParseResult.SUCCESS;
             } else {
                 context.getReader().setCursor(oldcursor);
             }
         }
-        return true;
+        if (childParsed) {
+            return ParseResult.CHILD_PARSE_ERROR;
+        }
+        return ParseResult.NO_CHILDREN;
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    private enum ParseResult {
+        SUCCESS(true, true),
+        NO_PERMISSION(false, false),
+        PARSE_ERROR(false, false),
+        NO_CHILDREN(false, false),
+        CHILD_PARSE_ERROR(false, true);
+
+        private final boolean executeSuccess;
+        private final boolean suggestionSuccess;
     }
 
     public List<List<TreeCommand<S>>> getBranches(S source) {

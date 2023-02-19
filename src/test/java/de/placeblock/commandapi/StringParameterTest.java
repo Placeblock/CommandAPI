@@ -12,12 +12,12 @@ public class StringParameterTest {
     @Test
     public void testGreedyStringParameterParse() {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
-        ParseContext<String> parseContext = parseTestCommand.parse("testcommandparse greedy a", "");
+        ParseContext<String> parseContext = parseTestCommand.parse("testcommandparse greedy a", "", false);
         ParsedValue<String> parsedGreedy = parseContext.getParameter("greedy", String.class);
         assert "a".equals(parsedGreedy.getValue());
         assert "a".equals(parsedGreedy.getString());
 
-        parseContext = parseTestCommand.parse("testcommandparse greedy a awd awdaw awd", "");
+        parseContext = parseTestCommand.parse("testcommandparse greedy a awd awdaw awd", "", false);
         parsedGreedy = parseContext.getParameter("greedy", String.class);
         assert "a awd awdaw awd".equals(parsedGreedy.getValue());
         assert "a awd awdaw awd".equals(parsedGreedy.getString());

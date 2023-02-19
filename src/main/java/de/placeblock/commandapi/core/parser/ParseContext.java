@@ -38,8 +38,6 @@ public class ParseContext<S> {
         this.parameters.put(name, parameter);
     }
 
-    public void addParsedCommand(TreeCommand<S> command) {this.parsedCommands.add(command);}
-
     public ParsedValue<?> getParameter(String name) {
         return this.parameters.get(name);
     }

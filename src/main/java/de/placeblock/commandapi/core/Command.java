@@ -62,9 +62,9 @@ public abstract class Command<S> {
     public abstract boolean hasPermission(S source, String permission);
     public abstract void sendMessage(S source, TextComponent message);
 
-    public ParseContext<S> parse(String text, S source) {
+    public ParseContext<S> parse(String text, S source, boolean suggestion) {
         ParseContext<S> parseContext = new ParseContext<>(new StringReader(text), source);
-        this.base.parseRecursive(parseContext);
+        this.base.parseRecursive(parseContext, suggestion);
         return parseContext;
     }
 
@@ -118,20 +118,23 @@ public abstract class Command<S> {
             return this.base.getSuggestions(context);
         }
         String wrongInformation = context.getReader().getRemaining();
+        System.out.println(context.getReader().debugString());
+        System.out.println(context.getLastParsedCommand().getName());
 
         // We want to display autocompletion of parameters even if they are valid
         if (wrongInformation.equals("") && lastParsedCommand instanceof ParameterTreeCommand<S,?> parameterTreeCommand) {
             return parameterTreeCommand.getSuggestions(context);
         }
-
         if (wrongInformation.startsWith(" ") && !wrongInformation.substring(1).contains(" ")) {
             List<String> suggestions = new ArrayList<>();
             context.getReader().skip();
             for (TreeCommand<S> child : lastParsedCommand.getChildren()) {
+                System.out.println(child.getName());
                 int cursor = context.getReader().getCursor();
                 suggestions.addAll(child.getSuggestions(context));
                 context.getReader().setCursor(cursor);
             }
+            System.out.println(suggestions);
             return suggestions;
         }
         return new ArrayList<>();
