@@ -7,9 +7,6 @@ import de.placeblock.commandapi.core.parser.StringReader;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Author: Placeblock
  */
@@ -50,8 +47,6 @@ public class StringParameter<S> implements Parameter<S, String> {
     }
 
     @Override
-    public List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
-        return new ArrayList<>();
-    }
+    public void getSuggestions(SuggestionBuilder<S> suggestionBuilder) {}
 }
 

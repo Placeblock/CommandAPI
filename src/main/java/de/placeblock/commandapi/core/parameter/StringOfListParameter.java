@@ -27,8 +27,8 @@ public class StringOfListParameter<S> implements Parameter<S, String> {
     }
 
     @Override
-    public List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
+    public void getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
         String partial = suggestionBuilder.getRemaining();
-        return Parameter.startsWith(this.values, partial);
+        suggestionBuilder.withSuggestions(Parameter.startsWith(this.values, partial));
     }
 }

@@ -4,9 +4,6 @@ import de.placeblock.commandapi.core.SuggestionBuilder;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.parser.ParsedCommand;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Author: Placeblock
  */
@@ -30,18 +27,16 @@ public class IntegerParameter<S> extends NumberParameter<S, Integer> {
     }
 
     @Override
-    public List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
-        List<String> suggestions = new ArrayList<>();
+    public void getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
         String partial = suggestionBuilder.getRemaining();
         for (int i = 0; i < 10; i++) {
             String suggestion = (partial != null ? partial : "") + i;
             try {
                 // Suggest only lower or equals than maximum
                 if (Integer.parseInt(suggestion) > this.max) continue;
-                suggestions.add(suggestion);
+                suggestionBuilder.withSuggestion(suggestion);
             } catch (NumberFormatException ignored) {}
         }
-        return suggestions;
     }
 
 }

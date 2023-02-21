@@ -41,7 +41,9 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
         if (this.hasNoPermission(source)) {
             return new ArrayList<>();
         }
-        return this.parameter.getSuggestions(new SuggestionBuilder<>(this, command.getReader().getRemaining(), source));
+        SuggestionBuilder<S> suggestionBuilder = new SuggestionBuilder<>(this, command.getReader().getRemaining(), source);
+        this.parameter.getSuggestions(suggestionBuilder);
+        return suggestionBuilder.getSuggestions();
     }
 
     @Override

@@ -20,8 +20,8 @@ public class BooleanParameter<S> implements Parameter<S, Boolean>{
     }
 
     @Override
-    public List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
+    public void getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
         String partial = suggestionBuilder.getRemaining();
-        return Parameter.startsWith(List.of("true", "false"), partial);
+        suggestionBuilder.withSuggestions(Parameter.startsWith(List.of("true", "false"), partial));
     }
 }

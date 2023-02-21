@@ -6,9 +6,6 @@ import de.placeblock.commandapi.core.parser.ParsedCommand;
 import io.schark.design.texts.Texts;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Author: Placeblock
  */
@@ -33,9 +30,8 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
     }
 
     @Override
-    public List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
+    public void getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
         String partial = suggestionBuilder.getRemaining();
-        ArrayList<String> suggestions = new ArrayList<>();
         for (E enumValue : this.enumValues) {
             String displayName;
             if (enumValue instanceof CommandEnum commandEnumValue) {
@@ -44,9 +40,8 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
                 displayName = enumValue.name();
             }
             if (displayName.toLowerCase().startsWith(partial.toLowerCase())) {
-                suggestions.add(displayName);
+                suggestionBuilder.withSuggestion(displayName);
             }
         }
-        return suggestions;
     }
 }

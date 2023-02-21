@@ -13,7 +13,7 @@ public interface Parameter<S, T> {
 
     T parse(ParsedCommand<S> command) throws CommandSyntaxException;
 
-    List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder);
+    void getSuggestions(SuggestionBuilder<S> suggestionBuilder);
 
     @SuppressWarnings("unused")
     static List<String> startsWith(List<String> list, String partial) {
