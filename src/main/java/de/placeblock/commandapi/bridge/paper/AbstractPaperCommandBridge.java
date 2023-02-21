@@ -6,12 +6,16 @@ import de.placeblock.commandapi.core.parser.ParsedCommand;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +23,7 @@ import java.util.Map;
  * Author: Placeblock
  */
 @SuppressWarnings("unused")
-public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> extends Command implements CommandBridge<Player, P, CommandSender, PaperCommandSource<P>> {
+public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> extends Command implements CommandBridge<Player, P, CommandSender, PaperCommandSource<P>>, Listener {
     @Getter
     private final de.placeblock.commandapi.core.Command<PaperCommandSource<P>> command;
 
@@ -65,18 +69,22 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
             lobbyPlayer = this.getCustomPlayer(player);
         }
         PaperCommandSource<P> source = new PaperCommandSource<>(lobbyPlayer, sender);
-        if (this.command.isAsync()) {
-            new Thread(() -> this.execute(commandLabel, args, source)).start();
-        } else {
-            this.execute(commandLabel, args, source);
-        }
+        new Thread(() -> {
+            List<ParsedCommand<PaperCommandSource<P>>> parseResults = this.command.parse(commandLabel + " " + String.join(" ", args), source);
+            ParsedCommand<PaperCommandSource<P>> bestResult = de.placeblock.commandapi.core.Command.getBestResult(parseResults);
+            if (this.command.isAsync()) {
+                this.execute(bestResult, source);
+            } else {
+                Bukkit.getScheduler().runTask(this.plugin, () -> this.execute(bestResult, source));
+            }
+        }).start();
+
         return true;
     }
 
-    private void execute(@NotNull String commandLabel, @NotNull String[] args, PaperCommandSource<P> source) {
-        List<ParsedCommand<PaperCommandSource<P>>> parseResults = this.command.parse(commandLabel + " " + String.join(" ", args), source);
+    private void execute(ParsedCommand<PaperCommandSource<P>> parseResult, PaperCommandSource<P> source) {
         try {
-            this.command.execute(de.placeblock.commandapi.core.Command.getBestResult(parseResults), source);
+            this.command.execute(parseResult, source);
         } catch (CommandSyntaxException e) {
             this.command.sendMessage(source, e.getTextMessage());
         }
@@ -97,10 +105,12 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
     @Override
     public void register() {
         this.plugin.getServer().getCommandMap().register(this.getLabel(), "commandapi", this);
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
     public void unregister() {
+        HandlerList.unregisterAll(this);
         CommandMap commandMap = this.plugin.getServer().getCommandMap();
         this.unregister(commandMap);
         Map<String, Command> knownCommands = commandMap.getKnownCommands();
