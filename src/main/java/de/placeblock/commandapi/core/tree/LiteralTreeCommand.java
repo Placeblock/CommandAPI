@@ -36,7 +36,9 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
 
     @Override
     public List<String> getSuggestions(ParsedCommand<S> context, S source) {
-        if (!this.getName().startsWith(context.getReader().getRemaining().trim())
+        String partial = context.getReader().getRemaining();
+        if (((!this.getName().startsWith(partial) || this.getName().equals(partial))
+            && this.aliases.stream().filter(alias -> alias.startsWith(partial) && !alias.equals(partial)).toList().size() == 0)
             || this.hasNoPermission(source)) {
             return new ArrayList<>();
         }

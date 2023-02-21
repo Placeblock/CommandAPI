@@ -29,27 +29,38 @@ public abstract class TreeCommand<S> {
 
     protected abstract void parse(ParsedCommand<S> command, S source) throws CommandSyntaxException;
 
-    public List<ParsedCommand<S>> parseRecursive(ParsedCommand<S> parsedCommand, S source) {
+    public List<ParsedCommand<S>> parseRecursive(ParsedCommand<S> command, S source) {
+        int cursor = command.getReader().getCursor();
         List<ParsedCommand<S>> commands = new ArrayList<>();
-        commands.add(parsedCommand);
+        commands.add(command);
         if (this.hasNoPermission(source)) {
-            parsedCommand.addException(this, new CommandSyntaxException(Errors.INVALID_COMMAND));
+            command.addException(this, new CommandSyntaxException(Errors.INVALID_COMMAND));
             return commands;
         }
         try {
-            this.parse(parsedCommand, source);
+            Command.LOGGER.info("Parsing Command " + this.getName());
+            this.parse(command, source);
         } catch (CommandSyntaxException e) {
-            parsedCommand.addException(this, e);
+            Command.LOGGER.info("Error Parsing Command " + this.getName());
+            command.addException(this, e);
+            // If an error occured while parsing we reset the cursor and subtract -1 because of the whitespace
+            command.getReader().setCursor(cursor - 1);
             return commands;
         }
-        StringReader reader = parsedCommand.getReader();
+        StringReader reader = command.getReader();
+        // We only parse Children if we can read further
         if (reader.canRead(2) && reader.peek(1) != ' ') {
             for (TreeCommand<S> child : this.getChildren()) {
-                ParsedCommand<S> childParsedCommand = new ParsedCommand<>(parsedCommand);
+                Command.LOGGER.info("Parsing Child " + child.getName());
+                ParsedCommand<S> childParsedCommand = new ParsedCommand<>(command);
                 childParsedCommand.getReader().skip();
-                child.parseRecursive(childParsedCommand, source);
-                commands.add(childParsedCommand);
+                List<ParsedCommand<S>> childParsedCommands = child.parseRecursive(childParsedCommand, source);
+                commands.addAll(childParsedCommands);
             }
+        }
+        Command.LOGGER.info("Commands of TreeCommand " + this.name);
+        for (ParsedCommand<S> parsedCommand : commands) {
+            Command.LOGGER.info(parsedCommand.getParsedTreeCommands().stream().map(TreeCommand::getName).toList() + ": " + parsedCommand.getReader().debugString());
         }
         return commands;
     }
@@ -68,15 +79,6 @@ public abstract class TreeCommand<S> {
             }
         }
         return branches;
-    }
-
-    public int getShortestBranchLength(S source) {
-        List<List<TreeCommand<S>>> branches = this.getBranches(source);
-        int branchLength = Integer.MAX_VALUE;
-        for (List<TreeCommand<S>> branch : branches) {
-            branchLength = Math.min(branchLength, branch.size());
-        }
-        return branchLength;
     }
 
     public boolean hasNoPermission(S source) {

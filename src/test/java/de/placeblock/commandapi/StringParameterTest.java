@@ -16,12 +16,12 @@ public class StringParameterTest {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "";
         List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse greedy a", source);
-        ParsedCommand<String> result = Command.getBestResult(results, source);
+        ParsedCommand<String> result = Command.getBestResult(results);
         String parsedGreedy = result.getParsedParameter("greedy", String.class);
         assert "a".equals(parsedGreedy);
 
         results = parseTestCommand.parse("testcommandparse greedy a awd awdaw awd", source);
-        result = Command.getBestResult(results, source);
+        result = Command.getBestResult(results);
         parsedGreedy = result.getParsedParameter("greedy", String.class);
         assert "a awd awdaw awd".equals(parsedGreedy);
     }

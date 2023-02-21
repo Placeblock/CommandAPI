@@ -90,9 +90,17 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         List<String> nodes = new ArrayList<>();
         Collections.addAll(nodes, this.getName());
         Collections.addAll(nodes, args);
+        if (this.command.isAsync()) {
+            new Thread(() -> this.execute(source, nodes)).start();
+        } else {
+            this.execute(source, nodes);
+        }
+    }
+
+    private void execute(WaterfallCommandSource<P> source, List<String> nodes) {
         List<ParsedCommand<WaterfallCommandSource<P>>> parseResults = this.command.parse(String.join(" ", nodes), source);
         try {
-            this.command.execute(de.placeblock.commandapi.core.Command.getBestResult(parseResults, source), source);
+            this.command.execute(de.placeblock.commandapi.core.Command.getBestResult(parseResults), source);
         } catch (CommandSyntaxException e) {
             this.command.sendMessage(source, e.getTextMessage());
         }

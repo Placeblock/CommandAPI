@@ -65,13 +65,21 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
             lobbyPlayer = this.getCustomPlayer(player);
         }
         PaperCommandSource<P> source = new PaperCommandSource<>(lobbyPlayer, sender);
+        if (this.command.isAsync()) {
+            new Thread(() -> this.execute(commandLabel, args, source)).start();
+        } else {
+            this.execute(commandLabel, args, source);
+        }
+        return true;
+    }
+
+    private void execute(@NotNull String commandLabel, @NotNull String[] args, PaperCommandSource<P> source) {
         List<ParsedCommand<PaperCommandSource<P>>> parseResults = this.command.parse(commandLabel + " " + String.join(" ", args), source);
         try {
-            this.command.execute(de.placeblock.commandapi.core.Command.getBestResult(parseResults, source), source);
+            this.command.execute(de.placeblock.commandapi.core.Command.getBestResult(parseResults), source);
         } catch (CommandSyntaxException e) {
             this.command.sendMessage(source, e.getTextMessage());
         }
-        return true;
     }
 
     @Override

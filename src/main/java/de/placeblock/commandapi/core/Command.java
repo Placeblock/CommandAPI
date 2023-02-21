@@ -62,7 +62,11 @@ public abstract class Command<S> {
 
     public List<ParsedCommand<S>> parse(String text, S source) {
         ParsedCommand<S> parsedCommand = new ParsedCommand<>(new StringReader(text));
-        return this.base.parseRecursive(parsedCommand, source);
+        System.out.println("Method gets executed");
+        long start = System.nanoTime();
+        List<ParsedCommand<S>> parsedCommands = this.base.parseRecursive(parsedCommand, source);
+        System.out.println("Time: " + (System.nanoTime() - start));
+        return parsedCommands;
     }
 
     public void execute(ParsedCommand<S> result, S source) throws CommandSyntaxException {
@@ -86,21 +90,43 @@ public abstract class Command<S> {
     public List<String> getSuggestions(List<ParsedCommand<S>> results, S source) {
         List<String> suggestions = new ArrayList<>();
         for (ParsedCommand<S> result : results) {
-            TreeCommand<S> lastParsedTreeCommand = result.getLastParsedTreeCommand();
-            List<String> resultSuggestions = lastParsedTreeCommand.getSuggestions(result, source);
-            suggestions.addAll(resultSuggestions);
+            Command.LOGGER.info("Checking Result: " + result.getParsedTreeCommands().stream().map(TreeCommand::getName).toList());
+            StringReader reader = result.getReader();
+            String remaining = reader.getRemaining();
+            // We only get suggestions if the remaining text starts with a whitespace and the next char is no whitespace
+            if (remaining.startsWith(" ") && !remaining.substring(1).startsWith(" ")) {
+                reader.skip();
+                TreeCommand<S> lastParsedTreeCommand = result.getLastParsedTreeCommand();
+                List<TreeCommand<S>> suggestionTreeCommands;
+                // If the last command was parsed successfully we get suggestions for the child commands
+                if (result.getExceptions().containsKey(lastParsedTreeCommand)) {
+                    suggestionTreeCommands = List.of(lastParsedTreeCommand);
+                } else {
+                    suggestionTreeCommands = lastParsedTreeCommand.getChildren();
+                }
+                for (TreeCommand<S> suggestionTreeCommand : suggestionTreeCommands) {
+                    Command.LOGGER.info("Getting Suggestions for TreeCommand: " + suggestionTreeCommand.getName());
+                    List<String> resultSuggestions = suggestionTreeCommand.getSuggestions(result, source);
+                    Command.LOGGER.info(resultSuggestions.toString());
+                    suggestions.addAll(resultSuggestions);
+                }
+            }
         }
         return suggestions;
     }
 
-    public static <S> ParsedCommand<S> getBestResult(List<ParsedCommand<S>> results, S source) {
+    public static <S> ParsedCommand<S> getBestResult(List<ParsedCommand<S>> results) {
         results.sort((a, b) -> {
-            TreeCommand<S> aLastParsedTreeCommand = a.getLastParsedTreeCommand();
+            /*TreeCommand<S> aLastParsedTreeCommand = a.getLastParsedTreeCommand();
             TreeCommand<S> bLastParsedTreeCommand = b.getLastParsedTreeCommand();
             int aShortestBranchLength = aLastParsedTreeCommand.getShortestBranchLength(source);
-            int bShortestBranchLength = bLastParsedTreeCommand.getShortestBranchLength(source);
-            if (aShortestBranchLength < bShortestBranchLength) return -1;
-            if (aShortestBranchLength > bShortestBranchLength) return 1;
+            int bShortestBranchLength = bLastParsedTreeCommand.getShortestBranchLength(source);*/
+            if (a.getParsedTreeCommands().size() > b.getParsedTreeCommands().size()) return -1;
+            if (a.getParsedTreeCommands().size() < b.getParsedTreeCommands().size()) return 1;
+            CommandExecutor<S> aCommandExecutor = a.getLastParsedTreeCommand().getCommandExecutor();
+            CommandExecutor<S> bCommandExecutor = b.getLastParsedTreeCommand().getCommandExecutor();
+            if (aCommandExecutor != null && bCommandExecutor == null) return -1;
+            if (aCommandExecutor == null && bCommandExecutor != null) return 1;
             if (a.getReader().canRead() && !b.getReader().canRead()) return -1;
             if (!a.getReader().canRead() && b.getReader().canRead()) return 1;
             if (a.getExceptions().isEmpty() && !b.getExceptions().isEmpty()) return -1;

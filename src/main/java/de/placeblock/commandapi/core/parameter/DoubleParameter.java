@@ -37,7 +37,10 @@ public class DoubleParameter<S> extends NumberParameter<S, Double> {
         // Suggest nothing if partial is < 0 and partial is smaller than min
         boolean partialHasDot = partial.contains(".");
         if (!partialHasDot) {
-            suggestions.add(".");
+            try {
+                Double.parseDouble(partial);
+                suggestions.add(".");
+            } catch (NumberFormatException ignored) {}
         }
         if (partial.split("\\.", -1).length > 2) return new ArrayList<>();
         for (int i = 0; i < 10; i++) {
