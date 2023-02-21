@@ -1,8 +1,8 @@
 package de.placeblock.commandapi.core.parameter;
 
-import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.parser.ParsedValue;
-import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
+import de.placeblock.commandapi.core.SuggestionBuilder;
+import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.parser.ParsedCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,25 +24,22 @@ public class IntegerParameter<S> extends NumberParameter<S, Integer> {
     }
 
     @Override
-    public ParsedValue<Integer> parse(ParseContext<S> context, ParameterTreeCommand<S, Integer> command) {
-        ParsedValue<Integer> result = context.getReader().readInt();
+    public Integer parse(ParsedCommand<S> command) throws CommandSyntaxException {
+        Integer result = command.getReader().readInt();
         return this.checkNumber(result);
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, Integer> command) {
+    public List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
         List<String> suggestions = new ArrayList<>();
-        ParsedValue<Integer> parsedParameter = context.getParameter(command.getName(), Integer.class);
-        Integer parsedValue = parsedParameter == null ? null : parsedParameter.getValue();
-        // Suggest nothing if higher than maximum
-        if ((parsedValue != null && parsedValue >= this.max) || (parsedParameter != null && parsedParameter.isInvalid() && context.isNotParsedToEnd())) {
-            return new ArrayList<>();
-        }
-        // Suggest only lower or equals than maximum
+        String partial = suggestionBuilder.getRemaining();
         for (int i = 0; i < 10; i++) {
-            String suggestion = (parsedValue != null ? parsedValue.toString() : "") + i;
-            if (Integer.parseInt(suggestion) > this.max) continue;
-            suggestions.add(suggestion);
+            String suggestion = (partial != null ? partial : "") + i;
+            try {
+                // Suggest only lower or equals than maximum
+                if (Integer.parseInt(suggestion) > this.max) continue;
+                suggestions.add(suggestion);
+            } catch (NumberFormatException ignored) {}
         }
         return suggestions;
     }

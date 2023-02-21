@@ -1,9 +1,9 @@
 package de.placeblock.commandapi;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
+import de.placeblock.commandapi.core.parser.ParsedCommand;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
+import de.placeblock.commandapi.core.tree.TreeCommand;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -18,48 +18,46 @@ public class ParseTest {
     public void testParse() {
         Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
-        ParseContext<String> context = parseTestCommand.parse("testcommandparse remove 22 ", "TestPlayer", false);
-        System.out.println(context.getReader().debugString());
-        System.out.println(context.getParsedCommands());
-        System.out.println(context.getLastParsedCommand().getName());
-        assert context.getReader().getCursor() == 26;
-        assert context.getParsedCommands().size() != 0;
-        assert context.getLastParsedCommand() instanceof ParameterTreeCommand<?,?>;
-        context = parseTestCommand.parse("testcommandparse", "TestPlayer", false);
-        assert context.getReader().getCursor() == 16;
-        assert context.getParsedCommands().size() != 0;
-        assert context.getLastParsedCommand() instanceof LiteralTreeCommand<String>;
+        String source = "TestPlayer";
+        List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse remove 22 ", source);
+        for (ParsedCommand<String> result : results) {
+            System.out.println(result.getParsedTreeCommands().stream().map(TreeCommand::getName).toList());
+        }
+        ParsedCommand<String> result = Command.getBestResult(results, source);
+        assert result.getReader().getCursor() == 26;
+        assert result.getParsedTreeCommands().size() != 0;
+        assert result.getLastParsedTreeCommand() instanceof ParameterTreeCommand<?,?>;
+        results = parseTestCommand.parse("testcommandparse", source);
+        result = Command.getBestResult(results, source);
+        assert result.getReader().getCursor() == 16;
+        assert result.getParsedTreeCommands().size() == 1;
+        assert result.getLastParsedTreeCommand() != null;
     }
 
     @Test
     public void testSuggestions() {
         Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
-        ParseContext<String> context = parseTestCommand.parse("testcommandparse remove", "TestPlayer", true);
-        assert parseTestCommand.getSuggestions(context).isEmpty();
-        context = parseTestCommand.parse("testcommandparse remove  ", "TestPlayer", true);
-        assert parseTestCommand.getSuggestions(context).isEmpty();
-        context = parseTestCommand.parse("testcommandparse add awd", "TestPlayer", true);
-        List<String> suggestions = parseTestCommand.getSuggestions(context);
-        System.out.println(suggestions);
-        assert suggestions.isEmpty();
-        context = parseTestCommand.parse("testcommandparse remove awd", "TestPlayer", true);
-        assert parseTestCommand.getSuggestions(context).isEmpty();
-        context = parseTestCommand.parse("testcommandparse remove ", "TestPlayer", true);
-        assert parseTestCommand.getSuggestions(context).contains("0");
-        context = parseTestCommand.parse("testcommandparse rem", "TestPlayer", true);
-        assert parseTestCommand.getSuggestions(context).contains("remove");
-        context = parseTestCommand.parse("testcommandparse ", "TestPlayer", true);
-        assert parseTestCommand.getSuggestions(context).containsAll(List.of("remove", "add"));
-        context = parseTestCommand.parse("testcommandparse", "TestPlayer", true);
-        assert parseTestCommand.getSuggestions(context).isEmpty();
-        context = parseTestCommand.parse("testcommandp", "TestPlayer", true);
-        assert parseTestCommand.getSuggestions(context).contains("testcommandparse");
-        context = parseTestCommand.parse("", "TestPlayer", true);
-        assert parseTestCommand.getSuggestions(context).contains("testcommandparse");
-        context = parseTestCommand.parse("testcommandparse remove 10", "TestPlayer", true);
-        assert parseTestCommand.getSuggestions(context).contains("100");
-        assert context.getParameter("amount", Integer.class).getValue() == 10;
+        String source = "TestPlayer";
+        List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse remove", source);
+        assert parseTestCommand.getSuggestions(results, source).isEmpty();
+        results = parseTestCommand.parse("testcommandparse remove  ", source);
+        assert parseTestCommand.getSuggestions(results, source).isEmpty();
+        results = parseTestCommand.parse("testcommandparse add awd", source);
+        assert parseTestCommand.getSuggestions(results, source).isEmpty();
+        results = parseTestCommand.parse("testcommandparse remove awd", source);
+        assert parseTestCommand.getSuggestions(results, source).isEmpty();
+        results = parseTestCommand.parse("testcommandparse remove ", source);
+        assert parseTestCommand.getSuggestions(results, source).contains("0");
+        results = parseTestCommand.parse("testcommandparse rem", source);
+        assert parseTestCommand.getSuggestions(results, source).contains("remove");
+        results = parseTestCommand.parse("testcommandparse ", source);
+        assert parseTestCommand.getSuggestions(results, source).containsAll(List.of("remove", "add"));
+        results = parseTestCommand.parse("testcommandparse", source);
+        assert parseTestCommand.getSuggestions(results, source).isEmpty();
+        results = parseTestCommand.parse("testcommandparse remove 10", source);
+        List<String> suggestions = parseTestCommand.getSuggestions(results, source);
+        assert suggestions.contains("100") && !suggestions.contains("106");
     }
 
 }

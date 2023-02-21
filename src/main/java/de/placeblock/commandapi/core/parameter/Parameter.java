@@ -1,8 +1,8 @@
 package de.placeblock.commandapi.core.parameter;
 
-import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.parser.ParsedValue;
-import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
+import de.placeblock.commandapi.core.SuggestionBuilder;
+import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.parser.ParsedCommand;
 
 import java.util.List;
 
@@ -11,12 +11,12 @@ import java.util.List;
  */
 public interface Parameter<S, T> {
 
-    ParsedValue<T> parse(ParseContext<S> context, ParameterTreeCommand<S, T> command);
+    T parse(ParsedCommand<S> command) throws CommandSyntaxException;
 
-    List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, T> command);
+    List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder);
 
     @SuppressWarnings("unused")
-    default List<String> startsWith(List<String> list, String partial) {
+    static List<String> startsWith(List<String> list, String partial) {
         return list.stream().filter(item -> item.startsWith(partial)).toList();
     }
 

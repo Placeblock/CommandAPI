@@ -1,7 +1,8 @@
 package de.placeblock.commandapi.bridge.waterfall;
 
 import de.placeblock.commandapi.bridge.CommandBridge;
-import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.parser.ParsedCommand;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
@@ -89,8 +90,12 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         List<String> nodes = new ArrayList<>();
         Collections.addAll(nodes, this.getName());
         Collections.addAll(nodes, args);
-        ParseContext<WaterfallCommandSource<P>> parseResults = this.command.parse(String.join(" ", nodes), source, false);
-        this.command.execute(parseResults);
+        List<ParsedCommand<WaterfallCommandSource<P>>> parseResults = this.command.parse(String.join(" ", nodes), source);
+        try {
+            this.command.execute(de.placeblock.commandapi.core.Command.getBestResult(parseResults, source), source);
+        } catch (CommandSyntaxException e) {
+            this.command.sendMessage(source, e.getTextMessage());
+        }
     }
 
     @Override
@@ -103,8 +108,9 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         if (sender instanceof ProxiedPlayer player) {
             customPlayer = this.getCustomPlayer(player);
         }
-        ParseContext<WaterfallCommandSource<P>> parseResults = this.command.parse(buffer, new WaterfallCommandSource<>(customPlayer, sender), true);
-        return this.command.getSuggestions(parseResults);
+        WaterfallCommandSource<P> source = new WaterfallCommandSource<>(customPlayer, sender);
+        List<ParsedCommand<WaterfallCommandSource<P>>> parseResults = this.command.parse(buffer, source);
+        return this.command.getSuggestions(parseResults, source);
     }
 
     @Override

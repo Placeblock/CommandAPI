@@ -1,5 +1,5 @@
 group = "de.placeblock"
-version = "2.0.4a"
+version = "2.1.0"
 description = "API for an easier use of Commands"
 
 plugins {
@@ -31,7 +31,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly("io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.24")
-    compileOnly("io.schark:ScharkDesign:1.3.3")
+    compileOnly("io.schark:ScharkDesign:1.6.0")
     compileOnly("net.kyori:adventure-platform-bungeecord:4.2.0")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
 
@@ -41,7 +41,7 @@ dependencies {
     testImplementation("net.kyori:adventure-platform-bungeecord:4.2.0")
     testImplementation("net.kyori:adventure-text-minimessage:4.12.0")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
-    testImplementation("io.schark:ScharkDesign:1.3.3")
+    testImplementation("io.schark:ScharkDesign:1.6.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")

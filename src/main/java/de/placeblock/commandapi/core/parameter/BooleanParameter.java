@@ -1,8 +1,8 @@
 package de.placeblock.commandapi.core.parameter;
 
-import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.parser.ParsedValue;
-import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
+import de.placeblock.commandapi.core.SuggestionBuilder;
+import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.parser.ParsedCommand;
 
 import java.util.List;
 
@@ -15,13 +15,13 @@ public class BooleanParameter<S> implements Parameter<S, Boolean>{
     }
 
     @Override
-    public ParsedValue<Boolean> parse(ParseContext<S> context, ParameterTreeCommand<S, Boolean> command) {
-        return context.getReader().readBoolean();
+    public Boolean parse(ParsedCommand<S> command) throws CommandSyntaxException {
+        return command.getReader().readBoolean();
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, Boolean> command) {
-        String partial = context.getParameter(command.getName()).getString();
-        return this.startsWith(List.of("true", "false"), partial);
+    public List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
+        String partial = suggestionBuilder.getRemaining();
+        return Parameter.startsWith(List.of("true", "false"), partial);
     }
 }

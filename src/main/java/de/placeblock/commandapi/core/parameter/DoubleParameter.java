@@ -1,8 +1,8 @@
 package de.placeblock.commandapi.core.parameter;
 
-import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.parser.ParsedValue;
-import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
+import de.placeblock.commandapi.core.SuggestionBuilder;
+import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.parser.ParsedCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,31 +24,28 @@ public class DoubleParameter<S> extends NumberParameter<S, Double> {
     }
 
     @Override
-    public ParsedValue<Double> parse(ParseContext<S> context, ParameterTreeCommand<S, Double> command) {
-        ParsedValue<Double> result = context.getReader().readDouble();
+    public Double parse(ParsedCommand<S> command) throws CommandSyntaxException {
+        Double result = command.getReader().readDouble();
         return this.checkNumber(result);
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, Double> command) {
+    public List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
         List<String> suggestions = new ArrayList<>();
-        ParsedValue<Double> parsedParameter = context.getParameter(command.getName(), Double.class);
-        Double parsedValue = parsedParameter == null ? null : parsedParameter.getValue();
-        String partial = parsedParameter == null ? "" : parsedParameter.getString();
-        System.out.println("x"+partial);
+        String partial = suggestionBuilder.getRemaining();
         // Suggest nothing if higher than maximum
-        // Suggest nothing if parsedParameter is < 0 and parsedParameter is smaller than min
-        if (parsedValue != null && (parsedValue >= this.max || (parsedValue < 0 && parsedValue < this.min))) {
-            return new ArrayList<>();
-        }
-        if (!partial.contains(".")) {
+        // Suggest nothing if partial is < 0 and partial is smaller than min
+        boolean partialHasDot = partial.contains(".");
+        if (!partialHasDot) {
             suggestions.add(".");
         }
         if (partial.split("\\.", -1).length > 2) return new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             String suggestion = partial + i;
             try {
-                if (Double.parseDouble(suggestion) > this.max) continue;
+                double newDouble = Double.parseDouble(suggestion);
+                if (newDouble > this.max) continue;
+                if (partialHasDot && newDouble < this.min) continue;
                 suggestions.add(suggestion);
             } catch (NumberFormatException ignored) {}
         }

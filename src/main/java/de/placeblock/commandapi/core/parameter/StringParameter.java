@@ -1,10 +1,9 @@
 package de.placeblock.commandapi.core.parameter;
 
+import de.placeblock.commandapi.core.SuggestionBuilder;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.parser.ParsedValue;
+import de.placeblock.commandapi.core.parser.ParsedCommand;
 import de.placeblock.commandapi.core.parser.StringReader;
-import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
 
@@ -36,22 +35,22 @@ public class StringParameter<S> implements Parameter<S, String> {
     }
 
     @Override
-    public ParsedValue<String> parse(ParseContext<S> context, ParameterTreeCommand<S, String> command) {
-        StringReader reader = context.getReader();
+    public String parse(ParsedCommand<S> command) throws CommandSyntaxException {
+        StringReader reader = command.getReader();
         String parsedText;
         if (type == StringType.GREEDY_PHRASE) {
             String remaining = reader.getRemaining();
             reader.setCursor(reader.getTotalLength());
             if (remaining.equals("")) {
-                return new ParsedValue<>(null, "", new CommandSyntaxException(Texts.inferior("Ein <color:primary>leerer String <color:inferior>ist als greedy Argument <color:negative>nicht erlaubt")));
+                throw  new CommandSyntaxException(Texts.inferior("Ein <color:primary>leerer String <color:inferior>ist als greedy Argument <color:negative>nicht erlaubt"));
             }
-            return new ParsedValue<>(remaining, remaining, null);
+            return remaining;
         }
         return this.type == StringType.SINGLE_WORD ? reader.readUnquotedString() : reader.readString();
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, String> command) {
+    public List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
         return new ArrayList<>();
     }
 }

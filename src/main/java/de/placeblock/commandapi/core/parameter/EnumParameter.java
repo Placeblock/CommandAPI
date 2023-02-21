@@ -1,9 +1,8 @@
 package de.placeblock.commandapi.core.parameter;
 
+import de.placeblock.commandapi.core.SuggestionBuilder;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.parser.ParsedValue;
-import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
+import de.placeblock.commandapi.core.parser.ParsedCommand;
 import io.schark.design.texts.Texts;
 import lombok.RequiredArgsConstructor;
 
@@ -24,24 +23,18 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
     }
 
     @Override
-    public ParsedValue<E> parse(ParseContext<S> context, ParameterTreeCommand<S, E> command) {
-        ParsedValue<String> word = context.getReader().readUnquotedString();
-        System.out.println("'"+word.getValue()+"'");
-        if (word.isInvalid()) {
-            return new ParsedValue<>(null, word.getString(), word.getSyntaxException());
-        }
+    public E parse(ParsedCommand<S> command) throws CommandSyntaxException {
+        String word = command.getReader().readUnquotedString();
         try {
-            E enumValue = Enum.valueOf(enumClass, word.getValue().toUpperCase());
-            return new ParsedValue<>(enumValue, word.getString(), null);
+            return Enum.valueOf(this.enumClass, word.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            return new ParsedValue<>(null, word.getString(), new CommandSyntaxException(Texts.inferior("Das Argument <color:primary>" + word + " <color:negative>existiert nicht<color:inferior>.")));
+            throw new CommandSyntaxException(Texts.inferior("Das Argument <color:primary>" + word + " <color:negative>existiert nicht<color:inferior>."));
         }
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> context, ParameterTreeCommand<S, E> command) {
-        ParsedValue<E> parsedValue = context.getParameter(command.getName(), this.enumClass);
-        String partial = parsedValue == null ? "" : parsedValue.getString();
+    public List<String> getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
+        String partial = suggestionBuilder.getRemaining();
         ArrayList<String> suggestions = new ArrayList<>();
         for (E enumValue : this.enumValues) {
             String displayName;

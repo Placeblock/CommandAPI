@@ -1,8 +1,7 @@
 package de.placeblock.commandapi.core;
 
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.parser.ParsedValue;
+import de.placeblock.commandapi.core.parser.ParsedCommand;
 import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
@@ -18,7 +17,6 @@ import net.kyori.adventure.text.event.HoverEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -62,86 +60,54 @@ public abstract class Command<S> {
     public abstract boolean hasPermission(S source, String permission);
     public abstract void sendMessage(S source, TextComponent message);
 
-    public ParseContext<S> parse(String text, S source, boolean suggestion) {
-        ParseContext<S> parseContext = new ParseContext<>(new StringReader(text), source);
-        this.base.parseRecursive(parseContext, suggestion);
-        return parseContext;
+    public List<ParsedCommand<S>> parse(String text, S source) {
+        ParsedCommand<S> parsedCommand = new ParsedCommand<>(new StringReader(text));
+        return this.base.parseRecursive(parsedCommand, source);
     }
 
-    public void execute(ParseContext<S> context) {
-        Command.LOGGER.info("Executing Command:");
-        Command.LOGGER.info("Current Reader: '" + context.getReader().debugString() + "'");
-        S source = context.getSource();
-        TreeCommand<S> lastParsedCommand = context.getLastParsedCommand();
-        Command.LOGGER.info("Last Parsed Command: " + (lastParsedCommand == null ? "null" : lastParsedCommand.getName()));
-        if (context.isNoPermission()) {
-            Command.LOGGER.info("No permission to execute Command. Skipping.");
-            this.sendMessage(source, Texts.INSUFFICIENT_PERMISSIONS);
-            return;
-        }
-        // If the last parsed command is null we can skip the proccess
-        if (lastParsedCommand != null) {
-            // We have to check Errors if string wasn't parsed to the end
-            if (context.isNotParsedToEnd()) {
-                Command.LOGGER.info("No permission to execute Command. Skipping.");
-                Map<String, ParsedValue<?>> errors = context.getParameters();
-                List<String> lastParsedCommandChildrenNames = lastParsedCommand.getChildren().stream().map(TreeCommand::getName).toList();
-                for (String parameterName : errors.keySet()) {
-                    // Only Errors at children of the last parsed command are important
-                    if (lastParsedCommandChildrenNames.contains(parameterName)) {
-                        CommandSyntaxException syntaxException = errors.get(parameterName).getSyntaxException();
-                        if (syntaxException != null) {
-                            Command.LOGGER.info("Found SyntaxException on children of last parsed Command.");
-                            this.sendMessage(source, syntaxException.getTextMessage());
-                            return;
-                        }
-                    }
-                }
-            }
-            if (context.getReader().getRemaining().trim().equals("") && lastParsedCommand.getRun() != null) {
-                Command.LOGGER.info("Checks passed. Executing.");
-                if (this.isAsync()) {
-                    this.threadPool.execute(() -> lastParsedCommand.getRun().accept(context));
-                } else {
-                    lastParsedCommand.getRun().accept(context);
-                }
+    public void execute(ParsedCommand<S> result, S source) throws CommandSyntaxException {
+        if (result.getReader().canRead()) {
+            if (result.getExceptions().size() >= 1) {
+                throw result.getExceptions().values().iterator().next();
+            } else {
+                this.sendMessage(source, this.generateHelpMessage(source));
                 return;
             }
         }
-        Command.LOGGER.info("Something failed. Help Message.");
-        this.sendMessage(source, this.generateHelpMessage(source));
+        List<TreeCommand<S>> parsedCommands = result.getParsedTreeCommands();
+        CommandExecutor<S> commandExecutor = parsedCommands.get(parsedCommands.size() - 1).getCommandExecutor();
+        if (commandExecutor == null) {
+            this.sendMessage(source, this.generateHelpMessage(source));
+        } else {
+            commandExecutor.run(result, source);
+        }
     }
 
-    public List<String> getSuggestions(ParseContext<S> context) {
-        TreeCommand<S> lastParsedCommand = context.getLastParsedCommand();
-        if (lastParsedCommand == null) {
-            return this.base.getSuggestions(context);
+    public List<String> getSuggestions(List<ParsedCommand<S>> results, S source) {
+        List<String> suggestions = new ArrayList<>();
+        for (ParsedCommand<S> result : results) {
+            TreeCommand<S> lastParsedTreeCommand = result.getLastParsedTreeCommand();
+            List<String> resultSuggestions = lastParsedTreeCommand.getSuggestions(result, source);
+            suggestions.addAll(resultSuggestions);
         }
-        String wrongInformation = context.getReader().getRemaining();
-        Command.LOGGER.info(context.getReader().debugString());
-        Command.LOGGER.info("Last Parsed Command: " + lastParsedCommand.getName());
-        Command.LOGGER.info("Wrong Information: " + wrongInformation);
+        return suggestions;
+    }
 
-        // We want to display autocompletion of even if parameters are valid
-        // For this we have to set the cursor to before the parameter
-        boolean isLastParsedCommandParameter = wrongInformation.equals("") && lastParsedCommand instanceof ParameterTreeCommand<S,?>;
-        if (isLastParsedCommandParameter) {
-            String lastParsedCommandString = context.getParameter(lastParsedCommand.getName()).getString();
-            context.getReader().setCursor(context.getReader().getCursor()-lastParsedCommandString.length());
-            lastParsedCommand = context.getParsedCommands().get(context.getParsedCommands().size()-2);
-        }
-
-        if (isLastParsedCommandParameter || (wrongInformation.startsWith(" ") && !wrongInformation.substring(1).contains(" "))) {
-            List<String> suggestions = new ArrayList<>();
-            context.getReader().skip();
-            int cursor = context.getReader().getCursor();
-            for (TreeCommand<S> child : lastParsedCommand.getChildren()) {
-                suggestions.addAll(child.getSuggestions(context));
-                context.getReader().setCursor(cursor);
-            }
-            return suggestions;
-        }
-        return new ArrayList<>();
+    public static <S> ParsedCommand<S> getBestResult(List<ParsedCommand<S>> results, S source) {
+        results.sort((a, b) -> {
+            TreeCommand<S> aLastParsedTreeCommand = a.getLastParsedTreeCommand();
+            TreeCommand<S> bLastParsedTreeCommand = b.getLastParsedTreeCommand();
+            int aShortestBranchLength = aLastParsedTreeCommand.getShortestBranchLength(source);
+            int bShortestBranchLength = bLastParsedTreeCommand.getShortestBranchLength(source);
+            if (aShortestBranchLength < bShortestBranchLength) return -1;
+            if (aShortestBranchLength > bShortestBranchLength) return 1;
+            if (a.getReader().canRead() && !b.getReader().canRead()) return -1;
+            if (!a.getReader().canRead() && b.getReader().canRead()) return 1;
+            if (a.getExceptions().isEmpty() && !b.getExceptions().isEmpty()) return -1;
+            if (!a.getExceptions().isEmpty() && b.getExceptions().isEmpty()) return 1;
+            return 0;
+        });
+        return results.get(0);
     }
 
     public TextComponent generateHelpMessage(S source) {
