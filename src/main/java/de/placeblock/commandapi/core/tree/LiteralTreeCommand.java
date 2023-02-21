@@ -27,7 +27,6 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
     @Override
     protected void parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
         String nextWord = command.getReader().readUnquotedString();
-        command.getParsedTreeCommandStrings().put(this, nextWord);
         command.getParsedTreeCommands().add(this);
         if (nextWord == null || (!nextWord.equalsIgnoreCase(this.getName()) &&
             this.aliases.stream().map(alias -> alias.equalsIgnoreCase(nextWord)).toList().size() == 0)) {

@@ -1,12 +1,15 @@
 package de.placeblock.commandapi;
 
+import de.placeblock.commandapi.core.Command;
+import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.parameter.DoubleParameter;
-import de.placeblock.commandapi.core.parser.ParseContext;
-import de.placeblock.commandapi.core.parser.ParsedValue;
+import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.parser.StringReader;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
 
 /**
  * Author: Placeblock
@@ -14,51 +17,54 @@ import java.util.Objects;
 public class DoubleParameterTest {
 
     @Test
-    public void testDoubleParameterParse() {
+    public void testDoubleParameterParse() throws CommandSyntaxException {
         DoubleParameter<String> doubleParameter = new DoubleParameter<>(0D, 100D);
-        ParseContext<String> parseContext = new ParseContext<>("awdawd 100   ", "TestSource");
-        parseContext.getReader().setCursor(7);
-        ParsedValue<Double> result = doubleParameter.parse(parseContext, null);
-        assert !result.hasException() && Objects.equals(result.getValue(), 100D);
+        StringReader reader = new StringReader("awdawd 100   ");
+        reader.setCursor(7);
+        ParsedCommand<String> parsedCommand = new ParsedCommand<>(reader);
+        Double result = doubleParameter.parse(parsedCommand);
+        assert Objects.equals(result, 100D);
     }
 
     @Test
     public void testDoubleParameterSuggestions() {
+        Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
-        ParseContext<String> parseContext = parseTestCommand.parse("testcommandparse 100", "", true);
-        List<String> result = parseTestCommand.getSuggestions(parseContext);
-        assert result.contains(".") && !result.contains("1001") && !result.contains("1");
+        String source = "";
+        List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse 100", source);
+        List<String> suggestions = parseTestCommand.getSuggestions(results, source);
+        assert suggestions.contains(".") && !suggestions.contains("1001") && !suggestions.contains("1");
 
-        parseContext = parseTestCommand.parse("testcommandparse 100.", "", true);
-        result = parseTestCommand.getSuggestions(parseContext);
-        assert result.containsAll(List.of("100.1", "100.2", "100.9")) && !result.contains(".");
+        results = parseTestCommand.parse("testcommandparse 100.", source);
+        suggestions = parseTestCommand.getSuggestions(results, source);
+        assert suggestions.containsAll(List.of("100.1", "100.2", "100.9")) && !suggestions.contains(".");
 
-        parseContext = parseTestCommand.parse("testcommandparse 100..", "", true);
-        result = parseTestCommand.getSuggestions(parseContext);
-        assert result.isEmpty();
+        results = parseTestCommand.parse("testcommandparse 100..", source);
+        suggestions = parseTestCommand.getSuggestions(results, source);
+        assert suggestions.isEmpty();
 
-        parseContext = parseTestCommand.parse("testcommandparse 100..3", "", true);
-        result = parseTestCommand.getSuggestions(parseContext);
-        assert result.isEmpty();
+        results = parseTestCommand.parse("testcommandparse 100..3", source);
+        suggestions = parseTestCommand.getSuggestions(results, source);
+        assert suggestions.isEmpty();
 
-        parseContext = parseTestCommand.parse("testcommandparse 100.3", "", true);
-        result = parseTestCommand.getSuggestions(parseContext);
-        assert result.containsAll(List.of("100.31", "100.32", "100.39"));
+        results = parseTestCommand.parse("testcommandparse 100.3", source);
+        suggestions = parseTestCommand.getSuggestions(results, source);
+        assert suggestions.containsAll(List.of("100.31", "100.32", "100.39"));
 
-        parseContext = parseTestCommand.parse("testcommandparse 105.", "", true);
-        result = parseTestCommand.getSuggestions(parseContext);
-        assert result.containsAll(List.of("105.0", "105.1", "105.2", "105.3", "105.4", "105.5")) && !result.contains("105.6");
+        results = parseTestCommand.parse("testcommandparse 105.", source);
+        suggestions = parseTestCommand.getSuggestions(results, source);
+        assert suggestions.containsAll(List.of("105.0", "105.1", "105.2", "105.3", "105.4", "105.5")) && !suggestions.contains("105.6");
 
-        parseContext = parseTestCommand.parse("testcommandparse ..", "", true);
-        result = parseTestCommand.getSuggestions(parseContext);
-        assert result.isEmpty();
+        results = parseTestCommand.parse("testcommandparse ..", source);
+        suggestions = parseTestCommand.getSuggestions(results, source);
+        assert suggestions.isEmpty();
 
-        parseContext = parseTestCommand.parse("testcommandparse ..2", "", true);
-        result = parseTestCommand.getSuggestions(parseContext);
-        assert result.isEmpty();
+        results = parseTestCommand.parse("testcommandparse ..2", source);
+        suggestions = parseTestCommand.getSuggestions(results, source);
+        assert suggestions.isEmpty();
 
-        parseContext = parseTestCommand.parse("testcommandparse .", "", true);
-        result = parseTestCommand.getSuggestions(parseContext);
-        assert result.containsAll(List.of(".1", ".2", ".3", ".0", ".9")) && !result.contains(".");
+        results = parseTestCommand.parse("testcommandparse .", source);
+        suggestions = parseTestCommand.getSuggestions(results, source);
+        assert suggestions.containsAll(List.of(".1", ".2", ".3", ".0", ".9")) && !suggestions.contains(".");
     }
 }

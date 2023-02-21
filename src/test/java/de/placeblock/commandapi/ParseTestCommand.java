@@ -30,7 +30,7 @@ public class ParseTestCommand extends Command<String> {
         ).then(
             literal("remove").then(
                 parameter("amount", integer(0, 105))
-                .run(ctx -> {
+                .run((context, source) -> {
 
                 }))
         ).then(

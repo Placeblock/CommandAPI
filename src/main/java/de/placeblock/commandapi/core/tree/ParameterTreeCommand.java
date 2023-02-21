@@ -6,7 +6,6 @@ import de.placeblock.commandapi.core.SuggestionBuilder;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.parser.ParsedCommand;
-import de.placeblock.commandapi.core.parser.StringReader;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
@@ -30,14 +29,8 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
     @Override
     protected void parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
         command.getParsedTreeCommands().add(this);
-        StringReader reader = command.getReader();
-        StringReader readerCopy = new StringReader(reader);
-        try {
-            T result = this.parameter.parse(command);
-            command.addParsedParameter(this.getName(), result);
-        } finally {
-            command.getParsedTreeCommandStrings().put(this, reader.getString().substring(readerCopy.getCursor(), reader.getCursor()));
-        }
+        T result = this.parameter.parse(command);
+        command.addParsedParameter(this.getName(), result);
     }
 
     @Override

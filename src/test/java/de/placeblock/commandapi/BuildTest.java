@@ -17,7 +17,7 @@ public class BuildTest {
         assert parseTestCommand.getName().equals("testcommandbuild");
         assert parseTestCommand.getDescription() == null;
         assert parseTestCommand.getPermission() == null;
-        assert parseTestCommand.getRun() == null;
+        assert parseTestCommand.getCommandExecutor() == null;
         TreeCommand<String> child = parseTestCommand.getChildren().get(0);
         assert child.getName().equals("amount");
         assert ((ParameterTreeCommand<String, Integer>) child).getParameter() instanceof IntegerParameter<String>;

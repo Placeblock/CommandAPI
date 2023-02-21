@@ -1,7 +1,7 @@
 package de.placeblock.commandapi.core.tree.builder;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.parser.ParseContext;
+import de.placeblock.commandapi.core.CommandExecutor;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,6 @@ import net.kyori.adventure.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Author: Placeblock
@@ -21,7 +20,7 @@ public abstract class TreeCommandBuilder<S, CT extends TreeCommandBuilder<S, CT>
 
     private final String name;
     private final List<TreeCommandBuilder<S, ?>> children = new ArrayList<>();
-    private Consumer<ParseContext<S>> run = null;
+    private CommandExecutor<S> run = null;
     private TextComponent description;
     private String permission;
 
@@ -32,7 +31,7 @@ public abstract class TreeCommandBuilder<S, CT extends TreeCommandBuilder<S, CT>
         return getThis();
     }
 
-    public CT run(Consumer<ParseContext<S>> callback) {
+    public CT run(CommandExecutor<S> callback) {
         this.run = callback;
         return getThis();
     }
