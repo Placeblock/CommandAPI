@@ -8,6 +8,8 @@ import de.placeblock.commandapi.core.parser.ParsedCommand;
  * Author: Placeblock
  */
 public class DoubleParameter<S> extends NumberParameter<S, Double> {
+    private final char[] possibleChars = "0123456789.".toCharArray();
+
     public DoubleParameter(Double min, Double max) {
         super(min, max);
     }
@@ -29,24 +31,23 @@ public class DoubleParameter<S> extends NumberParameter<S, Double> {
     @Override
     public void getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
         String partial = suggestionBuilder.getRemaining();
-        // Suggest nothing if higher than maximum
-        // Suggest nothing if partial is < 0 and partial is smaller than min
-        boolean partialHasDot = partial.contains(".");
-        if (!partialHasDot) {
-            try {
-                Double.parseDouble(partial);
-                suggestionBuilder.withSuggestion(".");
-            } catch (NumberFormatException ignored) {}
+        int partialLength = partial.length();
+        if (partialLength == 0) {
+            suggestionBuilder.withSuggestion(".");
+            if (this.min <= 0) {
+                suggestionBuilder.withSuggestion("-");
+            }
         }
-        if (partial.split("\\.", -1).length > 2) return;
-        for (int i = 0; i < 10; i++) {
-            String suggestion = partial + i;
+        for (char possibleChar : this.possibleChars) {
             try {
-                double newDouble = Double.parseDouble(suggestion);
-                if (newDouble > this.max) continue;
-                if (partialHasDot && newDouble < this.min) continue;
-                suggestionBuilder.withSuggestion(suggestion);
+                String newDoubleString = partial + possibleChar;
+                double newDouble = Double.parseDouble(newDoubleString);
+                if (((newDouble >= 0 && newDouble <= this.max) || (newDouble < 0 && newDouble >= this.min))
+                    && (possibleChar != '.' || ( newDouble >=0 && newDouble+1>this.min ) || (newDouble<0 && newDouble-1<this.max ))) {
+                    suggestionBuilder.withSuggestion(newDoubleString);
+                }
             } catch (NumberFormatException ignored) {}
         }
     }
+
 }

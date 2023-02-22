@@ -14,22 +14,21 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 @Getter
-public class ParsedCommand<S> {
+public class ParsedCommand<S> extends ParameterHolder {
     private final StringReader reader;
-    private final Map<String, Object> parsedParameters;
     private final List<TreeCommand<S>> parsedTreeCommands;
     private final Map<TreeCommand<S>, CommandSyntaxException> exceptions;
 
     public ParsedCommand(StringReader reader) {
+        super();
         this.reader = reader;
-        this.parsedParameters = new HashMap<>();
         this.parsedTreeCommands = new ArrayList<>();
         this.exceptions = new HashMap<>();
     }
 
     public ParsedCommand(ParsedCommand<S> parsedCommand) {
+        super(parsedCommand.getParsedParameters());
         this.reader = new StringReader(parsedCommand.getReader());
-        this.parsedParameters = new HashMap<>(parsedCommand.getParsedParameters());
         this.parsedTreeCommands = new ArrayList<>(parsedCommand.getParsedTreeCommands());
         this.exceptions = new HashMap<>(parsedCommand.getExceptions());
     }
@@ -43,19 +42,6 @@ public class ParsedCommand<S> {
         this.parsedParameters.put(name, parameter);
     }
 
-    public Object getParsedParameter(String name) {
-        return this.parsedParameters.get(name);
-    }
-
-    public <T> T getParsedParameter(String name, Class<T> type) {
-        //noinspection unchecked
-        return (T) this.parsedParameters.get(name);
-    }
-
-    public <T> T getParsedParameterOrDefault(String name, Class<T> type, T defaultValue) {
-        T value = this.getParsedParameter(name, type);
-        return value != null ? value : defaultValue;
-    }
 
     public void addException(TreeCommand<S> command, CommandSyntaxException exception) {
         this.exceptions.put(command, exception);

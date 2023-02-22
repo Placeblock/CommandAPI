@@ -11,6 +11,7 @@ import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -41,7 +42,7 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
         if (this.hasNoPermission(source)) {
             return new ArrayList<>();
         }
-        SuggestionBuilder<S> suggestionBuilder = new SuggestionBuilder<>(this, command.getReader().getRemaining(), source);
+        SuggestionBuilder<S> suggestionBuilder = new SuggestionBuilder<>(this, command.getReader().getRemaining(), source, new HashMap<>(command.getParsedParameters()));
         this.parameter.getSuggestions(suggestionBuilder);
         return suggestionBuilder.getSuggestions();
     }

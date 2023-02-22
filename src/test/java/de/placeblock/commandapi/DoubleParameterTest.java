@@ -1,6 +1,5 @@
 package de.placeblock.commandapi;
 
-import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.parameter.DoubleParameter;
 import de.placeblock.commandapi.core.parser.ParsedCommand;
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
 
 /**
  * Author: Placeblock
@@ -28,12 +26,12 @@ public class DoubleParameterTest {
 
     @Test
     public void testDoubleParameterSuggestions() {
-        Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "";
         List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse 100", source);
         List<String> suggestions = parseTestCommand.getSuggestions(results, source);
-        assert suggestions.contains(".") && !suggestions.contains("1001") && !suggestions.contains("1");
+        System.out.println(suggestions);
+        assert suggestions.contains("100.") && !suggestions.contains("1001") && !suggestions.contains("1");
 
         results = parseTestCommand.parse("testcommandparse 100.", source);
         suggestions = parseTestCommand.getSuggestions(results, source);
@@ -66,5 +64,10 @@ public class DoubleParameterTest {
         results = parseTestCommand.parse("testcommandparse .", source);
         suggestions = parseTestCommand.getSuggestions(results, source);
         assert suggestions.containsAll(List.of(".1", ".2", ".3", ".0", ".9")) && !suggestions.contains(".");
+
+        results = parseTestCommand.parse("testcommandparse ", source);
+        suggestions = parseTestCommand.getSuggestions(results, source);
+        System.out.println(suggestions);
+        assert suggestions.containsAll(List.of(".", "1"));
     }
 }
