@@ -118,19 +118,21 @@ public abstract class Command<S> {
         results.sort((a, b) -> {
             if (a.getParsedTreeCommands().size() > b.getParsedTreeCommands().size()) return -1;
             if (a.getParsedTreeCommands().size() < b.getParsedTreeCommands().size()) return 1;
-            CommandExecutor<S> aCommandExecutor = a.getLastParsedTreeCommand().getCommandExecutor();
-            CommandExecutor<S> bCommandExecutor = b.getLastParsedTreeCommand().getCommandExecutor();
-            if (aCommandExecutor != null && bCommandExecutor == null) return -1;
-            if (aCommandExecutor == null && bCommandExecutor != null) return 1;
             if (a.getReader().canRead() && !b.getReader().canRead()) return -1;
             if (!a.getReader().canRead() && b.getReader().canRead()) return 1;
             if (a.getExceptions().isEmpty() && !b.getExceptions().isEmpty()) return -1;
             if (!a.getExceptions().isEmpty() && b.getExceptions().isEmpty()) return 1;
+            CommandExecutor<S> aCommandExecutor = a.getLastParsedTreeCommand().getCommandExecutor();
+            CommandExecutor<S> bCommandExecutor = b.getLastParsedTreeCommand().getCommandExecutor();
+            if (aCommandExecutor != null && bCommandExecutor == null) return -1;
+            if (aCommandExecutor == null && bCommandExecutor != null) return 1;
             return 0;
         });
         Command.LOGGER.info("Sorted Parsed Commands:");
         for (ParsedCommand<S> parsedCommand : results) {
             Command.LOGGER.info(parsedCommand.getParsedTreeCommands().stream().map(TreeCommand::getName).toList() + ": " + parsedCommand.getReader().debugString());
+            Command.LOGGER.info("Exceptions:" + parsedCommand.getExceptions().size());
+            Command.LOGGER.info("Executor:" + parsedCommand.getExceptions().size());
         }
         return results.get(0);
     }
