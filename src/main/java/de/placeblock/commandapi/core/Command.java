@@ -131,8 +131,9 @@ public abstract class Command<S> {
         Command.LOGGER.info("Sorted Parsed Commands:");
         for (ParsedCommand<S> parsedCommand : results) {
             Command.LOGGER.info(parsedCommand.getParsedTreeCommands().stream().map(TreeCommand::getName).toList() + ": " + parsedCommand.getReader().debugString());
+            Command.LOGGER.info("Tree Commands:" + parsedCommand.getParsedTreeCommands().size());
             Command.LOGGER.info("Exceptions:" + parsedCommand.getExceptions().size());
-            Command.LOGGER.info("Executor:" + parsedCommand.getExceptions().size());
+            Command.LOGGER.info("Executor:" + parsedCommand.getLastParsedTreeCommand().getCommandExecutor());
         }
         return results.get(0);
     }
