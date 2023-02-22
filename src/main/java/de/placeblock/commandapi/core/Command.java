@@ -62,15 +62,14 @@ public abstract class Command<S> {
 
     public List<ParsedCommand<S>> parse(String text, S source) {
         ParsedCommand<S> parsedCommand = new ParsedCommand<>(new StringReader(text));
-        System.out.println("Method gets executed");
-        long start = System.nanoTime();
-        List<ParsedCommand<S>> parsedCommands = this.base.parseRecursive(parsedCommand, source);
-        System.out.println("Time: " + (System.nanoTime() - start));
-        return parsedCommands;
+        return this.base.parseRecursive(parsedCommand, source);
     }
 
     public void execute(ParsedCommand<S> result, S source) throws CommandSyntaxException {
-        if (result.getReader().canRead()) {
+        Command.LOGGER.info("Command for Execution: " + result.getParsedTreeCommands().stream().map(TreeCommand::getName).toList());
+        Command.LOGGER.info("Command for Execution2: " + result.getReader().debugString());
+
+        if (result.getReader().canRead(2)) {
             if (result.getExceptions().size() >= 1) {
                 throw result.getExceptions().values().iterator().next();
             } else {
