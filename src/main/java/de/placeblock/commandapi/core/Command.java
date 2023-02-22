@@ -116,10 +116,6 @@ public abstract class Command<S> {
 
     public static <S> ParsedCommand<S> getBestResult(List<ParsedCommand<S>> results) {
         results.sort((a, b) -> {
-            /*TreeCommand<S> aLastParsedTreeCommand = a.getLastParsedTreeCommand();
-            TreeCommand<S> bLastParsedTreeCommand = b.getLastParsedTreeCommand();
-            int aShortestBranchLength = aLastParsedTreeCommand.getShortestBranchLength(source);
-            int bShortestBranchLength = bLastParsedTreeCommand.getShortestBranchLength(source);*/
             if (a.getParsedTreeCommands().size() > b.getParsedTreeCommands().size()) return -1;
             if (a.getParsedTreeCommands().size() < b.getParsedTreeCommands().size()) return 1;
             CommandExecutor<S> aCommandExecutor = a.getLastParsedTreeCommand().getCommandExecutor();
@@ -132,6 +128,10 @@ public abstract class Command<S> {
             if (!a.getExceptions().isEmpty() && b.getExceptions().isEmpty()) return 1;
             return 0;
         });
+        Command.LOGGER.info("Sorted Parsed Commands:");
+        for (ParsedCommand<S> parsedCommand : results) {
+            Command.LOGGER.info(parsedCommand.getParsedTreeCommands().stream().map(TreeCommand::getName).toList() + ": " + parsedCommand.getReader().debugString());
+        }
         return results.get(0);
     }
 
