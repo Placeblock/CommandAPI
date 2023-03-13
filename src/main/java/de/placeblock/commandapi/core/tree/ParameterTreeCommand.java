@@ -30,7 +30,7 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
     @Override
     protected void parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
         command.getParsedTreeCommands().add(this);
-        T result = this.parameter.parse(command);
+        T result = this.parameter.parse(command, source);
         command.addParsedParameter(this.getName(), result);
     }
 

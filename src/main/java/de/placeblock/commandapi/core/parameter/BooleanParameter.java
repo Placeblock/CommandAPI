@@ -15,7 +15,7 @@ public class BooleanParameter<S> implements Parameter<S, Boolean>{
     }
 
     @Override
-    public Boolean parse(ParsedCommand<S> command) throws CommandSyntaxException {
+    public Boolean parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
         return command.getReader().readBoolean();
     }
 

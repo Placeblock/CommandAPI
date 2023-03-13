@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface Parameter<S, T> {
 
-    T parse(ParsedCommand<S> command) throws CommandSyntaxException;
+    T parse(ParsedCommand<S> command, S source) throws CommandSyntaxException;
 
     void getSuggestions(SuggestionBuilder<S> suggestionBuilder);
 

@@ -32,7 +32,7 @@ public class StringParameter<S> implements Parameter<S, String> {
     }
 
     @Override
-    public String parse(ParsedCommand<S> command) throws CommandSyntaxException {
+    public String parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
         StringReader reader = command.getReader();
         String parsedText;
         if (type == StringType.GREEDY_PHRASE) {

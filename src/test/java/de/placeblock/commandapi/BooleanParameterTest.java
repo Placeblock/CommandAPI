@@ -17,32 +17,33 @@ import java.util.logging.Level;
 public class BooleanParameterTest {
     @Test
     public void testBooleanParameterParse() throws CommandSyntaxException {
+        String source = "test";
         BooleanParameter<String> booleanParameter = new BooleanParameter<>();
         StringReader reader = new StringReader("awdawd f");
         reader.setCursor(7);
         ParsedCommand<String> parsedCommand = new ParsedCommand<>(reader);
         try {
-            booleanParameter.parse(parsedCommand);
+            booleanParameter.parse(parsedCommand, source);
             assert false;
         } catch (CommandSyntaxException ignored) {}
 
         reader = new StringReader("awdawd false");
         reader.setCursor(7);
         parsedCommand = new ParsedCommand<>(reader);
-        Boolean result = booleanParameter.parse(parsedCommand);
+        Boolean result = booleanParameter.parse(parsedCommand, source);
         assert Objects.equals(result, false);
 
         reader = new StringReader("awdawd true");
         reader.setCursor(7);
         parsedCommand = new ParsedCommand<>(reader);
-        result = booleanParameter.parse(parsedCommand);
+        result = booleanParameter.parse(parsedCommand, source);
         assert Objects.equals(result, true);
 
         reader = new StringReader("awdawd truea");
         reader.setCursor(7);
         parsedCommand = new ParsedCommand<>(reader);
         try {
-            booleanParameter.parse(parsedCommand);
+            booleanParameter.parse(parsedCommand, source);
             assert false;
         } catch (CommandSyntaxException ignored) {}
     }

@@ -20,7 +20,7 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
     }
 
     @Override
-    public E parse(ParsedCommand<S> command) throws CommandSyntaxException {
+    public E parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
         String word = command.getReader().readUnquotedString();
         try {
             return Enum.valueOf(this.enumClass, word.toUpperCase());

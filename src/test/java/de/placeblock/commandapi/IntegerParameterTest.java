@@ -19,7 +19,7 @@ public class IntegerParameterTest {
         StringReader reader = new StringReader("awdawd 100   ");
         reader.setCursor(7);
         ParsedCommand<String> parsedCommand = new ParsedCommand<>(reader);
-        Integer result = integerParameter.parse(parsedCommand);
+        Integer result = integerParameter.parse(parsedCommand, "source");
         assert Objects.equals(result, 100);
     }
 
@@ -30,7 +30,7 @@ public class IntegerParameterTest {
         reader.setCursor(7);
         ParsedCommand<String> parsedCommand = new ParsedCommand<>(reader);
         try {
-            integerParameter.parse(parsedCommand);
+            integerParameter.parse(parsedCommand, "source");
             assert false;
         } catch (CommandSyntaxException ignored) {}
     }

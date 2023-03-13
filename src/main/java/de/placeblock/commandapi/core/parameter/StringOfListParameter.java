@@ -18,7 +18,7 @@ public class StringOfListParameter<S> implements Parameter<S, String> {
     }
 
     @Override
-    public String parse(ParsedCommand<S> command) throws CommandSyntaxException {
+    public String parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
         String word = command.getReader().readUnquotedString();
         if (this.values.contains(word)) {
             throw new CommandSyntaxException(Texts.inferior("Du hast ein <color:negative>falsches Argument angegeben"));

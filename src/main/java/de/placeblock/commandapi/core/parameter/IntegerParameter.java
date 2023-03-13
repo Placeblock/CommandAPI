@@ -21,7 +21,7 @@ public class IntegerParameter<S> extends NumberParameter<S, Integer> {
     }
 
     @Override
-    public Integer parse(ParsedCommand<S> command) throws CommandSyntaxException {
+    public Integer parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
         Integer result = command.getReader().readInt();
         return this.checkNumber(result);
     }

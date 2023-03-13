@@ -23,7 +23,7 @@ public class DoubleParameter<S> extends NumberParameter<S, Double> {
     }
 
     @Override
-    public Double parse(ParsedCommand<S> command) throws CommandSyntaxException {
+    public Double parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
         Double result = command.getReader().readDouble();
         return this.checkNumber(result);
     }

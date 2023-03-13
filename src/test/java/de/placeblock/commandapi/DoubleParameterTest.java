@@ -20,7 +20,7 @@ public class DoubleParameterTest {
         StringReader reader = new StringReader("awdawd 100   ");
         reader.setCursor(7);
         ParsedCommand<String> parsedCommand = new ParsedCommand<>(reader);
-        Double result = doubleParameter.parse(parsedCommand);
+        Double result = doubleParameter.parse(parsedCommand, "source");
         assert Objects.equals(result, 100D);
     }
 
