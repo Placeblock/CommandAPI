@@ -133,7 +133,9 @@ public abstract class Command<S> {
             Command.LOGGER.info(parsedCommand.getParsedTreeCommands().stream().map(TreeCommand::getName).toList() + ": " + parsedCommand.getReader().debugString());
             Command.LOGGER.info("Tree Commands:" + parsedCommand.getParsedTreeCommands().size());
             Command.LOGGER.info("Exceptions:" + parsedCommand.getExceptions().size());
-            Command.LOGGER.info("Executor:" + parsedCommand.getLastParsedTreeCommand().getCommandExecutor());
+            if (parsedCommand.getLastParsedTreeCommand() != null) {
+                Command.LOGGER.info("Executor:" + parsedCommand.getLastParsedTreeCommand().getCommandExecutor());
+            }
         }
         return results.get(0);
     }
