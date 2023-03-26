@@ -57,7 +57,7 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
                 }
             }
         };
-
+        this.setPermission(this.command.getBase().getPermission());
         this.setAliases(this.command.getBase().getAliases());
     }
 
