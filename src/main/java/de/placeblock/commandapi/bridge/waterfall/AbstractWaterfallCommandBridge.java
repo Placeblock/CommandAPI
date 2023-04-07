@@ -70,11 +70,15 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
             }
         };
 
-        //Set aliases
+        //Set aliases and permission
         try {
             Field aliasField = Command.class.getDeclaredField("aliases");
             long fieldOffset = unsafe.objectFieldOffset(aliasField);
             unsafe.putObject(this, fieldOffset, this.command.getBase().getAliases().toArray(new String[0]));
+
+            Field permissionField = Command.class.getDeclaredField("permission");
+            long permissionFieldOffset = unsafe.objectFieldOffset(permissionField);
+            unsafe.putObject(this, permissionFieldOffset, this.command.getBase().getPermission());
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
