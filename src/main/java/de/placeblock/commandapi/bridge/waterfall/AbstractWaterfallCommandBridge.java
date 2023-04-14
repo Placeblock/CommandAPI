@@ -1,7 +1,6 @@
 package de.placeblock.commandapi.bridge.waterfall;
 
 import de.placeblock.commandapi.bridge.CommandBridge;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.parser.ParsedCommand;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import lombok.Getter;
@@ -96,11 +95,7 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         Collections.addAll(nodes, args);
         List<ParsedCommand<WaterfallCommandSource<P>>> parseResults = this.command.parse(String.join(" ", nodes), source);
         ParsedCommand<WaterfallCommandSource<P>> bestResult = de.placeblock.commandapi.core.Command.getBestResult(parseResults);
-        try {
-            this.command.execute(bestResult, source);
-        } catch (CommandSyntaxException e) {
-            this.command.sendMessage(source, e.getTextMessage());
-        }
+        this.command.execute(bestResult, source);
     }
 
     @Override
