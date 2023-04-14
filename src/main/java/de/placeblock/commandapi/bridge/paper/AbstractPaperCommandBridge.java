@@ -1,7 +1,6 @@
 package de.placeblock.commandapi.bridge.paper;
 
 import de.placeblock.commandapi.bridge.CommandBridge;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.parser.ParsedCommand;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import lombok.Getter;
@@ -83,11 +82,7 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
     }
 
     private void execute(ParsedCommand<PaperCommandSource<P>> parseResult, PaperCommandSource<P> source) {
-        try {
-            this.command.execute(parseResult, source);
-        } catch (CommandSyntaxException e) {
-            this.command.sendMessage(source, e.getTextMessage());
-        }
+        this.command.execute(parseResult, source);
     }
 
     @Override

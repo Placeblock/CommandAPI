@@ -1,5 +1,6 @@
 package de.placeblock.commandapi.core;
 
+import de.placeblock.commandapi.core.exception.CommandHelpException;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
 import de.placeblock.commandapi.core.parser.ParsedCommand;
 import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
@@ -65,7 +66,17 @@ public abstract class Command<S> {
         return this.base.parseRecursive(parsedCommand, source);
     }
 
-    public void execute(ParsedCommand<S> result, S source) throws CommandSyntaxException {
+    public void execute(ParsedCommand<S> result, S source) {
+        try {
+            this.executeRaw(result, source);
+        } catch (CommandHelpException e) {
+            this.sendMessage(source, this.generateHelpMessage(source));
+        } catch (CommandSyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void executeRaw(ParsedCommand<S> result, S source) throws CommandSyntaxException {
         Command.LOGGER.info("Command for Execution: " + result.getParsedTreeCommands().stream().map(TreeCommand::getName).toList());
         Command.LOGGER.info("Command for Execution2: " + result.getReader().debugString());
 
@@ -73,14 +84,13 @@ public abstract class Command<S> {
             if (result.getExceptions().size() >= 1) {
                 throw result.getExceptions().values().iterator().next();
             } else {
-                this.sendMessage(source, this.generateHelpMessage(source));
-                return;
+                throw new CommandHelpException();
             }
         }
         List<TreeCommand<S>> parsedCommands = result.getParsedTreeCommands();
         CommandExecutor<S> commandExecutor = parsedCommands.get(parsedCommands.size() - 1).getCommandExecutor();
         if (commandExecutor == null) {
-            this.sendMessage(source, this.generateHelpMessage(source));
+            throw new CommandHelpException();
         } else {
             commandExecutor.run(result, source);
         }
