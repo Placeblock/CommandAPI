@@ -78,7 +78,7 @@ If you instantiate a new TreeCommandBuilder you have several options:
 - .then -> adds a child treeCommand to this treeCommand
 - .run -> specifies the CommandExecutor that should be executed when this treeCommand gets parsed successfully and there is nothing more to parse.
 - .withDescription -> specifies the description that should show up in the help message
-- .withPermission -> specifies the permission needed to access this tree command
+- .withPermission -> specifies the permission needed to access this tree command<br>
 Particularly for Literals:
 - .withAlias -> specifies an alias for the name
 
