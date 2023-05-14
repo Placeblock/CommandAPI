@@ -15,6 +15,9 @@ public abstract class PaperCommandBridge<PL extends JavaPlugin> extends Abstract
     public PaperCommandBridge(PL plugin, String label, boolean async) {
         super(plugin, label, async);
     }
+    public PaperCommandBridge(PL plugin, String label, boolean async, boolean autoInnit) {
+        super(plugin, label, async, autoInnit);
+    }
 
     @Override
     public boolean hasPermission(Player player, String permission) {
