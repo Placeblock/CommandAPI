@@ -1,202 +1,146 @@
-# CommandAPI (< 2.0.0)
-API for an easier Command use on Minecraft Servers (BungeeCord, Spigot, ...).
+# CommandAPI DOC >2.0.0
 
-### 🔴IMPORTANT🔴 Please read the whole documentation to prevent mistakes and to answer unanswered questions
+Implementing commands in Spigot can be quite challenging. 
+As soon as they get more complex, things get complicated and unreadable quite fast.
+This is what CommandAPI tries to solve. The goal is to create a structured and safe way to 
+implement such commands and handle the execution of them.
 
-CommandAPI simplifies and structures subCommand definition and execution, especially with many subcommands.<br />
-Auto-Tab-Completion can be a mess to implement in large commands. CommandAPI does it for you!<br />
-It can be really hard to implement complex Commands, Help-Messages and Auto-Tab-Completion without many duplicated code snippets. Because the Structure of your commands and subcommands are stored only in one place, all of this can be done without much effort!
+For easier understanding this documentation is split up into four parts:
+1. The CommandSource
+2. The parser
+3. Command creation
+4. Paper and Waterfall in detail
 
-This API was originally inspired by Mojang's Brigadier, but in the end it turned out that I reworked nearly everything,
-because for me Brigadier was unnecessary complex.
-Bridges for Paper and Waterfall are included in the API.
+## 1. The CommandSource
 
-# Documentation
+A command gets always executed by a human. This is the CommandSource. However, as many applications offer clients as well as
+an admin-panel the source is split up into the player and the sender (the admin-panel and yea I know it's not the right name). If the command gets executed by
+a client the sender is null, otherwise it's the other way around.
 
-Every subCommand is stored in a tree-like structure <br />
-Example:
-```
-literal
-    literal2
-        argument1
-    literal3
-        literal4
-            argument2
-        argument3
-    argument4
-        argument5
-```
-If you don't know what literals and arguments are, here is an example:
-```
-Literal   Literal   Argument
-  \/        \/         \/
-/party    invite    [player]
-```
-At the same time every single of them are Nodes.
+## 2. The parser
 
-## How to create the Command Structure
-#### When using CommandAPI you can define this Structure by using the [ArgumentBuilder](src/main/java/de/placeblock/commandapi/core/builder/ArgumentBuilder.java)
-It is an abstract class and has the following methods:
+### Why do we need the parser?
 
-<dl>
-  <dt>then(ArgumentBuilder builder)</dt>
-  <dd>Used to add Child ArgumentBuilder.</dd>
-  <dt>executes(Command subCommand)</dt>
-  <dd>Sets the Callback to be executed when executing this node.</dd>
-  <dd>Command is a functional interface, so it can be used as a lambda function.</dd>
-  <dt>withDescription(TextComponent description)</dt>
-  <dd>Sets the description of this node.</dd>
-  <dd>The only use of descriptions is for generating the HelpMessage.</dd>
-  <dd>If no description is provided there will be no description in the HelpMessage.</dd>
+The most important part of the CommandAPI is the parser. It basically takes a string as
+an input and decides what should get executed or which error should be thrown.
+As the parser is used quite often it should be as performant as possible.
 
-  <dt>withPermission(String permission)</dt>
-  <dd>Sets the permission that is required to run this subCommand. </dd>
-  <dt>requires(Predicate requirement)</dt>
-  <dd>This Node is only executed if this Predicate returns true.</dd>
-</dl>
+Before the parser can evaluate any string, you have to give the parser instructions what should happen
+in specific situations. These instructions are called the command-structure or command-tree and
+ define, as the name already tells, the structure of the command.
 
-### There arer two implementations of the abstract [ArgumentBuilder](src/main/java/de/placeblock/commandapi/core/builder/ArgumentBuilder.java)
+Here is an example of such a command-tree, however you can find the detailed documentation on how to
+implement them in 3. Command creation.
 
+/file save   ->   should safe the file<br>
+/file append [line]   -> should append a line to the file<br>
+/file load [file]    -> should load a file
 
-#### [LiteralArgumentBuilder](src/main/java/de/placeblock/commandapi/core/builder/LiteralArgumentBuilder.java) with the following additional methods:
-Used for Literals (above-mentioned)
-<dl>
-  <dt>withAlias(String alias)</dt>
-  <dd>Adds an Alias to the Node.</dd>
-</dl>
+The purpose of the parser is to evaluate strings like:<br>
+"/file sa" -> Unknown Command<br>
+"/file save" -> Call the method to save the file
+
+This tree-structure is stored in the TreeCommand class. It contains its children TreeCommands, the permission
+required to access itself and the CommandExecutor, which is basically a lambda method, which is called when
+this specific TreeCommand should be executed.
+
+### How the parser works
+
+The parser evaluates the passed string from left to right. During the parsing process it gathers 
+information like parsed parameters, parsing errors and so on. All this information is stored in the
+ParsedCommand class, which can be accessed together with the CommandSource in the CommandExecutor to 
+get parsed parameters and other information.
+
+However, it could be possible, that there are multiple CommandExecutors that fit the passed string (Even ones,
+that would return SyntaxExceptions). Therefore, the parser evaluates all possible branches, which means multiple 
+ParsedCommands containing the information for the specific branches are returned. Based on the parsing errors 
+contained in the ParsedCommands the best ParsedCommand gets executed, if there is any CommandExecutor.
+
+The parser starts with index 0. At first, it will try, to parse the main literal. If that was successful, it sets
+the cursor to right after the literal. Then it will try to parse the tree-structure recursively. If the parser stumbles
+over a literal, it will try to parse the literal. If there is a parameter, it will call the parse() method of the Parameter.
 
 
-#### [RequiredArgumentBuilder](src/main/java/de/placeblock/commandapi/core/builder/RequiredArgumentBuilder.java) with the following additional methods:
-Used for Arguments (above-mentioned)
-<dl>
-  <dt>suggests(Function&lt;String, List&lt;String&gt;&gt; customSuggestions)</dt>
-  <dd>This Function will be called in addition to the ArgumentType when getting Suggestions for TabCompletion.</dd>
-</dl>
-RequiredArgumentBuilder needs an ArgumentType, at example, <br />
-/msg [player] [msg] <- This is an Argument of Type String
-When the Player types a subCommand, the parser tries to parse arguments into their Types.
-You can create your own CustomArgumentType by implementing ArgumentType.
+## 3. Command creation
 
-###  You can use these two Builders to build your Command, or if you want to, define your own:
-```
-return new LiteralArgumentBuilder<Source>("fly")
-    .executes(c -> {
-        //Gets executed if somebody types /fly
-    })
-    .then(
-        new RequiredArgumentBuilder<Source, ILobbyPlayer>("spieler", new LobbyPlayerArgumentType())
-        .then(new RequiredArgumentBuilder<Source, Boolean>("true/false", new BooleanArgumentType())
-            .executes(c -> {
-                //Gets executed if somebody types /fly <spieler> 
-            }))
-    );
-```
+Everything starts with the Command class. You can extend this class, but in 3. Paper and Waterfall in detail 
+we will discuss why there are better options. Weather you do it or not at some point you have to implement the generateCommand
+method which is called right after instantiating the command. There is one parameter, which is the base-literal treeCommandBuilder 
+you can build upon. At the end the complete tree-structure has to be returned for the command to work.
 
-## What is source?
-Since CommandAPI should be compatible with Paper as well as Waterfall the CommandAPI classes are generic.<br />
-This means there is no fixed class for the Player or the Console, instead of this there is just the Source S.
-When a subCommand gets executed you get the source, another word would be "whoever typed in this subCommand".
+### The tree structure
 
-You should create a Source Class which holds your Custom Player and the CommandSender,
-because when the subCommand gets executed from console you can set the Custom Player to null and
-in your execute lambda a simple check is needed to confirm that the subCommand was sent by an actual player. <br />
-IMPORTANT: PaperCommandBridge and WaterfallCommandBridge does this for you (More information further down).
+The base class for implementing the tree-structure is the LiteralTreeCommand and the ParameterTreeCommand. As the name describes,
+LiteralTreeCommand is for literals and ParameterTreeCommand is for parameters. However, you actually do not use these classes at all.
+There are corresponding builder classes, which simplify the implementation drastically. 
 
-## Example for a "simple" Paper Command without implementation:
-```
-public class FlyCommand extends CommandAPICommand<Source> implements CommandExecutor, TabCompleter {
+If you instantiate a new TreeCommandBuilder you have several options:
+- .then -> adds a child treeCommand to this treeCommand
+- .run -> specifies the CommandExecutor that should be executed when this treeCommand gets parsed successfully and there is nothing more to parse.
+- .withDescription -> specifies the description that should show up in the help message
+- .withPermission -> specifies the permission needed to access this tree command
 
-    public FlyCommand() {
-        super("fly");
-        //Registration missing
-    }
+Particularly for Literals:
+- .withAlias -> specifies an alias for the name
 
-    @Override
-    public LiteralArgumentBuilder<Source> generateCommand() {
-        //Here you can Define your Command Structure
-    }
+### Parameters
 
-    @Override
-    public boolean hasSourcePermission(Source source, String permission) {
-        //Implementation missing
-    }
+You have already learned that you use the ParameterTreeCommand for specifying parameters. In the constructor of this class you have to 
+provide the parameter that is used for this ParameterTreeCommand. There are many ready-to-use parameters implemented:
+- BooleanParameter
+- DoubleParameter
+- EnumParameter
+- IntegerParameter
+- StringOfListParameter
+- StringParameter
+- EnumParameter
 
-    @Override
-    public void sendSourceMessage(Source source, TextComponent textComponent) {
+If you want to add your own parameter you can do that by implementing the Parameter interface.
 
-    }
-    
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command subCommand, @NotNull String label, @NotNull String[] args) {
-        //Implementation missing
-    }
+Accessing parsed parameters in the CommandExecutor is quite easy. As already described, all information gathered while parsing the command is
+stored in the ParsedCommand instance, which is then passed to the CommandExecutor. Providing the name of the ParameterTreeCommand you can access
+parsed parameters there.
 
-    @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command subCommand, @NotNull String label, @NotNull String[] args) {
-        //Implementation missing
-    }
-}
-```
-The CommandAPI does not know how to send Messages to the Source because it doesn't know of which type Source is.<br />
-This is why you have to implement methods Like sendSourceMessage(Source source, TextComponent textComponent).<br />
-
-Maybe you are wondering if you have to do this for every single subCommand...
-Long answer short: no, of course not. <br />
-These methods will be probably the same for all your commands, and it would be stupid to implement them again and again.<br />
-One solution would be to create another class which extends CommandAPICommand and implements these methods.<br />
-For Paper and Waterfall this is already done with the [WaterfallCommandBridge](src/main/java/de/placeblock/commandapi/bungee/WaterfallCommandBridge.java)
-and [PaperCommandBridge](src/main/java/de/placeblock/commandapi/paper/PaperCommandBridge.java) classes.<br />
-They already have implemented Command Execution, Tab Completion and Command Registration,
-but still have some abstract methods (explained below example) you would have to implement in every subCommand, however they don't need
-as much logic as the above-mentioned. <br />
-Because there are still methods which are the same for every subCommand, 
-it is recommended to create a class between the Paper-/Bungee-Commandbridge, an example is shown below.
-
-### Example (Paper):
-```
-public abstract class PaperCommand extends PaperCommandBridge<CustomPlayer> {
-    public PaperCommand(String label) {
-        super(label);
-    }
-
-    @Override
-    public LobbySlime getPlugin() {
-        return MainPluginClass.getInstance();
-    }
-
-    @Override
-    protected CustomPlayer getCustomPlayer(Player player) {
-        return SomeMethodToGetYourCustomPlayerFromBukkitPlayer(player);
-    }
-
-    @Override
-    protected boolean hasPermission(CustomPlayer customPlayer, String permission) {
-        return CheckIfYourCustomPlayerHasPermission(permission)
-    }
-
-    @Override
-    protected void sendMessage(CustomPlayer customPlayer, TextComponent textComponent) {
-        customPlayer.getBukkitPlayer().sendMessage(textComponent);
-    }
-}
-```
-This looks much cleaner then the first-mentioned class, and now you can use PaperCommand freely.
-
-### What is CustomPlayer?
-Remember that I said that Paper-/Waterfall-CommandBridge handle the
-Source for you? Well, it isn't 100% right. I could have implemented a Source Class just with
-(for paper) the Bukkit Player and the CommandSender, and (for Waterfall) the ProxiedPlayer and the CommandSender,
-but in larger plugins you will likely have a Custom Player which holds your player data and (with Paper) your Bukkit Player.
-To Support these Custom Players, the Source used in the Paper-/Waterfall-CommandBridge is generic. You can set the Type
-for the Player to your Custom Player!
-But because the API don't know the type of Player, it doesn't know how to check Permissions, send Messages, etc.
-This is why you have to implement Methods like sendMessage(), hasPermission() etc.
+Attention: In the parse method of a parameter you have access to the ParsedCommand too, which means you can access already parsed parameters while
+parsing another. This can be really helpful for tab-completing a list of elements from an object that is specified by another parameter.
 
 
-## Generate HelpMessage
-CommandAPI automatically sends HelpMessages, however, if you want just to generate the Help Message, here you go:
-```
-CommandAPICommand subCommand = someCommandAPICommand()
-TextComponent helpMessage = subCommand.generateHelpMessage(source)
-```
-TextComponent from [AdventureAPI](https://github.com/KyoriPowered/adventure) is returned
+## 4. Paper and Waterfall in detail
+
+### How to work with Paper and Waterfall
+
+Initially the CommandAPI doesn't have anything to do with Minecraft. If you want to use the CommandAPI for Minecraft you
+would have to implement the event handling and everything else all by yourself. This is why there are these to classes:
+- AbstractPaperCommandBridge  ->  Handles events for Paper 
+- AbstractWaterfallCommandBridge  ->  Handles events for Waterfall
+These also provide unregister and register methods, which you have to call to access the command in-game.
+
+But even if you use them you still have to implement methods like hasPermission() and sendMessage() yourself, as the
+source is still generic and the API cannot know how to send a message to your source. For very minimalistic usage of
+the API this is not simple enough. This is why there are two more classes:
+- PaperCommandBridge  -> Extends AbstractPaperCommandBridge and implements hasPermission() and sendMessage()
+- WaterfallCommandBridge  -> Extends AbstractWaterfallCommandBridge and implements hasPermission() and sendMessage()
+However if you use these two you are forced to use the Paper Player or the Waterfall ProxiedPlayer as the source's player.
+
+In conclusion, you can say that if you just want to create very simple commands you just extend one of these classes.
+
+### Generics
+
+If you instantiate the tree-structure as described in 2. you will see quite fast that it's really annoying
+to always specify the generics for the CommandSource. This is because Java's type-inferring does not work here.
+
+#### How to avoid generics
+
+However, when using Paper or Waterfall, you usually want to use the console as the sender. To make your life easier there
+exist two classes called PaperCommandSource and WaterfallCommandSource, which do exactly that. This reduced the generics you
+have to specify, but hasn't removed them entirely.
+If you use the Paper Player class or the Waterfall ProxyPlayer class as the player of your source, you can use
+- PaperCommandBridge.literal() -> for creating literals for Paper without generics
+- PaperCommandBridge.parameter() -> for creating parameters for Paper without generics
+- WaterfallCommandBridge.literal() -> for creating literals for Waterfall without generics
+- WaterfallCommandBridge.parameter() -> for creating parameters for Waterfall without generics
+It makes sense to put them in these classes, because if you use them to create a command you are forced to use the Paper Player 
+and Waterfall ProxyPlayer too!
+
+If you don't use these specific Player classes it's recommended to create such static methods for yourself to avoid
+generics.

@@ -12,6 +12,8 @@ public interface CommandBridge<DP, P, C, S extends CommandSource<P, C>> {
     boolean hasPermission(P customPlayer, String permission);
     LiteralTreeCommandBuilder<S> generateCommand(LiteralTreeCommandBuilder<S> builder);
 
+    void init();
+
     void register();
     void unregister();
 }
