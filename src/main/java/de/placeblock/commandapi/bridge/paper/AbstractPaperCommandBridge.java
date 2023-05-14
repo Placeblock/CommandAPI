@@ -24,16 +24,28 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> extends Command implements CommandBridge<Player, P, CommandSender, PaperCommandSource<P>>, Listener {
     @Getter
-    private final de.placeblock.commandapi.core.Command<PaperCommandSource<P>> command;
+    private de.placeblock.commandapi.core.Command<PaperCommandSource<P>> command;
 
     @Getter
     private final PL plugin;
+    @Getter
+    private boolean async;
 
     public AbstractPaperCommandBridge(PL plugin, String label, boolean async) {
+        this(plugin, label, async, true);
+    }
+
+    public AbstractPaperCommandBridge(PL plugin, String label, boolean async, boolean autoInit) {
         super(label);
         this.plugin = plugin;
+        this.async = async;
+        if (autoInit) {
+            this.init();
+        }
+    }
 
-        this.command = new de.placeblock.commandapi.core.Command<>(label, async) {
+    public void init() {
+        this.command = new de.placeblock.commandapi.core.Command<>(this.getLabel(), this.isAsync()) {
             @Override
             public LiteralTreeCommandBuilder<PaperCommandSource<P>> generateCommand(LiteralTreeCommandBuilder<PaperCommandSource<P>> builder) {
                 return AbstractPaperCommandBridge.this.generateCommand(builder);

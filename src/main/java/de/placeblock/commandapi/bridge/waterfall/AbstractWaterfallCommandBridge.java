@@ -24,10 +24,12 @@ import java.util.List;
 @SuppressWarnings("unused")
 public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> extends Command implements CommandBridge<ProxiedPlayer, P, CommandSender, WaterfallCommandSource<P>>, TabExecutor {
     @Getter
-    private final de.placeblock.commandapi.core.Command<WaterfallCommandSource<P>> command;
+    private de.placeblock.commandapi.core.Command<WaterfallCommandSource<P>> command;
 
     @Getter
     private final PL plugin;
+    @Getter
+    private boolean async;
 
     private static Unsafe unsafe;
 
@@ -43,9 +45,20 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
     }
 
     public AbstractWaterfallCommandBridge(PL plugin, String label, boolean async) {
+        this(plugin, label, async, true);
+    }
+
+    public AbstractWaterfallCommandBridge(PL plugin, String label, boolean async, boolean autoInit) {
         super(label);
         this.plugin = plugin;
-        this.command = new de.placeblock.commandapi.core.Command<>(label, async) {
+        this.async = async;
+        if (autoInit) {
+            this.init();
+        }
+    }
+
+    public void init() {
+        this.command = new de.placeblock.commandapi.core.Command<>(this.getName(), this.isAsync()) {
             @Override
             public LiteralTreeCommandBuilder<WaterfallCommandSource<P>> generateCommand(LiteralTreeCommandBuilder<WaterfallCommandSource<P>> builder) {
                 return AbstractWaterfallCommandBridge.this.generateCommand(builder);
