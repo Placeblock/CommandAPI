@@ -18,6 +18,11 @@ public abstract class WaterfallCommandBridge<PL extends Plugin> extends Abstract
         super(plugin, label, async);
     }
 
+    public WaterfallCommandBridge(PL plugin, String label, boolean async, boolean autoInit) {
+        super(plugin, label, async, autoInit);
+    }
+
+
     @Override
     public boolean hasPermission(ProxiedPlayer customPlayer, String permission) {
         return customPlayer.hasPermission(permission);
