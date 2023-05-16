@@ -124,6 +124,12 @@ public abstract class Command<S> {
         return suggestions;
     }
 
+    /**
+     * Returns the best Result for a list of ParsedCommands
+     * @param results
+     * @return
+     * @param <S>
+     */
     public static <S> ParsedCommand<S> getBestResult(List<ParsedCommand<S>> results) {
         results.sort((a, b) -> {
             if (a.getParsedTreeCommands().size() > b.getParsedTreeCommands().size()) return -1;
