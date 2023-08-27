@@ -1,10 +1,10 @@
 package de.placeblock.commandapi.core;
 
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 
 @FunctionalInterface
 public interface CommandExecutor<S> {
 
-    void run(ParsedCommand<S> parsedCommand, S source);
+    void run(ParsedCommandBranch<S> parsedCommandBranch, S source);
 
 }

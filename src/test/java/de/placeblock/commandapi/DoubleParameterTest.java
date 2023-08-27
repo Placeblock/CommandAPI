@@ -1,8 +1,8 @@
 package de.placeblock.commandapi;
 
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.exception.CommandParseException;
 import de.placeblock.commandapi.core.parameter.DoubleParameter;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import de.placeblock.commandapi.core.parser.StringReader;
 import org.junit.jupiter.api.Test;
 
@@ -15,12 +15,12 @@ import java.util.Objects;
 public class DoubleParameterTest {
 
     @Test
-    public void testDoubleParameterParse() throws CommandSyntaxException {
+    public void testDoubleParameterParse() throws CommandParseException {
         DoubleParameter<String> doubleParameter = new DoubleParameter<>(0D, 100D);
         StringReader reader = new StringReader("awdawd 100   ");
         reader.setCursor(7);
-        ParsedCommand<String> parsedCommand = new ParsedCommand<>(reader);
-        Double result = doubleParameter.parse(parsedCommand, "source");
+        ParsedCommandBranch<String> parsedCommandBranch = new ParsedCommandBranch<>(reader);
+        Double result = doubleParameter.parse(parsedCommandBranch, "source");
         assert Objects.equals(result, 100D);
     }
 
@@ -28,7 +28,7 @@ public class DoubleParameterTest {
     public void testDoubleParameterSuggestions() {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "";
-        List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse 100", source);
+        List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse 100", source);
         List<String> suggestions = parseTestCommand.getSuggestions(results, source);
         System.out.println(suggestions);
         assert suggestions.contains("100.") && !suggestions.contains("1001") && !suggestions.contains("1");

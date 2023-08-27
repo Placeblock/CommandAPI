@@ -1,9 +1,9 @@
 package de.placeblock.commandapi;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.exception.CommandParseException;
 import de.placeblock.commandapi.core.parameter.BooleanParameter;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import de.placeblock.commandapi.core.parser.StringReader;
 import org.junit.jupiter.api.Test;
 
@@ -16,36 +16,36 @@ import java.util.logging.Level;
  */
 public class BooleanParameterTest {
     @Test
-    public void testBooleanParameterParse() throws CommandSyntaxException {
+    public void testBooleanParameterParse() throws CommandParseException {
         String source = "test";
         BooleanParameter<String> booleanParameter = new BooleanParameter<>();
         StringReader reader = new StringReader("awdawd f");
         reader.setCursor(7);
-        ParsedCommand<String> parsedCommand = new ParsedCommand<>(reader);
+        ParsedCommandBranch<String> parsedCommandBranch = new ParsedCommandBranch<>(reader);
         try {
-            booleanParameter.parse(parsedCommand, source);
+            booleanParameter.parse(parsedCommandBranch, source);
             assert false;
-        } catch (CommandSyntaxException ignored) {}
+        } catch (CommandParseException ignored) {}
 
         reader = new StringReader("awdawd false");
         reader.setCursor(7);
-        parsedCommand = new ParsedCommand<>(reader);
-        Boolean result = booleanParameter.parse(parsedCommand, source);
+        parsedCommandBranch = new ParsedCommandBranch<>(reader);
+        Boolean result = booleanParameter.parse(parsedCommandBranch, source);
         assert Objects.equals(result, false);
 
         reader = new StringReader("awdawd true");
         reader.setCursor(7);
-        parsedCommand = new ParsedCommand<>(reader);
-        result = booleanParameter.parse(parsedCommand, source);
+        parsedCommandBranch = new ParsedCommandBranch<>(reader);
+        result = booleanParameter.parse(parsedCommandBranch, source);
         assert Objects.equals(result, true);
 
         reader = new StringReader("awdawd truea");
         reader.setCursor(7);
-        parsedCommand = new ParsedCommand<>(reader);
+        parsedCommandBranch = new ParsedCommandBranch<>(reader);
         try {
-            booleanParameter.parse(parsedCommand, source);
+            booleanParameter.parse(parsedCommandBranch, source);
             assert false;
-        } catch (CommandSyntaxException ignored) {}
+        } catch (CommandParseException ignored) {}
     }
 
     @Test
@@ -53,7 +53,7 @@ public class BooleanParameterTest {
         Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "";
-        List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse bool t", source);
+        List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse bool t", source);
         List<String> suggestions = parseTestCommand.getSuggestions(results, source);
         assert suggestions.contains("true") && !suggestions.contains("false");
 

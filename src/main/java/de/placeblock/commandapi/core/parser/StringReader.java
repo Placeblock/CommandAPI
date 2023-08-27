@@ -1,7 +1,7 @@
 package de.placeblock.commandapi.core.parser;
 
 
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.exception.*;
 import io.schark.design.texts.Texts;
 
 @SuppressWarnings("unused")
@@ -98,51 +98,51 @@ public class StringReader {
         }
     }
 
-    public int readInt() throws CommandSyntaxException {
+    public int readInt() throws CommandParseException {
         final String number = this.readUnquotedString();
         if (number.isEmpty()) {
-            throw new CommandSyntaxException(Texts.inferior("Ganze Zahl erwartet"));
+            throw new IntegerRequiredException();
         }
         try {
             return Integer.parseInt(number);
         } catch (final NumberFormatException ex) {
-            throw new CommandSyntaxException(Texts.primary(number + " <color:inferior>ist <color:negative>keine Ganze Zahl"));
+            throw new InvalidIntegerException(number);
         }
     }
 
-    public long readLong() throws CommandSyntaxException {
+    public long readLong() throws CommandParseException {
         final String number = this.readUnquotedString();
         if (number.isEmpty()) {
-            throw new CommandSyntaxException(Texts.inferior("Ganze Zahl erwartet"));
+            throw new IntegerRequiredException();
         }
         try {
             return Long.parseLong(number);
         } catch (final NumberFormatException ex) {
-            throw new CommandSyntaxException(Texts.primary(number + " <color:inferior>ist <color:negative>keine Ganze Zahl"));
+            throw new InvalidIntegerException(number);
         }
     }
 
-    public double readDouble() throws CommandSyntaxException {
+    public double readDouble() throws CommandParseException {
         final String number = this.readUnquotedString();
         if (number.isEmpty()) {
-            throw new CommandSyntaxException(Texts.inferior("Komma Zahl erwartet"));
+            throw new DecimalRequiredException();
         }
         try {
             return Double.parseDouble(number);
         } catch (final NumberFormatException ex) {
-            throw new CommandSyntaxException(Texts.primary(number + " <color:inferior>ist <color:negative>keine Komma Zahl"));
+            throw new InvalidDecimalException(number);
         }
     }
 
-    public float readFloat() throws CommandSyntaxException {
+    public float readFloat() throws CommandParseException {
         final String number = this.readUnquotedString();
         if (number.isEmpty()) {
-            throw new CommandSyntaxException(Texts.inferior("Komma Zahl erwartet"));
+            throw new DecimalRequiredException();
         }
         try {
             return Float.parseFloat(number);
         } catch (final NumberFormatException ex) {
-            throw new CommandSyntaxException(Texts.primary(number + " <color:inferior>ist <color:negative>keine Komma Zahl"));
+            throw new InvalidDecimalException(number);
         }
     }
 
@@ -154,19 +154,19 @@ public class StringReader {
         return string.substring(start, cursor);
     }
 
-    public String readQuotedString() throws CommandSyntaxException {
+    public String readQuotedString() throws CommandParseException {
         if (!canRead()) {
             return "";
         }
         final char next = peek();
         if (!isQuotedStringStart(next)) {
-            throw new CommandSyntaxException(Texts.inferior("Text in Anführungszeichen erwartet"));
+            throw new QuotedStringRequiredException();
         }
         skip();
         return readStringUntil(next);
     }
 
-    public String readStringUntil(char terminator) throws CommandSyntaxException {
+    public String readStringUntil(char terminator) throws CommandParseException {
         final StringBuilder result = new StringBuilder();
         boolean escaped = false;
         while (canRead()) {
@@ -177,7 +177,7 @@ public class StringReader {
                     escaped = false;
                 } else {
                     setCursor(getCursor() - 1);
-                    throw new CommandSyntaxException(Texts.primary(c + " <color:negative>darf nicht Escaped werden"));
+                    throw new InvalidEscapeCharException(c);
                 }
             } else if (c == SYNTAX_ESCAPE) {
                 escaped = true;
@@ -188,10 +188,10 @@ public class StringReader {
             }
         }
 
-        throw new CommandSyntaxException(Texts.inferior("End-Anführungszeichen erwartet"));
+        throw new NoEndQuoteException();
     }
 
-    public String readString() throws CommandSyntaxException {
+    public String readString() throws CommandParseException {
         if (!canRead()) {
             return "";
         }
@@ -203,26 +203,18 @@ public class StringReader {
         return readUnquotedString();
     }
 
-    public boolean readBoolean() throws CommandSyntaxException {
+    public boolean readBoolean() throws CommandParseException {
         final String value = readUnquotedString();
         if (value.isEmpty()) {
-            throw new CommandSyntaxException(Texts.inferior("true oder false erwartet"));
+            throw new BooleanRequiredException();
         }
         if (value.equals("true")) {
             return true;
         } else if (value.equals("false")) {
             return false;
         } else {
-            throw new CommandSyntaxException(Texts.primary(value + " <color:primary>ist <color:negative>kein Wahrheitswert"));
+            throw new InvalidBooleanException(value);
         }
-    }
-
-    public void expect(final char c) throws CommandSyntaxException {
-        char peek = peek();
-        if (!canRead() || peek != c) {
-            throw new CommandSyntaxException(Texts.primary(c + " <color:inferior>erwartet <color:negative>" + c + " <color:inferior>bekommen"));
-        }
-        skip();
     }
 
     public String debugString() {

@@ -1,7 +1,7 @@
 package de.placeblock.commandapi.bridge.waterfall;
 
 import de.placeblock.commandapi.bridge.CommandBridge;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
@@ -120,7 +120,7 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
             customPlayer = this.getCustomPlayer(player);
         }
         WaterfallCommandSource<P> source = new WaterfallCommandSource<>(customPlayer, sender);
-        List<ParsedCommand<WaterfallCommandSource<P>>> parseResults = this.command.parse(buffer, source);
+        List<ParsedCommandBranch<WaterfallCommandSource<P>>> parseResults = this.command.parse(buffer, source);
         return this.command.getSuggestions(parseResults, source);
     }
 

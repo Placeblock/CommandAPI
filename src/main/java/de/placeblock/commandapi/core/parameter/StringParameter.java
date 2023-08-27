@@ -1,8 +1,9 @@
 package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.SuggestionBuilder;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.exception.CommandParseException;
+import de.placeblock.commandapi.core.exception.EmptyGreedyException;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import de.placeblock.commandapi.core.parser.StringReader;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
@@ -32,14 +33,14 @@ public class StringParameter<S> implements Parameter<S, String> {
     }
 
     @Override
-    public String parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
+    public String parse(ParsedCommandBranch<S> command, S source) throws CommandParseException {
         StringReader reader = command.getReader();
         String parsedText;
         if (type == StringType.GREEDY_PHRASE) {
             String remaining = reader.getRemaining();
             reader.setCursor(reader.getTotalLength());
             if (remaining.equals("")) {
-                throw  new CommandSyntaxException(Texts.inferior("Ein <color:primary>leerer String <color:inferior>ist als greedy Argument <color:negative>nicht erlaubt"));
+                throw new EmptyGreedyException();
             }
             return remaining;
         }

@@ -1,8 +1,8 @@
 package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.SuggestionBuilder;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.exception.CommandParseException;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 
 /**
  * Author: Placeblock
@@ -21,7 +21,7 @@ public class IntegerParameter<S> extends NumberParameter<S, Integer> {
     }
 
     @Override
-    public Integer parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
+    public Integer parse(ParsedCommandBranch<S> command, S source) throws CommandParseException {
         Integer result = command.getReader().readInt();
         return this.checkNumber(result);
     }

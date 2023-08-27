@@ -1,9 +1,9 @@
 package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.SuggestionBuilder;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
-import io.schark.design.texts.Texts;
+import de.placeblock.commandapi.core.exception.CommandParseException;
+import de.placeblock.commandapi.core.exception.InvalidParameterValueException;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -20,7 +20,7 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
     }
 
     @Override
-    public E parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
+    public E parse(ParsedCommandBranch<S> command, S source) throws CommandParseException {
         String word = command.getReader().readUnquotedString();
         try {
             if (CommandEnum.class.isAssignableFrom(this.enumClass)) {
@@ -29,12 +29,12 @@ public class EnumParameter<S, E extends Enum<E>> implements Parameter<S, E> {
                         return enumValue;
                     }
                 }
-                throw new CommandSyntaxException(Texts.inferior("Das Argument <color:primary>" + word + " <color:negative>existiert nicht<color:inferior>."));
+                throw new InvalidParameterValueException(word);
             } else {
                 return Enum.valueOf(this.enumClass, word.toUpperCase());
             }
         } catch (IllegalArgumentException ex) {
-            throw new CommandSyntaxException(Texts.inferior("Das Argument <color:primary>" + word + " <color:negative>existiert nicht<color:inferior>."));
+            throw new InvalidParameterValueException(word);
         }
     }
 

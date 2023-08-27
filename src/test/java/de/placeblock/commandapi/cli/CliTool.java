@@ -2,7 +2,7 @@ package de.placeblock.commandapi.cli;
 
 import de.placeblock.commandapi.ParseTestCommand;
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,8 +20,8 @@ public class CliTool {
         try {
             while (true) {
                 String name = reader.readLine();
-                List<ParsedCommand<String>> parsedCommands = command.parse(name, "test");
-                command.execute(Command.getBestResult(parsedCommands), "test");
+                List<ParsedCommandBranch<String>> parsedCommandBranches = command.parse(name, "test");
+                command.execute(Command.getBestResult(parsedCommandBranches), "test");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

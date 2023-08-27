@@ -1,7 +1,7 @@
 package de.placeblock.commandapi;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import org.junit.jupiter.api.Test;
 
@@ -18,15 +18,15 @@ public class ParseTest {
         Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "TestPlayer";
-        List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse remove 22  ", source);
-        ParsedCommand<String> result = Command.getBestResult(results);
+        List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse remove 22  ", source);
+        ParsedCommandBranch<String> result = Command.getBestResult(results);
         assert result.getReader().getCursor() == 26;
-        assert result.getParsedTreeCommands().size() != 0;
+        assert result.getBranch().size() != 0;
         assert result.getLastParsedTreeCommand() instanceof ParameterTreeCommand<?,?>;
         results = parseTestCommand.parse("testcommandparse", source);
         result = Command.getBestResult(results);
         assert result.getReader().getCursor() == 16;
-        assert result.getParsedTreeCommands().size() == 1;
+        assert result.getBranch().size() == 1;
         assert result.getLastParsedTreeCommand() != null;
     }
 
@@ -35,7 +35,7 @@ public class ParseTest {
         Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "TestPlayer";
-        List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse remove", source);
+        List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse remove", source);
         List<String> suggestions = parseTestCommand.getSuggestions(results, source);
         assert suggestions.isEmpty();
         results = parseTestCommand.parse("testcommandparse remove  ", source);

@@ -1,8 +1,8 @@
 package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.SuggestionBuilder;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.exception.CommandParseException;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 
 /**
  * Author: Placeblock
@@ -23,7 +23,7 @@ public class DoubleParameter<S> extends NumberParameter<S, Double> {
     }
 
     @Override
-    public Double parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
+    public Double parse(ParsedCommandBranch<S> command, S source) throws CommandParseException {
         Double result = command.getReader().readDouble();
         return this.checkNumber(result);
     }

@@ -1,8 +1,8 @@
 package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.SuggestionBuilder;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.exception.CommandParseException;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class BooleanParameter<S> implements Parameter<S, Boolean>{
     }
 
     @Override
-    public Boolean parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
+    public Boolean parse(ParsedCommandBranch<S> command, S source) throws CommandParseException {
         return command.getReader().readBoolean();
     }
 

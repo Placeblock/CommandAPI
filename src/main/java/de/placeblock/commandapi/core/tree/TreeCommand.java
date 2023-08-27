@@ -2,10 +2,10 @@ package de.placeblock.commandapi.core.tree;
 
 import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.CommandExecutor;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.exception.CommandNoPermissionException;
+import de.placeblock.commandapi.core.exception.CommandParseException;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import de.placeblock.commandapi.core.parser.StringReader;
-import io.schark.design.texts.Errors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.TextComponent;
@@ -27,22 +27,23 @@ public abstract class TreeCommand<S> {
     private final String permission;
     private final CommandExecutor<S> commandExecutor;
 
-    protected abstract void parse(ParsedCommand<S> command, S source) throws CommandSyntaxException;
+    protected abstract void parse(ParsedCommandBranch<S> command, S source) throws CommandParseException;
 
-    public List<ParsedCommand<S>> parseRecursive(ParsedCommand<S> command, S source) {
+    public List<ParsedCommandBranch<S>> parseRecursive(ParsedCommandBranch<S> command, S source) {
         int cursor = command.getReader().getCursor();
-        List<ParsedCommand<S>> commands = new ArrayList<>();
+        List<ParsedCommandBranch<S>> commands = new ArrayList<>();
         commands.add(command);
         if (this.hasNoPermission(source)) {
-            command.addException(this, new CommandSyntaxException(Errors.INVALID_COMMAND));
+            command.setException(this, new CommandNoPermissionException(this));
             return commands;
         }
         try {
             Command.LOGGER.info("Parsing Command " + this.getName());
             this.parse(command, source);
-        } catch (CommandSyntaxException e) {
+        } catch (CommandParseException e) {
             Command.LOGGER.info("Error Parsing Command " + this.getName());
-            command.addException(this, e);
+            e.setTreeCommand(this);
+            command.setException(this, e);
             // If an error occured while parsing we reset the cursor and subtract -1 because of the whitespace
             command.getReader().setCursor(cursor - 1);
             return commands;
@@ -52,15 +53,15 @@ public abstract class TreeCommand<S> {
         if (reader.canReadWord()) {
             for (TreeCommand<S> child : this.getChildren()) {
                 Command.LOGGER.info("Parsing Child " + child.getName());
-                ParsedCommand<S> childParsedCommand = new ParsedCommand<>(command);
-                childParsedCommand.getReader().skip();
-                List<ParsedCommand<S>> childParsedCommands = child.parseRecursive(childParsedCommand, source);
-                commands.addAll(childParsedCommands);
+                ParsedCommandBranch<S> childParsedCommandBranch = new ParsedCommandBranch<>(command);
+                childParsedCommandBranch.getReader().skip();
+                List<ParsedCommandBranch<S>> childParsedCommandBranches = child.parseRecursive(childParsedCommandBranch, source);
+                commands.addAll(childParsedCommandBranches);
             }
         }
         Command.LOGGER.info("Commands of TreeCommand " + this.name);
-        for (ParsedCommand<S> parsedCommand : commands) {
-            Command.LOGGER.info(parsedCommand.getParsedTreeCommands().stream().map(TreeCommand::getName).toList() + ": " + parsedCommand.getReader().debugString());
+        for (ParsedCommandBranch<S> parsedCommandBranch : commands) {
+            Command.LOGGER.info(parsedCommandBranch.getBranch().stream().map(TreeCommand::getName).toList() + ": " + parsedCommandBranch.getReader().debugString());
         }
         return commands;
     }
@@ -86,7 +87,7 @@ public abstract class TreeCommand<S> {
         return !this.command.hasPermission(source, this.permission);
     }
 
-    public abstract List<String> getSuggestions(ParsedCommand<S> command, S source);
+    public abstract List<String> getSuggestions(ParsedCommandBranch<S> command, S source);
 
     public abstract TextComponent getHelpComponent();
 

@@ -1,7 +1,7 @@
 package de.placeblock.commandapi;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class EnumParameterTest {
         Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "";
-        List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse add ", source);
+        List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse add ", source);
         List<String> suggestions = parseTestCommand.getSuggestions(results, source);
         assert suggestions.contains("TEST");
 

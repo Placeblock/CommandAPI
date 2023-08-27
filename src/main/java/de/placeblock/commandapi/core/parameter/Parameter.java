@@ -1,8 +1,8 @@
 package de.placeblock.commandapi.core.parameter;
 
 import de.placeblock.commandapi.core.SuggestionBuilder;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.exception.CommandParseException;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface Parameter<S, T> {
 
-    T parse(ParsedCommand<S> command, S source) throws CommandSyntaxException;
+    T parse(ParsedCommandBranch<S> command, S source) throws CommandParseException;
 
     void getSuggestions(SuggestionBuilder<S> suggestionBuilder);
 

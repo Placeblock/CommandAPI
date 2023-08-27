@@ -1,12 +1,13 @@
 package de.placeblock.commandapi.core.exception;
 
-import io.schark.design.texts.Texts;
+import de.placeblock.commandapi.core.tree.TreeCommand;
 
 /**
  * Author: Placeblock
  */
-public class CommandNoPermissionException extends CommandException{
-    public CommandNoPermissionException() {
-        super(Texts.INSUFFICIENT_PERMISSIONS);
+public class CommandNoPermissionException extends CommandParseException {
+    public CommandNoPermissionException(TreeCommand<?> treeCommand) {
+        super();
+        this.setTreeCommand(treeCommand);
     }
 }

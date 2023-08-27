@@ -2,8 +2,9 @@ package de.placeblock.commandapi.core.tree;
 
 import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.CommandExecutor;
-import de.placeblock.commandapi.core.exception.CommandSyntaxException;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.exception.CommandParseException;
+import de.placeblock.commandapi.core.exception.InvalidLiteralException;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
@@ -25,17 +26,17 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
     }
 
     @Override
-    protected void parse(ParsedCommand<S> command, S source) throws CommandSyntaxException {
+    protected void parse(ParsedCommandBranch<S> command, S source) throws CommandParseException {
         String nextWord = command.getReader().readUnquotedString();
-        command.getParsedTreeCommands().add(this);
+        command.getBranch().add(this);
         if (nextWord == null || (!nextWord.equalsIgnoreCase(this.getName()) &&
             this.aliases.stream().map(alias -> alias.equalsIgnoreCase(nextWord)).toList().size() == 0)) {
-            throw new CommandSyntaxException(Texts.primary(this.getName() + " <color:inferior>erwartet, <color:negative>" + nextWord + "<color:inferior> bekommen."));
+            throw new InvalidLiteralException();
         }
     }
 
     @Override
-    public List<String> getSuggestions(ParsedCommand<S> context, S source) {
+    public List<String> getSuggestions(ParsedCommandBranch<S> context, S source) {
         String partial = context.getReader().getRemaining();
         if (((!this.getName().startsWith(partial) || this.getName().equals(partial))
             && this.aliases.stream().filter(alias -> alias.startsWith(partial) && !alias.equals(partial)).toList().size() == 0)

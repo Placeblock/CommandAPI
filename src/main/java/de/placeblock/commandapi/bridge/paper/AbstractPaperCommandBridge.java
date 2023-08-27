@@ -1,7 +1,7 @@
 package de.placeblock.commandapi.bridge.paper;
 
 import de.placeblock.commandapi.bridge.CommandBridge;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
@@ -81,8 +81,8 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
         }
         PaperCommandSource<P> source = new PaperCommandSource<>(lobbyPlayer, sender);
         new Thread(() -> {
-            List<ParsedCommand<PaperCommandSource<P>>> parseResults = this.command.parse(commandLabel + " " + String.join(" ", args), source);
-            ParsedCommand<PaperCommandSource<P>> bestResult = de.placeblock.commandapi.core.Command.getBestResult(parseResults);
+            List<ParsedCommandBranch<PaperCommandSource<P>>> parseResults = this.command.parse(commandLabel + " " + String.join(" ", args), source);
+            ParsedCommandBranch<PaperCommandSource<P>> bestResult = de.placeblock.commandapi.core.Command.getBestResult(parseResults);
             if (this.command.isAsync()) {
                 this.execute(bestResult, source);
             } else {
@@ -93,7 +93,7 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
         return true;
     }
 
-    private void execute(ParsedCommand<PaperCommandSource<P>> parseResult, PaperCommandSource<P> source) {
+    private void execute(ParsedCommandBranch<PaperCommandSource<P>> parseResult, PaperCommandSource<P> source) {
         this.command.execute(parseResult, source);
     }
 
@@ -105,7 +105,7 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
             customPlayer = this.getCustomPlayer(player);
         }
         PaperCommandSource<P> source = new PaperCommandSource<>(customPlayer, sender);
-        List<ParsedCommand<PaperCommandSource<P>>> parseResults = this.command.parse(buffer, source);
+        List<ParsedCommandBranch<PaperCommandSource<P>>> parseResults = this.command.parse(buffer, source);
         return this.command.getSuggestions(parseResults, source);
     }
 

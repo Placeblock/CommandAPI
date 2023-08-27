@@ -1,7 +1,7 @@
 package de.placeblock.commandapi;
 
 import de.placeblock.commandapi.core.Command;
-import de.placeblock.commandapi.core.parser.ParsedCommand;
+import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -15,8 +15,8 @@ public class StringParameterTest {
     public void testGreedyStringParameterParse() {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "";
-        List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse greedy a", source);
-        ParsedCommand<String> result = Command.getBestResult(results);
+        List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse greedy a", source);
+        ParsedCommandBranch<String> result = Command.getBestResult(results);
         String parsedGreedy = result.getParsedParameter("greedy", String.class);
         assert "a".equals(parsedGreedy);
 
