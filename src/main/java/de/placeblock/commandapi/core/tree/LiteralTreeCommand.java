@@ -5,7 +5,6 @@ import de.placeblock.commandapi.core.CommandExecutor;
 import de.placeblock.commandapi.core.exception.CommandParseException;
 import de.placeblock.commandapi.core.exception.InvalidLiteralException;
 import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
-import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 
@@ -50,12 +49,11 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
 
     @Override
     public TextComponent getHelpComponent() {
-        return Texts.inferior(this.getName());
+        return this.getCommand().getDesign().getHelpLiteralTreeCommand(this);
     }
 
     @Override
     public TextComponent getHelpExtraDescription() {
-        if (this.aliases.size() == 0) return null;
-        return Texts.inferior("Alias: " + String.join(", ", this.aliases));
+        return this.getCommand().getDesign().getHelpLiteralTreeCommandDescription(this);
     }
 }

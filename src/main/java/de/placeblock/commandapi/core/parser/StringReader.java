@@ -2,7 +2,6 @@ package de.placeblock.commandapi.core.parser;
 
 
 import de.placeblock.commandapi.core.exception.*;
-import io.schark.design.texts.Texts;
 
 @SuppressWarnings("unused")
 public class StringReader {

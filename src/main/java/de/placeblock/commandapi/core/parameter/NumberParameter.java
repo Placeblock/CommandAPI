@@ -3,7 +3,6 @@ package de.placeblock.commandapi.core.parameter;
 import de.placeblock.commandapi.core.exception.CommandParseException;
 import de.placeblock.commandapi.core.exception.NumberTooBigException;
 import de.placeblock.commandapi.core.exception.NumberTooSmallException;
-import io.schark.design.texts.Texts;
 import lombok.RequiredArgsConstructor;
 
 /**

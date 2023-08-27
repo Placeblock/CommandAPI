@@ -6,7 +6,6 @@ import de.placeblock.commandapi.core.SuggestionBuilder;
 import de.placeblock.commandapi.core.exception.CommandParseException;
 import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
-import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 
@@ -49,11 +48,11 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
 
     @Override
     public TextComponent getHelpComponent() {
-        return Texts.inferior("[" + this.getName() + "]");
+        return this.getCommand().getDesign().getHelpParameterTreeCommand(this);
     }
 
     @Override
     public TextComponent getHelpExtraDescription() {
-        return null;
+        return this.getCommand().getDesign().getHelpParameterTreeCommandDescription(this);
     }
 }

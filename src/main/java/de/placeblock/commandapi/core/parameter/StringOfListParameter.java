@@ -4,7 +4,6 @@ import de.placeblock.commandapi.core.SuggestionBuilder;
 import de.placeblock.commandapi.core.exception.CommandParseException;
 import de.placeblock.commandapi.core.exception.InvalidParameterValueException;
 import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
-import io.schark.design.texts.Texts;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

@@ -2,20 +2,17 @@ package de.placeblock.commandapi.core;
 
 import de.placeblock.commandapi.core.exception.CommandHelpException;
 import de.placeblock.commandapi.core.exception.CommandParseException;
-import de.placeblock.commandapi.core.messages.Messages;
+import de.placeblock.commandapi.core.messages.CommandDesign;
+import de.placeblock.commandapi.core.messages.DefaultCommandDesign;
 import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import de.placeblock.commandapi.core.parser.StringReader;
-import io.schark.design.colors.Colors;
-import io.schark.design.texts.Texts;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +28,7 @@ import java.util.logging.Logger;
 public abstract class Command<S> {
 
     public static Logger LOGGER;
-    public static Messages MESSAGES;
+    public static CommandDesign DESIGN = new DefaultCommandDesign();
 
     static {
         LOGGER = Logger.getLogger("commandapi");
@@ -42,15 +39,29 @@ public abstract class Command<S> {
     private final TextComponent prefix;
     private final boolean async;
     private final ExecutorService threadPool;
+    private final CommandDesign design;
+
+    public Command(String label) {
+        this(label, false);
+    }
+
+    public Command(String label, CommandDesign commandDesign) {
+        this(label, false, commandDesign);
+    }
 
     public Command(String label, boolean async) {
+        this(label, async, DESIGN);
+    }
+
+    public Command(String label, boolean async, CommandDesign commandDesign) {
+        this.design = commandDesign;
+        this.prefix = this.design.getPrefix(this);
+        this.async = async;
         TreeCommand<S> baseCommand = this.generateCommand(new LiteralTreeCommandBuilder<>(label)).build(this);
         if (!(baseCommand instanceof LiteralTreeCommand<S> literalTreeCommand)) {
             throw new IllegalArgumentException("You can only use LiteralTreeCommandBuilder as root");
         }
         this.base = literalTreeCommand;
-        this.prefix = Texts.subPrefix(Texts.primary(this.base.getName())).append(Component.space());
-        this.async = async;
         if (this.async) {
             this.threadPool = Executors.newFixedThreadPool(4);
         } else {
@@ -77,14 +88,14 @@ public abstract class Command<S> {
         try {
             this.executeRaw(result, source);
         } catch (CommandHelpException e) {
-            TextComponent message = this.generateHelpMessage(source);
+            TextComponent message = this.design.generateHelpMessage(this, source);
             if (message == null) {
                 this.sendMessage(source, Component.text("Missing Exception Message for Exception: " + e.getClass().getSimpleName()));
                 return;
             }
             this.sendMessage(source, message);
         } catch (CommandParseException e) {
-            this.sendMessage(source, MESSAGES.getMessage(e));
+            this.sendMessage(source, this.design.getMessage(e));
         }
     }
 
@@ -159,40 +170,4 @@ public abstract class Command<S> {
         }
         return results.get(0);
     }
-
-    public TextComponent generateHelpMessage(S source) {
-        List<List<TreeCommand<S>>> branches = this.getBase().getBranches(source);
-        TextComponent helpMessage = Component.newline()
-            .append(Texts.headline(this.getBase().getName().toUpperCase()).append(Component.newline()));
-        for (List<TreeCommand<S>> branch : branches) {
-            // We only want to generate the branchCommand to the first Parameter
-            boolean parameterReached = false;
-            StringBuilder branchCommand = new StringBuilder("/");
-            TextComponent branchMessage = Texts.primary("/");
-            for (int i = 0; i < branch.size(); i++) {
-                TreeCommand<S> treeCommand = branch.get(i);
-                if (treeCommand instanceof ParameterTreeCommand<?,?>) {
-                    parameterReached = true;
-                }
-                TextComponent treeCommandMessage = treeCommand.getHelpComponent().color(i == 0 ? Colors.PRIMARY : Colors.INFERIOR);
-                TextComponent hoverText = Component.empty();
-                TextComponent description = treeCommand.getDescription();
-                TextComponent extraDescription = treeCommand.getHelpExtraDescription();
-                if (description != null) hoverText = hoverText.append(description);
-                if (description != null && extraDescription != null) hoverText = hoverText.append(Component.newline());
-                if (extraDescription != null) hoverText = hoverText.append(extraDescription);
-                if (description != null || extraDescription != null) {
-                    treeCommandMessage = treeCommandMessage.hoverEvent(HoverEvent.showText(hoverText));
-                }
-                branchMessage = branchMessage.append(treeCommandMessage).append(Component.space());
-                if (!parameterReached) {
-                    branchCommand.append(treeCommand.getName()).append(" ");
-                }
-            }
-            branchMessage = branchMessage.clickEvent(ClickEvent.suggestCommand(branchCommand.toString()));
-            helpMessage = helpMessage.append(branchMessage.append(Component.newline()));
-        }
-        return helpMessage;
-    }
-
 }

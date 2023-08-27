@@ -1,11 +1,16 @@
 package de.placeblock.commandapi.core.messages;
 
+import de.placeblock.commandapi.core.Command;
 import de.placeblock.commandapi.core.exception.*;
+import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
+import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 
-public class DefaultMessages extends Messages{
+public class DefaultCommandDesign extends CommandDesign {
 
-    public DefaultMessages() {
+    public DefaultCommandDesign() {
         this.register(QuotedStringRequiredException.class, e -> Component.text("Quoted String required for " + e.getTreeCommand().getName()));
         this.register(BooleanRequiredException.class, e -> Component.text("Boolean required for " + e.getTreeCommand().getName()));
         this.register(DecimalRequiredException.class, e -> Component.text("Decimal required for " + e.getTreeCommand().getName()));
@@ -21,4 +26,34 @@ public class DefaultMessages extends Messages{
         this.register(EmptyGreedyException.class, e -> Component.text("Empty Greedy String is invalid for " + e.getTreeCommand().getName()));
     }
 
+    @Override
+    public TextComponent getPrefix(Command<?> commandName) {
+        return Component.text(commandName + " > ").color(NamedTextColor.BLUE);
+    }
+
+    @Override
+    public TextComponent getHelpHeadline(Command<?> commandName) {
+        return Component.text("---===[ " + commandName + " ]===---").color(NamedTextColor.BLUE);
+    }
+
+    @Override
+    public TextComponent getHelpLiteralTreeCommand(LiteralTreeCommand<?> literal) {
+        return Component.text(literal.getName()).color(NamedTextColor.DARK_GRAY);
+    }
+
+    @Override
+    public TextComponent getHelpParameterTreeCommand(ParameterTreeCommand<?, ?> parameter) {
+        return Component.text("[" + parameter.getName() + "]").color(NamedTextColor.DARK_GRAY);
+    }
+
+    @Override
+    public TextComponent getHelpLiteralTreeCommandDescription(LiteralTreeCommand<?> literal) {
+        if (literal.getAliases().size() == 0) return null;
+        return Component.text("Alias: " + String.join(", ", literal.getAliases())).color(NamedTextColor.DARK_GRAY);
+    }
+
+    @Override
+    public TextComponent getHelpParameterTreeCommandDescription(ParameterTreeCommand<?, ?> parameter) {
+        return null;
+    }
 }

@@ -5,7 +5,6 @@ import de.placeblock.commandapi.core.exception.CommandParseException;
 import de.placeblock.commandapi.core.exception.EmptyGreedyException;
 import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
 import de.placeblock.commandapi.core.parser.StringReader;
-import io.schark.design.texts.Texts;
 import lombok.Getter;
 
 /**
