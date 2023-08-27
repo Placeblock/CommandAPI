@@ -57,6 +57,10 @@ public class StringReader {
         return cursor + length <= string.length();
     }
 
+    public boolean canReadWord() {
+        return this.canRead(2) && !this.getRemaining().isBlank();
+    }
+
     
     public boolean canRead() {
         return canRead(1);

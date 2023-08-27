@@ -18,7 +18,7 @@ public class ParseTest {
         Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "TestPlayer";
-        List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse remove 22 ", source);
+        List<ParsedCommand<String>> results = parseTestCommand.parse("testcommandparse remove 22  ", source);
         ParsedCommand<String> result = Command.getBestResult(results);
         assert result.getReader().getCursor() == 26;
         assert result.getParsedTreeCommands().size() != 0;

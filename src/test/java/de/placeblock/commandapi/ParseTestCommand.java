@@ -31,7 +31,7 @@ public class ParseTestCommand extends Command<String> {
             literal("remove").then(
                 parameter("amount", integer(0, 105))
                 .run((context, source) -> {
-
+                    System.out.println(context.getParsedParameter("amount"));
                 }))
         ).then(
                 literal("greedy").then(
@@ -63,6 +63,6 @@ public class ParseTestCommand extends Command<String> {
 
     @Override
     public void sendMessage(String source, TextComponent message) {
-
+        System.out.println(message.content());
     }
 }

@@ -106,9 +106,7 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         List<String> nodes = new ArrayList<>();
         Collections.addAll(nodes, this.getName());
         Collections.addAll(nodes, args);
-        List<ParsedCommand<WaterfallCommandSource<P>>> parseResults = this.command.parse(String.join(" ", nodes), source);
-        ParsedCommand<WaterfallCommandSource<P>> bestResult = de.placeblock.commandapi.core.Command.getBestResult(parseResults);
-        this.command.execute(bestResult, source);
+        this.command.parseAndExecute(String.join(" ", nodes), source);
     }
 
     @Override

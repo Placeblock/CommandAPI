@@ -2,6 +2,7 @@ package de.placeblock.commandapi.core;
 
 import de.placeblock.commandapi.core.exception.CommandHelpException;
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import de.placeblock.commandapi.core.messages.Messages;
 import de.placeblock.commandapi.core.parser.ParsedCommand;
 import de.placeblock.commandapi.core.tree.LiteralTreeCommand;
 import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
@@ -30,6 +31,7 @@ import java.util.logging.Logger;
 public abstract class Command<S> {
 
     public static Logger LOGGER;
+    public static Messages MESSAGES;
 
     static {
         LOGGER = Logger.getLogger("commandapi");
@@ -61,6 +63,11 @@ public abstract class Command<S> {
     public abstract boolean hasPermission(S source, String permission);
     public abstract void sendMessage(S source, TextComponent message);
 
+    public void parseAndExecute(String text, S source) {
+        List<ParsedCommand<S>> parseResult = this.parse(text, source);
+        this.execute(getBestResult(parseResult), source);
+    }
+
     public List<ParsedCommand<S>> parse(String text, S source) {
         ParsedCommand<S> parsedCommand = new ParsedCommand<>(new StringReader(text));
         return this.base.parseRecursive(parsedCommand, source);
@@ -72,7 +79,7 @@ public abstract class Command<S> {
         } catch (CommandHelpException e) {
             this.sendMessage(source, this.generateHelpMessage(source));
         } catch (CommandSyntaxException e) {
-            throw new RuntimeException(e);
+            this.sendMessage(source, MESSAGES.getMessage(e));
         }
     }
 
@@ -80,15 +87,15 @@ public abstract class Command<S> {
         Command.LOGGER.info("Command for Execution: " + result.getParsedTreeCommands().stream().map(TreeCommand::getName).toList());
         Command.LOGGER.info("Command for Execution2: " + result.getReader().debugString());
 
-        if (result.getReader().canRead(2)) {
+        System.out.println(result.getReader().debugString());
+        if (result.getReader().canReadWord()) {
             if (result.getExceptions().size() >= 1) {
                 throw result.getExceptions().values().iterator().next();
             } else {
                 throw new CommandHelpException();
             }
         }
-        List<TreeCommand<S>> parsedCommands = result.getParsedTreeCommands();
-        CommandExecutor<S> commandExecutor = parsedCommands.get(parsedCommands.size() - 1).getCommandExecutor();
+        CommandExecutor<S> commandExecutor = result.getLastParsedTreeCommand().getCommandExecutor();
         if (commandExecutor == null) {
             throw new CommandHelpException();
         } else {
@@ -126,9 +133,6 @@ public abstract class Command<S> {
 
     /**
      * Returns the best Result for a list of ParsedCommands
-     * @param results
-     * @return
-     * @param <S>
      */
     public static <S> ParsedCommand<S> getBestResult(List<ParsedCommand<S>> results) {
         results.sort((a, b) -> {

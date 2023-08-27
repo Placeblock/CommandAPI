@@ -49,7 +49,7 @@ public abstract class TreeCommand<S> {
         }
         StringReader reader = command.getReader();
         // We only parse Children if we can read further
-        if (reader.canRead(2) && reader.peek(1) != ' ') {
+        if (reader.canReadWord()) {
             for (TreeCommand<S> child : this.getChildren()) {
                 Command.LOGGER.info("Parsing Child " + child.getName());
                 ParsedCommand<S> childParsedCommand = new ParsedCommand<>(command);
