@@ -1,6 +1,7 @@
 package de.placeblock.commandapi.core.messages;
 
 import de.placeblock.commandapi.core.exception.CommandSyntaxException;
+import io.schark.design.texts.Texts;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.HashMap;

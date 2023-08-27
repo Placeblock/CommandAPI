@@ -17,20 +17,19 @@ import java.util.Map;
 public class ParsedCommand<S> extends ParameterHolder {
     private final StringReader reader;
     private final List<TreeCommand<S>> parsedTreeCommands;
-    private final Map<TreeCommand<S>, CommandSyntaxException> exceptions;
+    private CommandSyntaxException exception;
 
     public ParsedCommand(StringReader reader) {
         super();
         this.reader = reader;
         this.parsedTreeCommands = new ArrayList<>();
-        this.exceptions = new HashMap<>();
     }
 
     public ParsedCommand(ParsedCommand<S> parsedCommand) {
         super(parsedCommand.getParsedParameters());
         this.reader = new StringReader(parsedCommand.getReader());
         this.parsedTreeCommands = new ArrayList<>(parsedCommand.getParsedTreeCommands());
-        this.exceptions = new HashMap<>(parsedCommand.getExceptions());
+        this.exception = parsedCommand.getException();
     }
 
     public TreeCommand<S> getLastParsedTreeCommand() {
@@ -44,7 +43,7 @@ public class ParsedCommand<S> extends ParameterHolder {
 
 
     public void addException(TreeCommand<S> command, CommandSyntaxException exception) {
-        this.exceptions.put(command, exception);
+        this.exception = exception;
     }
 
 }

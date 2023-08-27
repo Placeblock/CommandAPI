@@ -89,8 +89,8 @@ public abstract class Command<S> {
 
         System.out.println(result.getReader().debugString());
         if (result.getReader().canReadWord()) {
-            if (result.getExceptions().size() >= 1) {
-                throw result.getExceptions().values().iterator().next();
+            if (result.getException() != null) {
+                throw result.getException();
             } else {
                 throw new CommandHelpException();
             }
@@ -115,7 +115,7 @@ public abstract class Command<S> {
                 TreeCommand<S> lastParsedTreeCommand = result.getLastParsedTreeCommand();
                 List<TreeCommand<S>> suggestionTreeCommands;
                 // If the last command was parsed successfully we get suggestions for the child commands
-                if (result.getExceptions().containsKey(lastParsedTreeCommand)) {
+                if (result.getException() != null) {
                     suggestionTreeCommands = List.of(lastParsedTreeCommand);
                 } else {
                     suggestionTreeCommands = lastParsedTreeCommand.getChildren();
@@ -140,8 +140,8 @@ public abstract class Command<S> {
             if (a.getParsedTreeCommands().size() < b.getParsedTreeCommands().size()) return 1;
             if (!a.getReader().canRead() && b.getReader().canRead()) return -1;
             if (a.getReader().canRead() && !b.getReader().canRead()) return 1;
-            if (a.getExceptions().isEmpty() && !b.getExceptions().isEmpty()) return -1;
-            if (!a.getExceptions().isEmpty() && b.getExceptions().isEmpty()) return 1;
+            if (a.getException() == null && b.getException() != null) return -1;
+            if (a.getException() != null && b.getException() == null) return 1;
             CommandExecutor<S> aCommandExecutor = a.getLastParsedTreeCommand().getCommandExecutor();
             CommandExecutor<S> bCommandExecutor = b.getLastParsedTreeCommand().getCommandExecutor();
             if (aCommandExecutor != null && bCommandExecutor == null) return -1;
@@ -152,7 +152,7 @@ public abstract class Command<S> {
         for (ParsedCommand<S> parsedCommand : results) {
             Command.LOGGER.info(parsedCommand.getParsedTreeCommands().stream().map(TreeCommand::getName).toList() + ": " + parsedCommand.getReader().debugString());
             Command.LOGGER.info("Tree Commands:" + parsedCommand.getParsedTreeCommands().size());
-            Command.LOGGER.info("Exceptions:" + parsedCommand.getExceptions().size());
+            Command.LOGGER.info("Exception:" + parsedCommand.getException());
             if (parsedCommand.getLastParsedTreeCommand() != null) {
                 Command.LOGGER.info("Executor:" + parsedCommand.getLastParsedTreeCommand().getCommandExecutor());
             }
