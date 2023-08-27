@@ -1,4 +1,4 @@
-group = "de.placeblock"
+group = "de.codelix"
 version = "2.2.0-SNAPSHOT"
 description = "API for an easier use of Commands"
 var isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
@@ -33,7 +33,7 @@ tasks {
 
     javadoc {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
-        title = "BetterInventories API Documentation"
+        title = "CommandAPI API Documentation"
     }
 }
 
@@ -77,8 +77,8 @@ publishing {
             from(components["java"])
             pom {
                 packaging = "jar"
-                name.set("BetterInventories")
-                description.set("Easy to use and extensive InventoryAPI for Spigot")
+                name.set("CommandAPI")
+                description.set("Easy to use CommandAPI")
                 url.set("https://github.com/Placeblock/BetterInventories")
                 licenses {
                     license {
