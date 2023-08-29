@@ -1,4 +1,4 @@
-package de.placeblock.commandapi.bridge.paper;
+package de.placeblock.commandapi.paper;
 
 import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
