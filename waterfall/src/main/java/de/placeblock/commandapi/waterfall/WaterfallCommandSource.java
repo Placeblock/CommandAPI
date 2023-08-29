@@ -1,4 +1,4 @@
-package de.placeblock.commandapi.bridge.waterfall;
+package de.placeblock.commandapi.waterfall;
 
 import de.placeblock.commandapi.bridge.CommandSource;
 import net.md_5.bungee.api.CommandSender;

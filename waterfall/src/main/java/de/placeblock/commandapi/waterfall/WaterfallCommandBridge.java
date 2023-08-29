@@ -1,6 +1,5 @@
-package de.placeblock.commandapi.bridge.waterfall;
+package de.placeblock.commandapi.waterfall;
 
-import de.placeblock.commandapi.bridge.paper.PaperCommandSource;
 import de.placeblock.commandapi.core.parameter.Parameter;
 import de.placeblock.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import de.placeblock.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
@@ -39,11 +38,11 @@ public abstract class WaterfallCommandBridge<PL extends Plugin> extends Abstract
     }
 
 
-    public static LiteralTreeCommandBuilder<PaperCommandSource<ProxiedPlayer>> literal(final String name) {
+    public static LiteralTreeCommandBuilder<WaterfallCommandSource<ProxiedPlayer>> literal(final String name) {
         return new LiteralTreeCommandBuilder<>(name);
     }
 
-    public static <S> ParameterTreeCommandBuilder<PaperCommandSource<ProxiedPlayer>, S> parameter(final String name, Parameter<PaperCommandSource<ProxiedPlayer>, S> parameter) {
+    public static <S> ParameterTreeCommandBuilder<WaterfallCommandSource<ProxiedPlayer>, S> parameter(final String name, Parameter<WaterfallCommandSource<ProxiedPlayer>, S> parameter) {
         return new ParameterTreeCommandBuilder<>(name, parameter);
     }
 }

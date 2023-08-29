@@ -1,4 +1,4 @@
-package de.placeblock.commandapi.bridge.waterfall;
+package de.placeblock.commandapi.waterfall;
 
 import de.placeblock.commandapi.bridge.CommandBridge;
 import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
@@ -29,7 +29,7 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
     @Getter
     private final PL plugin;
     @Getter
-    private boolean async;
+    private final boolean async;
 
     private static Unsafe unsafe;
 

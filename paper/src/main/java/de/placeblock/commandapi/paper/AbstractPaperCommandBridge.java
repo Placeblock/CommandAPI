@@ -1,4 +1,4 @@
-package de.placeblock.commandapi.bridge.paper;
+package de.placeblock.commandapi.paper;
 
 import de.placeblock.commandapi.bridge.CommandBridge;
 import de.placeblock.commandapi.core.parser.ParsedCommandBranch;
@@ -29,7 +29,7 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
     @Getter
     private final PL plugin;
     @Getter
-    private boolean async;
+    private final boolean async;
 
     public AbstractPaperCommandBridge(PL plugin, String label, boolean async) {
         this(plugin, label, async, true);

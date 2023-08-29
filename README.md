@@ -1,5 +1,12 @@
 # CommandAPI DOC >2.0.0
 
+Builds are availible at the mavenCentral Repository
+```kotlin
+implementation("de.codelix.commandapi:api:2.0.0")
+implementation("de.codelix.commandapi:paper:2.0.0") //API including the Paper-Bridge
+implementation("de.codelix.commandapi:waterfall:2.0.0") //API including the Waterfall-Bridge
+```
+<br>
 Implementing commands in Spigot can be quite challenging. 
 As soon as they get more complex, things get complicated and unreadable quite fast.
 This is what CommandAPI tries to solve. The goal is to create a structured and safe way to 
