@@ -6,3 +6,7 @@ pluginManagement {
 }
 
 rootProject.name = "CommandAPI"
+include("api")
+include("paper")
+include("waterfall")
+include("bridge")

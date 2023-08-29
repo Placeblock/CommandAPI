@@ -1,80 +1,35 @@
-group = "de.placeblock"
-version = "2.1.7a"
-description = "API for an easier use of Commands"
+group = "de.codelix.commandapi"
+var isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
 
 plugins {
-  `java-library`
-  id("maven-publish")
+    `java-library`
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
-java {
-  // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
-  toolchain.languageVersion.set(JavaLanguageVersion.of(17))
-}
-
-repositories {
-    maven {
-        url = uri("https://repo.schark.io/private")
-        isAllowInsecureProtocol = true
-        credentials {
-            username = project.properties["reposilite.username"] as String?
-            password = project.properties["reposilite.token"] as String?
-        }
-    }
-    maven {
-        url = uri("https://repo.papermc.io/repository/maven-public/")
-    }
-    mavenCentral()
-}
-
-dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
-    compileOnly("io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT")
-    compileOnly("org.projectlombok:lombok:1.18.26")
-    compileOnly("io.schark:ScharkDesign:1.6.0")
-    compileOnly("net.kyori:adventure-platform-bungeecord:4.3.0")
-    annotationProcessor("org.projectlombok:lombok:1.18.26")
-
-    testCompileOnly("org.projectlombok:lombok:1.18.26")
-    testCompileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
-    testCompileOnly("io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT")
-    testImplementation("net.kyori:adventure-platform-bungeecord:4.3.0")
-    testImplementation("net.kyori:adventure-text-minimessage:4.13.0")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.26")
-    testImplementation("io.schark:ScharkDesign:1.6.0")
-
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testImplementation("org.junit-pioneer:junit-pioneer:2.0.0")
-    testImplementation("org.mockito:mockito-core:5.2.0")
-}
-
-
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = project.group as String?
-            artifactId = project.name
-            version = project.version as String?
-
-            from(components["java"])
-        }
-    }
+subprojects {
+    group = this.rootProject.group
+    apply<JavaPlugin>()
     repositories {
-        maven {
-            name = "ScharkIO"
-            url = uri("https://repo.schark.io/private")
-            isAllowInsecureProtocol = true
-            credentials{
-                username = project.properties["reposilite.username"] as String?
-                password = project.properties["reposilite.token"] as String?
-            }
-        }
+        mavenCentral()
+    }
+    dependencies {
+        compileOnly("org.projectlombok:lombok:1.18.26")
+        annotationProcessor("org.projectlombok:lombok:1.18.26")
+    }
+    java {
+        withJavadocJar()
+        withSourcesJar()
+        // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
+        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
-tasks {
-    test {
-        useJUnitPlatform()
+
+nexusPublishing {
+    repositories {
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
     }
 }
