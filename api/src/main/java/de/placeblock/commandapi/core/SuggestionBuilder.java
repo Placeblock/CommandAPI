@@ -26,6 +26,7 @@ public class SuggestionBuilder<S> extends ParameterHolder {
         this.source = source;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public SuggestionBuilder<S> withSuggestion(String suggestion) {
         this.suggestions.add(suggestion);
         return this;

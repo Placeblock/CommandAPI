@@ -21,6 +21,7 @@ public abstract class ParameterHolder {
         return this.parsedParameters.get(name);
     }
 
+    @SuppressWarnings("unused")
     public <T> T getParsedParameter(String name, Class<T> type) {
         //noinspection unchecked
         return (T) this.parsedParameters.get(name);

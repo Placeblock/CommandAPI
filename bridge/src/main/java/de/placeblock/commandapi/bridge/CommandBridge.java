@@ -14,6 +14,8 @@ public interface CommandBridge<DP, P, C, S extends CommandSource<P, C>> {
 
     void init();
 
+    @SuppressWarnings("unused")
     void register();
+    @SuppressWarnings("unused")
     void unregister();
 }

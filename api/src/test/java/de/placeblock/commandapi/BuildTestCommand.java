@@ -33,6 +33,7 @@ public class BuildTestCommand extends Command<String> {
         return new LiteralTreeCommandBuilder<>(name);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static ParameterTreeCommandBuilder<String, ?> parameter(String name, Parameter<String, ?> parameter) {
         return new ParameterTreeCommandBuilder<>(name, parameter);
     }

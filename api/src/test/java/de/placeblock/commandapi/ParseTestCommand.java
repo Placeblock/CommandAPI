@@ -30,9 +30,8 @@ public class ParseTestCommand extends Command<String> {
         ).then(
             literal("remove").then(
                 parameter("amount", integer(0, 105))
-                .run((context, source) -> {
-                    System.out.println(context.getParsedParameter("amount"));
-                }))
+                .run((context, source) ->
+                    System.out.println(context.getParsedParameter("amount"))))
         ).then(
                 literal("greedy").then(
                     parameter("greedy", greedyString())

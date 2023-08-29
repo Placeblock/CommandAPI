@@ -24,6 +24,7 @@ public class LiteralTreeCommandBuilder<S> extends TreeCommandBuilder<S, LiteralT
         return this;
     }
 
+    @SuppressWarnings("unused")
     public LiteralTreeCommandBuilder<S> withAlias(String alias) {
         this.aliases.add(alias);
         return this.getThis();
