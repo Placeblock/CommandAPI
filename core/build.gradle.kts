@@ -3,20 +3,17 @@ plugins {
     id("signing")
 }
 
+description = "API for an easier use of Commands"
 version = "2.2.2"
 
-repositories {
-    maven {
-        url = uri("https://repo.papermc.io/repository/maven-public/")
-    }
+dependencies {
+    compileOnly("net.kyori:adventure-api:4.14.0")
+    testImplementation("net.kyori:adventure-api:4.14.0")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-dependencies {
-    compileOnly("io.github.waterfallmc:waterfall-api:1.20-R0.1-SNAPSHOT")
-    compileOnly("net.kyori:adventure-platform-bungeecord:4.3.0")
-    compileOnly(project(":core"))
-    implementation(project(":bridge"))
-}
 
 tasks {
     compileJava {
@@ -26,12 +23,12 @@ tasks {
     processResources {
         filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything
     }
-    jar {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        dependsOn(configurations.runtimeClasspath)
-        from({
-            configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-        })
+    test {
+        useJUnitPlatform()
+    }
+    javadoc {
+        options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
+        title = "CommandAPI API Documentation"
     }
 }
 
@@ -54,8 +51,8 @@ publishing {
             artifact(tasks["javadocJar"])
             pom {
                 packaging = "jar"
-                name.set("Waterfall Bridge")
-                description.set("Waterfall Bridge for CommandAPI")
+                name.set("CommandAPI")
+                description.set("Easy to use CommandAPI")
                 url.set("https://github.com/Placeblock/CommandAPI")
                 licenses {
                     license {

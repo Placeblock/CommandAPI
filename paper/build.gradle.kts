@@ -3,7 +3,7 @@ plugins {
     id("signing")
 }
 
-version = "2.2.0"
+version = "2.2.2"
 
 repositories {
     maven {
@@ -13,8 +13,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
-
-    implementation(project(":api"))
+    compileOnly(project(":core"))
     implementation(project(":bridge"))
 }
 
@@ -25,6 +24,13 @@ tasks {
     }
     processResources {
         filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything
+    }
+    jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        dependsOn(configurations.runtimeClasspath)
+        from({
+            configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+        })
     }
 }
 
