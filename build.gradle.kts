@@ -1,5 +1,4 @@
 group = "de.codelix.commandapi"
-var isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
 
 plugins {
     `java-library`
