@@ -2,9 +2,9 @@
 
 Builds are availible at the mavenCentral Repository
 ```kotlin
-implementation("de.codelix.commandapi:api:2.0.0")
-implementation("de.codelix.commandapi:paper:2.0.0") //API including the Paper-Bridge
-implementation("de.codelix.commandapi:waterfall:2.0.0") //API including the Waterfall-Bridge
+implementation("de.codelix.commandapi:core:2.2.2")
+implementation("de.codelix.commandapi:paper:2.2.2") //Paper-Bridge
+implementation("de.codelix.commandapi:waterfall:2.2.2") //Waterfall-Bridge
 ```
 <br>
 Implementing commands in Spigot can be quite challenging. 
