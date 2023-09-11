@@ -1,5 +1,4 @@
 group = "de.codelix.commandapi"
-var isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
 
 plugins {
     `java-library`
@@ -13,8 +12,8 @@ subprojects {
         mavenCentral()
     }
     dependencies {
-        compileOnly("org.projectlombok:lombok:1.18.26")
-        annotationProcessor("org.projectlombok:lombok:1.18.26")
+        compileOnly("org.projectlombok:lombok:1.18.28")
+        annotationProcessor("org.projectlombok:lombok:1.18.28")
     }
     java {
         withJavadocJar()

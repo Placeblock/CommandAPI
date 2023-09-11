@@ -20,7 +20,7 @@ public class StringOfListParameter<S> implements Parameter<S, String> {
     @Override
     public String parse(ParsedCommandBranch<S> command, S source) throws CommandParseException {
         String word = command.getReader().readUnquotedString();
-        if (this.values.contains(word)) {
+        if (!this.values.contains(word)) {
             throw new InvalidParameterValueException(word);
         }
         return word;

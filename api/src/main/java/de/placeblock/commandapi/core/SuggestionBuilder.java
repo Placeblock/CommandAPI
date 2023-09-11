@@ -1,6 +1,7 @@
 package de.placeblock.commandapi.core;
 
 import de.placeblock.commandapi.core.parser.ParameterHolder;
+import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class SuggestionBuilder<S> extends ParameterHolder {
     private final S source;
     private final List<String> suggestions = new ArrayList<>();
 
-    public SuggestionBuilder(TreeCommand<S> treeCommand, String remaining, S source, Map<String, Object> parsedParameters) {
+    public SuggestionBuilder(TreeCommand<S> treeCommand, String remaining, S source, Map<ParameterTreeCommand<?, ?>, Object> parsedParameters) {
         super(parsedParameters);
         this.treeCommand = treeCommand;
         this.remaining = remaining;
