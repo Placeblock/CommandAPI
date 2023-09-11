@@ -3,7 +3,7 @@ plugins {
     id("signing")
 }
 
-version = "2.2.0"
+version = "2.2.1"
 
 repositories {
     maven {
@@ -25,6 +25,13 @@ tasks {
     }
     processResources {
         filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything
+    }
+    jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        dependsOn(configurations.runtimeClasspath)
+        from({
+            configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+        })
     }
 }
 
