@@ -3,7 +3,7 @@ plugins {
     id("signing")
 }
 
-version = "2.2.1"
+version = "2.2.2"
 
 repositories {
     maven {
@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
-    compileOnly(project(":api"))
+    compileOnly(project(":core"))
     implementation(project(":bridge"))
 }
 
