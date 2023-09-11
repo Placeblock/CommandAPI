@@ -1,10 +1,12 @@
 package de.placeblock.commandapi.core.parser;
 
 import de.placeblock.commandapi.core.exception.CommandParseException;
+import de.placeblock.commandapi.core.tree.ParameterTreeCommand;
 import de.placeblock.commandapi.core.tree.TreeCommand;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -24,7 +26,7 @@ public class ParsedCommandBranch<S> extends ParameterHolder {
     }
 
     public ParsedCommandBranch(ParsedCommandBranch<S> parsedCommandBranch) {
-        super(parsedCommandBranch.getParsedParameters());
+        super(new HashMap<>(parsedCommandBranch.getParsedParameters()));
         this.reader = new StringReader(parsedCommandBranch.getReader());
         this.branch = new ArrayList<>(parsedCommandBranch.getBranch());
         this.exception = parsedCommandBranch.getException();
@@ -35,8 +37,8 @@ public class ParsedCommandBranch<S> extends ParameterHolder {
         return this.branch.get(this.branch.size() - 1);
     }
 
-    public void addParsedParameter(String name, Object parameter) {
-        this.parsedParameters.put(name, parameter);
+    public void addParsedParameter(ParameterTreeCommand<?, ?> command, Object parameter) {
+        this.parsedParameters.put(command, parameter);
     }
 
 
