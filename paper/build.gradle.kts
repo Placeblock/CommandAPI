@@ -13,8 +13,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
-
-    implementation(project(":api"))
+    compileOnly(project(":api"))
     implementation(project(":bridge"))
 }
 

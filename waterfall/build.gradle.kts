@@ -14,8 +14,7 @@ repositories {
 dependencies {
     compileOnly("io.github.waterfallmc:waterfall-api:1.20-R0.1-SNAPSHOT")
     compileOnly("net.kyori:adventure-platform-bungeecord:4.3.0")
-
-    implementation(project(":api"))
+    compileOnly(project(":api"))
     implementation(project(":bridge"))
 }
 
