@@ -2,11 +2,11 @@ package de.codelix.commandapi.core;
 
 import de.codelix.commandapi.core.exception.CommandHelpException;
 import de.codelix.commandapi.core.exception.CommandParseException;
+import de.codelix.commandapi.core.exception.InvalidLiteralException;
 import de.codelix.commandapi.core.messages.CommandDesign;
 import de.codelix.commandapi.core.messages.DefaultCommandDesign;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
 import de.codelix.commandapi.core.tree.LiteralTreeCommand;
-import de.codelix.commandapi.core.tree.ParameterTreeCommand;
 import de.codelix.commandapi.core.tree.TreeCommand;
 import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import de.codelix.commandapi.core.parser.StringReader;
@@ -89,13 +89,14 @@ public abstract class Command<S> {
             this.executeRaw(result, source);
         } catch (CommandHelpException e) {
             TextComponent message = this.design.generateHelpMessage(this, source);
+            this.sendMessage(source, message);
+        } catch (CommandParseException e) {
+            TextComponent message = this.design.getMessage(e);
             if (message == null) {
                 this.sendMessage(source, Component.text("Missing Exception Message for Exception: " + e.getClass().getSimpleName()));
                 return;
             }
             this.sendMessage(source, message);
-        } catch (CommandParseException e) {
-            this.sendMessage(source, this.design.getMessage(e));
         }
     }
 
@@ -103,8 +104,12 @@ public abstract class Command<S> {
         Command.LOGGER.info("Command for Execution: " + result.getBranch().stream().map(TreeCommand::getName).toList());
         Command.LOGGER.info("Command for Execution2: " + result.getReader().debugString());
         TreeCommand<S> lastParsed = result.getLastParsedTreeCommand();
-        if (result.getException() != null && lastParsed instanceof ParameterTreeCommand<?,?>) {
-            throw result.getException();
+        if (result.getException() != null) {
+            if (result.getException() instanceof InvalidLiteralException) {
+                throw new CommandHelpException();
+            } else {
+                throw result.getException();
+            }
         }
         CommandExecutor<S> commandExecutor = lastParsed.getCommandExecutor();
         if (commandExecutor == null) {
