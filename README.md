@@ -1,19 +1,3 @@
-<style>
-    :root {
-        --primary-color: #6ffcb6
-    }
-    h1, h2 {
-        color: var(--primary-color);
-        text-decoration: underline;
-    }
-    b {
-        color: var(--primary-color);
-    }
-    a {
-        color: var(--primary-color);
-        text-decoration: underline;
-    }
-</style>
 # The CommandAPI
 
 Builds are availible at the mavenCentral Repository 📦
