@@ -55,13 +55,13 @@ public abstract class Command<S> {
 
     public Command(String label, boolean async, CommandDesign commandDesign) {
         this.design = commandDesign;
-        this.prefix = this.design.getPrefix(this);
         this.async = async;
         TreeCommand<S> baseCommand = this.generateCommand(new LiteralTreeCommandBuilder<>(label)).build(this);
         if (!(baseCommand instanceof LiteralTreeCommand<S> literalTreeCommand)) {
             throw new IllegalArgumentException("You can only use LiteralTreeCommandBuilder as root");
         }
         this.base = literalTreeCommand;
+        this.prefix = this.design.getPrefix(this);
         if (this.async) {
             this.threadPool = Executors.newFixedThreadPool(4);
         } else {
