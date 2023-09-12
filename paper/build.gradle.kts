@@ -51,6 +51,7 @@ publishing {
             artifact(tasks["jar"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
+            version = project.version.toString()
             pom {
                 packaging = "jar"
                 name.set("Paper Bridge")

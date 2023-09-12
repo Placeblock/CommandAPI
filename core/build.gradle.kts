@@ -4,7 +4,7 @@ plugins {
 }
 
 description = "API for an easier use of Commands"
-version = "2.2.2"
+version = "2.2.3-SNAPSHOT"
 
 dependencies {
     compileOnly("net.kyori:adventure-api:4.14.0")
@@ -49,6 +49,7 @@ publishing {
             artifact(tasks["jar"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
+            version = project.version.toString()
             pom {
                 packaging = "jar"
                 name.set("CommandAPI")
