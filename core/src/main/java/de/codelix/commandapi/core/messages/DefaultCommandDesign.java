@@ -42,7 +42,7 @@ public class DefaultCommandDesign extends CommandDesign {
 
     @Override
     public TextComponent getPrefix(Command<?> command) {
-        return command.getPrefix().append(Component.text(" > ")).color(this.primaryColor);
+        return Component.text(command.getBase().getName()).append(Component.text(" > ")).color(this.primaryColor);
     }
 
     public TextComponent getHelpHeadline(Command<?> command) {
