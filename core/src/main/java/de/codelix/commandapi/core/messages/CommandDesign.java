@@ -16,7 +16,9 @@ public abstract class CommandDesign {
     }
 
     public <T extends CommandParseException>  TextComponent getMessage(T exception) {
-        return this.messages.get(exception.getClass()).apply(exception);
+        Function<CommandParseException, TextComponent> generator = this.messages.get(exception.getClass());
+        if (generator == null) return null;
+        return generator.apply(exception);
     }
 
     public abstract TextComponent getPrefix(Command<?> commandName);
