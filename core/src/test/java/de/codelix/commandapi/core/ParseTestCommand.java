@@ -1,6 +1,7 @@
 package de.codelix.commandapi.core;
 
 import de.codelix.commandapi.core.parameter.Parameter;
+import de.codelix.commandapi.core.parameter.TestEnum;
 import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import de.codelix.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
 import net.kyori.adventure.text.TextComponent;

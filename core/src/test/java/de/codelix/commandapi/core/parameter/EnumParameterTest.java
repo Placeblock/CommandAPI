@@ -1,5 +1,6 @@
-package de.codelix.commandapi.core;
+package de.codelix.commandapi.core.parameter;
 
+import de.codelix.commandapi.core.ParseTestCommand;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
 import org.junit.jupiter.api.Test;
 

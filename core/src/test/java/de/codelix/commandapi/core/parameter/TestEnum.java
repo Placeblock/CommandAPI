@@ -1,4 +1,4 @@
-package de.codelix.commandapi.core;
+package de.codelix.commandapi.core.parameter;
 
 /**
  * Author: Placeblock
