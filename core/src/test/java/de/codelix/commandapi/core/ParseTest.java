@@ -5,7 +5,6 @@ import de.codelix.commandapi.core.tree.ParameterTreeCommand;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Author: Placeblock
@@ -14,7 +13,6 @@ public class ParseTest {
 
     @Test
     public void testParse() {
-        Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "TestPlayer";
         List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse remove 22  ", source);
@@ -31,7 +29,6 @@ public class ParseTest {
 
     @Test
     public void testSuggestions() {
-        Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "TestPlayer";
         List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse remove", source);

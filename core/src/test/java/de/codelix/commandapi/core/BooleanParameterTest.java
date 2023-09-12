@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
 
 /**
  * Author: Placeblock
@@ -49,7 +48,6 @@ public class BooleanParameterTest {
 
     @Test
     public void testBooleanParameterSuggestions() {
-        Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "";
         List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse bool t", source);
