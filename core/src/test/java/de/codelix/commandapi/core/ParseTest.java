@@ -1,7 +1,7 @@
 package de.codelix.commandapi.core;
 
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
-import de.codelix.commandapi.core.tree.ParameterTreeCommand;
+import de.codelix.commandapi.core.tree.ParameterCommandNode;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class ParseTest {
         ParsedCommandBranch<String> result = Command.getBestResult(results);
         assert result.getReader().getCursor() == 26;
         assert result.getBranch().size() != 0;
-        assert result.getLastParsedTreeCommand() instanceof ParameterTreeCommand<?,?>;
+        assert result.getLastParsedTreeCommand() instanceof ParameterCommandNode<?,?>;
         results = parseTestCommand.parse("testcommandparse", source);
         result = Command.getBestResult(results);
         assert result.getReader().getCursor() == 16;

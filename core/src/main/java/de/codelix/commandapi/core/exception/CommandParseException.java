@@ -1,6 +1,6 @@
 package de.codelix.commandapi.core.exception;
 
-import de.codelix.commandapi.core.tree.TreeCommand;
+import de.codelix.commandapi.core.tree.CommandNode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,5 +10,5 @@ import lombok.Setter;
 @Setter
 @Getter
 public class CommandParseException extends CommandException {
-    private TreeCommand<?> treeCommand;
+    private CommandNode<?> commandNode;
 }

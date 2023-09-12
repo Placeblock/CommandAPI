@@ -15,10 +15,10 @@ import java.util.List;
  * Author: Placeblock
  */
 @Getter
-public class LiteralTreeCommand<S> extends TreeCommand<S> {
+public class LiteralCommandNode<S> extends CommandNode<S> {
     private final List<String> aliases;
 
-    public LiteralTreeCommand(Command<S> command, String name, List<TreeCommand<S>> children, TextComponent description,
+    public LiteralCommandNode(Command<S> command, String name, List<CommandNode<S>> children, TextComponent description,
                               String permission, CommandExecutor<S>  run, List<String> aliases) {
         super(command, name, children, description, permission, run);
         this.aliases = aliases;

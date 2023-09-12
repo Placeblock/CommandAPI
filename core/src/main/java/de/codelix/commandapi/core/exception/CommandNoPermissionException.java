@@ -1,13 +1,13 @@
 package de.codelix.commandapi.core.exception;
 
-import de.codelix.commandapi.core.tree.TreeCommand;
+import de.codelix.commandapi.core.tree.CommandNode;
 
 /**
  * Author: Placeblock
  */
 public class CommandNoPermissionException extends CommandParseException {
-    public CommandNoPermissionException(TreeCommand<?> treeCommand) {
+    public CommandNoPermissionException(CommandNode<?> commandNode) {
         super();
-        this.setTreeCommand(treeCommand);
+        this.setCommandNode(commandNode);
     }
 }

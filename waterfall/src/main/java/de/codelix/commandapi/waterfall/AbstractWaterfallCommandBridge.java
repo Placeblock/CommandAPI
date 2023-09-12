@@ -1,7 +1,7 @@
 package de.codelix.commandapi.waterfall;
 
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
-import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
+import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
 import de.codelix.commandapi.minecraft.MCCommandBridge;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
@@ -59,7 +59,7 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
     public void init() {
         this.command = new de.codelix.commandapi.core.Command<>(this.getName(), this.isAsync()) {
             @Override
-            public LiteralTreeCommandBuilder<WaterfallCommandSource<P>> generateCommand(LiteralTreeCommandBuilder<WaterfallCommandSource<P>> builder) {
+            public LiteralCommandNodeBuilder<WaterfallCommandSource<P>> generateCommand(LiteralCommandNodeBuilder<WaterfallCommandSource<P>> builder) {
                 return AbstractWaterfallCommandBridge.this.generateCommand(builder);
             }
 

@@ -1,8 +1,8 @@
 package de.codelix.commandapi.paper;
 
 import de.codelix.commandapi.core.parameter.Parameter;
-import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
-import de.codelix.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
+import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
+import de.codelix.commandapi.core.tree.builder.ParameterCommandNodeBuilder;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -41,11 +41,11 @@ public abstract class PaperCommandBridge<PL extends JavaPlugin> extends Abstract
         return bukkitPlayer;
     }
 
-    public static LiteralTreeCommandBuilder<PaperCommandSource<Player>> literal(final String name) {
-        return new LiteralTreeCommandBuilder<>(name);
+    public static LiteralCommandNodeBuilder<PaperCommandSource<Player>> literal(final String name) {
+        return new LiteralCommandNodeBuilder<>(name);
     }
 
-    public static <T> ParameterTreeCommandBuilder<PaperCommandSource<Player>, T> parameter(final String name, Parameter<PaperCommandSource<Player>, T> parameter) {
-        return new ParameterTreeCommandBuilder<>(name, parameter);
+    public static <T> ParameterCommandNodeBuilder<PaperCommandSource<Player>, T> parameter(final String name, Parameter<PaperCommandSource<Player>, T> parameter) {
+        return new ParameterCommandNodeBuilder<>(name, parameter);
     }
 }

@@ -17,10 +17,10 @@ import java.util.List;
  * Author: Placeblock
  */
 @Getter
-public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
+public class ParameterCommandNode<S, T> extends CommandNode<S> {
     private final Parameter<S, T> parameter;
 
-    public ParameterTreeCommand(Command<S> command, String name, List<TreeCommand<S>> children, TextComponent description,
+    public ParameterCommandNode(Command<S> command, String name, List<CommandNode<S>> children, TextComponent description,
                                 String permission, CommandExecutor<S> run, Parameter<S, T> parameter) {
         super(command, name, children, description, permission, run);
         this.parameter = parameter;

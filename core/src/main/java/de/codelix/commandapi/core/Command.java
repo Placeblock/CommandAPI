@@ -4,9 +4,9 @@ import de.codelix.commandapi.core.exception.*;
 import de.codelix.commandapi.core.design.CommandDesign;
 import de.codelix.commandapi.core.design.DefaultCommandDesign;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
-import de.codelix.commandapi.core.tree.LiteralTreeCommand;
-import de.codelix.commandapi.core.tree.TreeCommand;
-import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
+import de.codelix.commandapi.core.tree.CommandNode;
+import de.codelix.commandapi.core.tree.LiteralCommandNode;
+import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
 import de.codelix.commandapi.core.parser.StringReader;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -33,7 +33,7 @@ public abstract class Command<S> {
         LOGGER.setLevel(Level.WARNING);
     }
 
-    private final LiteralTreeCommand<S> base;
+    private final LiteralCommandNode<S> base;
     private final TextComponent prefix;
     private final boolean async;
     private final ExecutorService threadPool;
@@ -54,8 +54,8 @@ public abstract class Command<S> {
     public Command(String label, boolean async, CommandDesign commandDesign) {
         this.design = commandDesign;
         this.async = async;
-        TreeCommand<S> baseCommand = this.generateCommand(new LiteralTreeCommandBuilder<>(label)).build(this);
-        if (!(baseCommand instanceof LiteralTreeCommand<S> literalTreeCommand)) {
+        CommandNode<S> baseCommand = this.generateCommand(new LiteralCommandNodeBuilder<>(label)).build(this);
+        if (!(baseCommand instanceof LiteralCommandNode<S> literalTreeCommand)) {
             throw new IllegalArgumentException("You can only use LiteralTreeCommandBuilder as root");
         }
         this.base = literalTreeCommand;
@@ -67,7 +67,7 @@ public abstract class Command<S> {
         }
     }
 
-    public abstract LiteralTreeCommandBuilder<S> generateCommand(LiteralTreeCommandBuilder<S> builder);
+    public abstract LiteralCommandNodeBuilder<S> generateCommand(LiteralCommandNodeBuilder<S> builder);
 
     public abstract boolean hasPermission(S source, String permission);
     public abstract void sendMessage(S source, TextComponent message);
@@ -99,9 +99,9 @@ public abstract class Command<S> {
     }
 
     public void executeRaw(ParsedCommandBranch<S> result, S source) throws CommandParseException {
-        Command.LOGGER.info("Command for Execution: " + result.getBranch().stream().map(TreeCommand::getName).toList());
+        Command.LOGGER.info("Command for Execution: " + result.getBranch().stream().map(CommandNode::getName).toList());
         Command.LOGGER.info("Command for Execution2: " + result.getReader().debugString());
-        TreeCommand<S> lastParsed = result.getLastParsedTreeCommand();
+        CommandNode<S> lastParsed = result.getLastParsedTreeCommand();
         if (result.getException() != null) {
             if (result.getException() instanceof InvalidLiteralException) {
                 throw new CommandHelpException();
@@ -120,23 +120,23 @@ public abstract class Command<S> {
     public List<String> getSuggestions(List<ParsedCommandBranch<S>> results, S source) {
         List<String> suggestions = new ArrayList<>();
         for (ParsedCommandBranch<S> result : results) {
-            Command.LOGGER.info("Checking Result: " + result.getBranch().stream().map(TreeCommand::getName).toList());
+            Command.LOGGER.info("Checking Result: " + result.getBranch().stream().map(CommandNode::getName).toList());
             StringReader reader = result.getReader();
             String remaining = reader.getRemaining();
             // We only get suggestions if the remaining text starts with a whitespace and the next char is no whitespace
             if (remaining.startsWith(" ") && !remaining.substring(1).startsWith(" ")) {
                 reader.skip();
-                TreeCommand<S> lastParsedTreeCommand = result.getLastParsedTreeCommand();
-                List<TreeCommand<S>> suggestionTreeCommands;
+                CommandNode<S> lastParsedCommandNode = result.getLastParsedTreeCommand();
+                List<CommandNode<S>> suggestionCommandNodes;
                 // If the last command was parsed successfully we get suggestions for the child commands
                 if (result.getException() != null) {
-                    suggestionTreeCommands = List.of(lastParsedTreeCommand);
+                    suggestionCommandNodes = List.of(lastParsedCommandNode);
                 } else {
-                    suggestionTreeCommands = lastParsedTreeCommand.getChildren();
+                    suggestionCommandNodes = lastParsedCommandNode.getChildren();
                 }
-                for (TreeCommand<S> suggestionTreeCommand : suggestionTreeCommands) {
-                    Command.LOGGER.info("Getting Suggestions for TreeCommand: " + suggestionTreeCommand.getName());
-                    List<String> resultSuggestions = suggestionTreeCommand.getSuggestions(result, source);
+                for (CommandNode<S> suggestionCommandNode : suggestionCommandNodes) {
+                    Command.LOGGER.info("Getting Suggestions for TreeCommand: " + suggestionCommandNode.getName());
+                    List<String> resultSuggestions = suggestionCommandNode.getSuggestions(result, source);
                     Command.LOGGER.info(resultSuggestions.toString());
                     suggestions.addAll(resultSuggestions);
                 }
@@ -164,7 +164,7 @@ public abstract class Command<S> {
         });
         Command.LOGGER.info("Sorted Parsed Commands:");
         for (ParsedCommandBranch<S> parsedCommandBranch : results) {
-            Command.LOGGER.info(parsedCommandBranch.getBranch().stream().map(TreeCommand::getName).toList() + ": " + parsedCommandBranch.getReader().debugString());
+            Command.LOGGER.info(parsedCommandBranch.getBranch().stream().map(CommandNode::getName).toList() + ": " + parsedCommandBranch.getReader().debugString());
             Command.LOGGER.info("Tree Commands:" + parsedCommandBranch.getBranch().size());
             Command.LOGGER.info("Exception:" + parsedCommandBranch.getException());
             if (parsedCommandBranch.getLastParsedTreeCommand() != null) {

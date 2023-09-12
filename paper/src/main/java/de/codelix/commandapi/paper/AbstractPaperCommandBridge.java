@@ -1,7 +1,7 @@
 package de.codelix.commandapi.paper;
 
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
-import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
+import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
 import de.codelix.commandapi.minecraft.MCCommandBridge;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
@@ -47,7 +47,7 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
     public void init() {
         this.command = new de.codelix.commandapi.core.Command<>(this.getLabel(), this.isAsync()) {
             @Override
-            public LiteralTreeCommandBuilder<PaperCommandSource<P>> generateCommand(LiteralTreeCommandBuilder<PaperCommandSource<P>> builder) {
+            public LiteralCommandNodeBuilder<PaperCommandSource<P>> generateCommand(LiteralCommandNodeBuilder<PaperCommandSource<P>> builder) {
                 return AbstractPaperCommandBridge.this.generateCommand(builder);
             }
 

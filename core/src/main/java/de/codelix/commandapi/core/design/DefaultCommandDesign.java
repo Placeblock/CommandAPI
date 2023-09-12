@@ -1,9 +1,9 @@
 package de.codelix.commandapi.core.design;
 
 import de.codelix.commandapi.core.Command;
-import de.codelix.commandapi.core.tree.LiteralTreeCommand;
-import de.codelix.commandapi.core.tree.ParameterTreeCommand;
-import de.codelix.commandapi.core.tree.TreeCommand;
+import de.codelix.commandapi.core.tree.LiteralCommandNode;
+import de.codelix.commandapi.core.tree.ParameterCommandNode;
+import de.codelix.commandapi.core.tree.CommandNode;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -39,17 +39,17 @@ public class DefaultCommandDesign extends CommandDesign {
             .color(this.primaryColor);
     }
 
-    public TextComponent getHelpTreeCommand(TreeCommand<?> treeCommand) {
-        if (treeCommand instanceof LiteralTreeCommand<?>) {
-            return Component.text(treeCommand.getName()).color(this.inferiorColor);
-        } else if (treeCommand instanceof ParameterTreeCommand<?, ?>) {
-            return Component.text("[" + treeCommand.getName() + "]").color(this.inferiorColor);
+    public TextComponent getHelpTreeCommand(CommandNode<?> commandNode) {
+        if (commandNode instanceof LiteralCommandNode<?>) {
+            return Component.text(commandNode.getName()).color(this.inferiorColor);
+        } else if (commandNode instanceof ParameterCommandNode<?, ?>) {
+            return Component.text("[" + commandNode.getName() + "]").color(this.inferiorColor);
         }
         return null;
     }
 
-    public TextComponent getHelpTreeCommandDescription(TreeCommand<?> treeCommand) {
-        if (treeCommand instanceof LiteralTreeCommand<?> literalTreeCommand) {
+    public TextComponent getHelpTreeCommandDescription(CommandNode<?> commandNode) {
+        if (commandNode instanceof LiteralCommandNode<?> literalTreeCommand) {
             if (literalTreeCommand.getAliases().size() == 0) return null;
             return Component.text("Alias: " + String.join(", ", literalTreeCommand.getAliases())).color(this.primaryColor);
         }
@@ -57,24 +57,24 @@ public class DefaultCommandDesign extends CommandDesign {
     }
 
     public <S> TextComponent generateHelpMessage(Command<S> command, S source) {
-        List<List<TreeCommand<S>>> branches = command.getBase().getBranches(source);
+        List<List<CommandNode<S>>> branches = command.getBase().getBranches(source);
         TextComponent helpMessage = Component.newline()
             .append(this.getHelpHeadline(command));
-        for (List<TreeCommand<S>> branch : branches) {
+        for (List<CommandNode<S>> branch : branches) {
             // We only want to generate the branchCommand to the first Parameter
             boolean parameterReached = false;
             StringBuilder branchCommand = new StringBuilder("/");
             TextComponent branchMessage = Component.text("/").color(this.primaryColor);
             for (int i = 0; i < branch.size(); i++) {
-                TreeCommand<S> treeCommand = branch.get(i);
-                if (treeCommand instanceof ParameterTreeCommand<?,?>) {
+                CommandNode<S> commandNode = branch.get(i);
+                if (commandNode instanceof ParameterCommandNode<?,?>) {
                     parameterReached = true;
                 }
                 TextColor color = i == 0 ? this.primaryColor : this.inferiorColor;
-                TextComponent treeCommandMessage = this.getHelpTreeCommand(treeCommand).color(color);
+                TextComponent treeCommandMessage = this.getHelpTreeCommand(commandNode).color(color);
                 TextComponent hoverText = Component.empty();
-                TextComponent description = treeCommand.getDescription();
-                TextComponent extraDescription = this.getHelpTreeCommandDescription(treeCommand);
+                TextComponent description = commandNode.getDescription();
+                TextComponent extraDescription = this.getHelpTreeCommandDescription(commandNode);
                 if (description != null) hoverText = hoverText.append(description);
                 if (description != null && extraDescription != null) hoverText = hoverText.append(Component.newline());
                 if (extraDescription != null) hoverText = hoverText.append(extraDescription);
@@ -83,7 +83,7 @@ public class DefaultCommandDesign extends CommandDesign {
                 }
                 branchMessage = branchMessage.append(treeCommandMessage).append(Component.space());
                 if (!parameterReached) {
-                    branchCommand.append(treeCommand.getName()).append(" ");
+                    branchCommand.append(commandNode.getName()).append(" ");
                 }
             }
             branchMessage = branchMessage.clickEvent(ClickEvent.suggestCommand(branchCommand.toString()));

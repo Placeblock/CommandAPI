@@ -2,7 +2,7 @@ package de.codelix.commandapi.core.tree.builder;
 
 import de.codelix.commandapi.core.Command;
 import de.codelix.commandapi.core.CommandExecutor;
-import de.codelix.commandapi.core.tree.TreeCommand;
+import de.codelix.commandapi.core.tree.CommandNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.TextComponent;
@@ -16,17 +16,17 @@ import java.util.List;
 @SuppressWarnings("ALL")
 @Getter
 @RequiredArgsConstructor
-public abstract class TreeCommandBuilder<S, CT extends TreeCommandBuilder<S, CT>> {
+public abstract class CommandNodeBuilder<S, CT extends CommandNodeBuilder<S, CT>> {
 
     private final String name;
-    private final List<TreeCommandBuilder<S, ?>> children = new ArrayList<>();
+    private final List<CommandNodeBuilder<S, ?>> children = new ArrayList<>();
     private CommandExecutor<S> run = null;
     private TextComponent description;
     private String permission;
 
     protected abstract CT getThis();
 
-    public CT then(TreeCommandBuilder<S, ?> builder) {
+    public CT then(CommandNodeBuilder<S, ?> builder) {
         this.children.add(builder);
         return getThis();
     }
@@ -46,6 +46,6 @@ public abstract class TreeCommandBuilder<S, CT extends TreeCommandBuilder<S, CT>
         return getThis();
     }
 
-    public abstract TreeCommand<S> build(Command<S> command);
+    public abstract CommandNode<S> build(Command<S> command);
 
 }

@@ -1,8 +1,8 @@
 package de.codelix.commandapi.waterfall;
 
 import de.codelix.commandapi.core.parameter.Parameter;
-import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
-import de.codelix.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
+import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
+import de.codelix.commandapi.core.tree.builder.ParameterCommandNodeBuilder;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.md_5.bungee.api.CommandSender;
@@ -45,11 +45,11 @@ public abstract class WaterfallCommandBridge<PL extends Plugin> extends Abstract
     }
 
 
-    public static LiteralTreeCommandBuilder<WaterfallCommandSource<ProxiedPlayer>> literal(final String name) {
-        return new LiteralTreeCommandBuilder<>(name);
+    public static LiteralCommandNodeBuilder<WaterfallCommandSource<ProxiedPlayer>> literal(final String name) {
+        return new LiteralCommandNodeBuilder<>(name);
     }
 
-    public static <S> ParameterTreeCommandBuilder<WaterfallCommandSource<ProxiedPlayer>, S> parameter(final String name, Parameter<WaterfallCommandSource<ProxiedPlayer>, S> parameter) {
-        return new ParameterTreeCommandBuilder<>(name, parameter);
+    public static <S> ParameterCommandNodeBuilder<WaterfallCommandSource<ProxiedPlayer>, S> parameter(final String name, Parameter<WaterfallCommandSource<ProxiedPlayer>, S> parameter) {
+        return new ParameterCommandNodeBuilder<>(name, parameter);
     }
 }

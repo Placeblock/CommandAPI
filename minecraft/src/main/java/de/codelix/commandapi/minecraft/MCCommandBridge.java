@@ -1,6 +1,6 @@
 package de.codelix.commandapi.minecraft;
 
-import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
+import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
 import net.kyori.adventure.text.TextComponent;
 
 /**
@@ -24,7 +24,7 @@ public interface MCCommandBridge<DP, P, C, S extends MCCommandSource<P, C>> {
         }
         return true;
     }
-    LiteralTreeCommandBuilder<S> generateCommand(LiteralTreeCommandBuilder<S> builder);
+    LiteralCommandNodeBuilder<S> generateCommand(LiteralCommandNodeBuilder<S> builder);
 
     void init();
 

@@ -18,11 +18,11 @@ import java.util.List;
  */
 @Getter
 @RequiredArgsConstructor
-public abstract class TreeCommand<S> {
+public abstract class CommandNode<S> {
 
     private final Command<S> command;
     private final String name;
-    private final List<TreeCommand<S>> children;
+    private final List<CommandNode<S>> children;
     private final TextComponent description;
     private final String permission;
     private final CommandExecutor<S> commandExecutor;
@@ -42,7 +42,7 @@ public abstract class TreeCommand<S> {
             this.parse(command, source);
         } catch (CommandParseException e) {
             Command.LOGGER.info("Error Parsing Command " + this.getName());
-            e.setTreeCommand(this);
+            e.setCommandNode(this);
             command.setException(this, e);
             // If an error occured while parsing we reset the cursor and subtract -1 because of the whitespace
             command.getReader().setCursor(cursor - 1);
@@ -51,7 +51,7 @@ public abstract class TreeCommand<S> {
         StringReader reader = command.getReader();
         // We only parse Children if we can read further
         if (reader.canReadWord()) {
-            for (TreeCommand<S> child : this.getChildren()) {
+            for (CommandNode<S> child : this.getChildren()) {
                 Command.LOGGER.info("Parsing Child " + child.getName());
                 ParsedCommandBranch<S> childParsedCommandBranch = new ParsedCommandBranch<>(command);
                 childParsedCommandBranch.getReader().skip();
@@ -61,20 +61,20 @@ public abstract class TreeCommand<S> {
         }
         Command.LOGGER.info("Commands of TreeCommand " + this.name);
         for (ParsedCommandBranch<S> parsedCommandBranch : commands) {
-            Command.LOGGER.info(parsedCommandBranch.getBranch().stream().map(TreeCommand::getName).toList() + ": " + parsedCommandBranch.getReader().debugString());
+            Command.LOGGER.info(parsedCommandBranch.getBranch().stream().map(CommandNode::getName).toList() + ": " + parsedCommandBranch.getReader().debugString());
         }
         return commands;
     }
 
-    public List<List<TreeCommand<S>>> getBranches(S source) {
-        List<List<TreeCommand<S>>> branches = new ArrayList<>();
+    public List<List<CommandNode<S>>> getBranches(S source) {
+        List<List<CommandNode<S>>> branches = new ArrayList<>();
         if (this.children.size() == 0 || this.getCommandExecutor() != null) {
             branches.add(new ArrayList<>(List.of(this)));
         }
-        for (TreeCommand<S> child : this.children) {
+        for (CommandNode<S> child : this.children) {
             if (child.hasNoPermission(source)) continue;
-            List<List<TreeCommand<S>>> childBranches = child.getBranches(source);
-            for (List<TreeCommand<S>> childBranch : childBranches) {
+            List<List<CommandNode<S>>> childBranches = child.getBranches(source);
+            for (List<CommandNode<S>> childBranch : childBranches) {
                 childBranch.add(0, this);
                 branches.add(childBranch);
             }
