@@ -46,14 +46,4 @@ public class LiteralTreeCommand<S> extends TreeCommand<S> {
         suggestions.add(this.getName());
         return suggestions;
     }
-
-    @Override
-    public TextComponent getHelpComponent() {
-        return this.getCommand().getDesign().getHelpLiteralTreeCommand(this);
-    }
-
-    @Override
-    public TextComponent getHelpExtraDescription() {
-        return this.getCommand().getDesign().getHelpLiteralTreeCommandDescription(this);
-    }
 }

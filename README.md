@@ -103,6 +103,7 @@ provide the parameter that is used for this ParameterTreeCommand. There are many
 - EnumParameter
 
 If you want to add your own parameter you can do that by implementing the Parameter interface.
+In the parse method you should throw a CommandParseException if the Parameter couldn't get parsed.
 
 Accessing parsed parameters in the CommandExecutor is quite easy. As already described, all information gathered while parsing the command is
 stored in the ParsedCommand instance, which is then passed to the CommandExecutor. Providing the name of the ParameterTreeCommand you can access
@@ -111,6 +112,13 @@ parsed parameters there.
 Attention: In the parse method of a parameter you have access to the ParsedCommand too, which means you can access already parsed parameters while
 parsing another. This can be really helpful for tab-completing a list of elements from an object that is specified by another parameter.
 
+### Design & Error Messages
+Where are the messages??? This question is now to be answered! Maybe you have noticed that when you throw an exception in the parse method of your parameter,
+you cannot specify an error-message anymore. The old version of the CommandAPI used to implement them directly into the parameters. However, because of this,
+api-users couldn't set their own error-messages for already existing parameters. This is where the CommandDesign class flights directly into the screen. Every
+Command you create has a CommandDesign attribute. If you don't set it via the constructor, it will use the global CommandDesign in the static field Command.DESIGN.
+In this class you can register messages for specific exceptions. If the command throws an exception while parsing, it will get the according message
+from the CommandDesign.
 
 ## 4. Paper and Waterfall in detail
 

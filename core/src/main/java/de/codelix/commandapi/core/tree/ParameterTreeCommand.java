@@ -45,14 +45,4 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
         this.parameter.getSuggestions(suggestionBuilder);
         return suggestionBuilder.getSuggestions();
     }
-
-    @Override
-    public TextComponent getHelpComponent() {
-        return this.getCommand().getDesign().getHelpParameterTreeCommand(this);
-    }
-
-    @Override
-    public TextComponent getHelpExtraDescription() {
-        return this.getCommand().getDesign().getHelpParameterTreeCommandDescription(this);
-    }
 }

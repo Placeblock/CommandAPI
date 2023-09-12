@@ -88,8 +88,4 @@ public abstract class TreeCommand<S> {
     }
 
     public abstract List<String> getSuggestions(ParsedCommandBranch<S> command, S source);
-
-    public abstract TextComponent getHelpComponent();
-
-    public abstract TextComponent getHelpExtraDescription();
 }
