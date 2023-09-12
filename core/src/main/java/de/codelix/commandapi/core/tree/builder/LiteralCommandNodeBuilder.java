@@ -1,8 +1,8 @@
 package de.codelix.commandapi.core.tree.builder;
 
 import de.codelix.commandapi.core.Command;
-import de.codelix.commandapi.core.tree.LiteralTreeCommand;
-import de.codelix.commandapi.core.tree.TreeCommand;
+import de.codelix.commandapi.core.tree.LiteralCommandNode;
+import de.codelix.commandapi.core.tree.CommandNode;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -12,27 +12,27 @@ import java.util.List;
  * Author: Placeblock
  */
 @Getter
-public class LiteralTreeCommandBuilder<S> extends TreeCommandBuilder<S, LiteralTreeCommandBuilder<S>> {
+public class LiteralCommandNodeBuilder<S> extends CommandNodeBuilder<S, LiteralCommandNodeBuilder<S>> {
     private final List<String> aliases = new ArrayList<>();
 
-    public LiteralTreeCommandBuilder(String name) {
+    public LiteralCommandNodeBuilder(String name) {
         super(name);
     }
 
     @Override
-    protected LiteralTreeCommandBuilder<S> getThis() {
+    protected LiteralCommandNodeBuilder<S> getThis() {
         return this;
     }
 
     @SuppressWarnings("unused")
-    public LiteralTreeCommandBuilder<S> withAlias(String alias) {
+    public LiteralCommandNodeBuilder<S> withAlias(String alias) {
         this.aliases.add(alias);
         return this.getThis();
     }
 
     @Override
-    public TreeCommand<S> build(Command<S> command) {
-        return new LiteralTreeCommand<>(
+    public CommandNode<S> build(Command<S> command) {
+        return new LiteralCommandNode<>(
             command,
             this.getName(),
             this.getChildren().stream().map(treeCommand -> treeCommand.build(command)).toList(),

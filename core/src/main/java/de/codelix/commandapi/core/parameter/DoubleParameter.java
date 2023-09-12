@@ -8,7 +8,7 @@ import de.codelix.commandapi.core.parser.ParsedCommandBranch;
  * Author: Placeblock
  */
 public class DoubleParameter<S> extends NumberParameter<S, Double> {
-    private final char[] possibleChars = "0123456789.".toCharArray();
+    private static final char[] POSSIBLE_CHARS = "0123456789.".toCharArray();
 
     public DoubleParameter(Double min, Double max) {
         super(min, max);
@@ -31,19 +31,23 @@ public class DoubleParameter<S> extends NumberParameter<S, Double> {
     @Override
     public void getSuggestions(SuggestionBuilder<S> suggestionBuilder) {
         String partial = suggestionBuilder.getRemaining();
+        calculateSuggestions(suggestionBuilder, partial, this.min, this.max);
+    }
+
+    public static <S> void calculateSuggestions(SuggestionBuilder<S> suggestionBuilder, String partial, double min, double max) {
         int partialLength = partial.length();
         if (partialLength == 0) {
             suggestionBuilder.withSuggestion(".");
-            if (this.min <= 0) {
+            if (min <= 0) {
                 suggestionBuilder.withSuggestion("-");
             }
         }
-        for (char possibleChar : this.possibleChars) {
+        for (char possibleChar : POSSIBLE_CHARS) {
             try {
                 String newDoubleString = partial + possibleChar;
                 double newDouble = Double.parseDouble(newDoubleString);
-                if (((newDouble >= 0 && newDouble <= this.max) || (newDouble < 0 && newDouble >= this.min))
-                    && (possibleChar != '.' || ( newDouble >=0 && newDouble+1>this.min ) || (newDouble<0 && newDouble-1<this.max ))) {
+                if (((newDouble >= 0 && newDouble <= max) || (newDouble < 0 && newDouble >= min))
+                    && (possibleChar != '.' || ( newDouble >=0 && newDouble+1>min ) || (newDouble<0 && newDouble-1<max ))) {
                     suggestionBuilder.withSuggestion(newDoubleString);
                 }
             } catch (NumberFormatException ignored) {}

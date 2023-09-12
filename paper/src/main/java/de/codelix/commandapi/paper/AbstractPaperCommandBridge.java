@@ -1,8 +1,8 @@
 package de.codelix.commandapi.paper;
 
-import de.codelix.commandapi.bridge.CommandBridge;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
-import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
+import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
+import de.codelix.commandapi.minecraft.MCCommandBridge;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
@@ -22,7 +22,7 @@ import java.util.Map;
  * Author: Placeblock
  */
 @SuppressWarnings("unused")
-public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> extends Command implements CommandBridge<Player, P, CommandSender, PaperCommandSource<P>>, Listener {
+public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> extends Command implements MCCommandBridge<Player, P, CommandSender, PaperCommandSource<P>>, Listener {
     @Getter
     private de.codelix.commandapi.core.Command<PaperCommandSource<P>> command;
 
@@ -47,25 +47,18 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
     public void init() {
         this.command = new de.codelix.commandapi.core.Command<>(this.getLabel(), this.isAsync()) {
             @Override
-            public LiteralTreeCommandBuilder<PaperCommandSource<P>> generateCommand(LiteralTreeCommandBuilder<PaperCommandSource<P>> builder) {
+            public LiteralCommandNodeBuilder<PaperCommandSource<P>> generateCommand(LiteralCommandNodeBuilder<PaperCommandSource<P>> builder) {
                 return AbstractPaperCommandBridge.this.generateCommand(builder);
             }
 
             @Override
             public boolean hasPermission(PaperCommandSource<P> source, String permission) {
-                if (source.getPlayer() != null) {
-                    return AbstractPaperCommandBridge.this.hasPermission(source.getPlayer(), permission);
-                }
-                return true;
+                return AbstractPaperCommandBridge.this.hasPermission(source, permission);
             }
 
             @Override
             public void sendMessage(PaperCommandSource<P> source, TextComponent message) {
-                if (source.isPlayer()) {
-                    AbstractPaperCommandBridge.this.sendMessage(source.getPlayer(), message);
-                } else {
-                    source.getSender().sendMessage(message);
-                }
+                AbstractPaperCommandBridge.this.sendMessage(source, message);
             }
         };
         this.setPermission(this.command.getBase().getPermission());

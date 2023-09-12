@@ -1,7 +1,7 @@
-package de.codelix.commandapi.core;
+package de.codelix.commandapi.core.parameter;
 
+import de.codelix.commandapi.core.ParseTestCommand;
 import de.codelix.commandapi.core.exception.CommandParseException;
-import de.codelix.commandapi.core.parameter.DoubleParameter;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
 import de.codelix.commandapi.core.parser.StringReader;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,6 @@ public class DoubleParameterTest {
         String source = "";
         List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse 100", source);
         List<String> suggestions = parseTestCommand.getSuggestions(results, source);
-        System.out.println(suggestions);
         assert suggestions.contains("100.") && !suggestions.contains("1001") && !suggestions.contains("1");
 
         results = parseTestCommand.parse("testcommandparse 100.", source);
@@ -67,7 +66,6 @@ public class DoubleParameterTest {
 
         results = parseTestCommand.parse("testcommandparse ", source);
         suggestions = parseTestCommand.getSuggestions(results, source);
-        System.out.println(suggestions);
         assert suggestions.containsAll(List.of(".", "1"));
     }
 }

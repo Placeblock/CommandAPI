@@ -1,30 +1,76 @@
-# CommandAPI DOC >2.0.0
+<style>
+    :root {
+        --primary-color: #6ffcb6
+    }
+    h1, h2 {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+    b {
+        color: var(--primary-color);
+    }
+    a {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+</style>
+# The CommandAPI
 
-Builds are availible at the mavenCentral Repository
+Builds are availible at the mavenCentral Repository 📦
+<details>
+<summary>Gradle Kotlin</summary>
+
 ```kotlin
-implementation("de.codelix.commandapi:core:2.2.2")
-implementation("de.codelix.commandapi:paper:2.2.2") //Paper-Bridge
-implementation("de.codelix.commandapi:waterfall:2.2.2") //Waterfall-Bridge
+implementation("de.codelix.commandapi:core:VERSION")
+implementation("de.codelix.commandapi:paper:VERSION") //Paper-Bridge
+implementation("de.codelix.commandapi:waterfall:VERSION") //Waterfall-Bridge
 ```
-<br>
-Implementing commands in Spigot can be quite challenging. 
-As soon as they get more complex, things get complicated and unreadable quite fast.
-This is what CommandAPI tries to solve. The goal is to create a structured and safe way to 
-implement such commands and handle the execution of them.
+</details>
+<details>
+<summary>Gradle Groovy</summary>
 
-For easier understanding this documentation is split up into four parts:
-1. The CommandSource
-2. The parser
-3. Command creation
-4. Paper and Waterfall in detail
+```kotlin
+implementation 'de.codelix.commandapi:core:VERSION'
+implementation 'de.codelix.commandapi:paper:VERSION' //Paper-Bridge
+implementation 'de.codelix.commandapi:waterfall:VERSION' //Waterfall-Bridge
+```
+</details>
+<details>
+<summary>Maven</summary>
 
-## 1. The CommandSource
+```xml
+<dependency>
+    <groupId>de.codelix.commandapi</groupId>
+    <artifactId>core</artifactId>
+    <version>VERSION</version>
+</dependency>
+<dependency>  <!--Paper-Bridge-->
+    <groupId>de.codelix.commandapi</groupId>
+    <artifactId>paper</artifactId>
+    <version>VERSION</version>
+</dependency>
+<dependency> <!--Waterfall-Bridge-->
+    <groupId>de.codelix.commandapi</groupId>
+    <artifactId>waterfall</artifactId>
+    <version>VERSION</version>
+</dependency>
+```
+</details>
 
-A command gets always executed by a human. This is the CommandSource. However, as many applications offer clients as well as
-an admin-panel the source is split up into the player and the sender (the admin-panel and yea I know it's not the right name). If the command gets executed by
-a client the sender is null, otherwise it's the other way around.
+You can get the current version from [here](https://central.sonatype.com/search?q=de.codelix.commandapi)
 
-## 2. The parser
+## Introduction
+
+Implementing commands in Spigot can be quite challenging 😟. 
+As soon as they get more complex, things get complicated and unreadable quite fast 😟😟. 
+This is what CommandAPI tries to solve 😀😀.  The goal is to create a structured and safe way to 
+implement such commands and handle the execution of them!
+
+## The CommandSource
+
+A command gets always executed by a human (At least most of the time 🤖). This is the CommandSource.
+
+## The parser
 
 ### Why do we need the parser?
 
@@ -36,8 +82,8 @@ Before the parser can evaluate any string, you have to give the parser instructi
 in specific situations. These instructions are called the command-structure or command-tree and
  define, as the name already tells, the structure of the command.
 
-Here is an example of such a command-tree, however you can find the detailed documentation on how to
-implement them in 3. Command creation.
+Here is an example of such a command-tree. How you can implement them is described 
+in [Command Creation](#command-creation).
 
 /file save   ->   should safe the file<br>
 /file append [line]   -> should append a line to the file<br>
@@ -47,11 +93,11 @@ The purpose of the parser is to evaluate strings like:<br>
 "/file sa" -> Unknown Command<br>
 "/file save" -> Call the method to save the file
 
-This tree-structure is stored in the TreeCommand class. It contains its children TreeCommands, the permission
+This tree-structure is stored in the CommandNode class. It contains its children CommandNodes, the permission
 required to access itself and the CommandExecutor, which is basically a lambda method, which is called when
-this specific TreeCommand should be executed.
+this specific CommandNode is executed.
 
-### How the parser works
+### How the parser works (In detail)
 
 The parser evaluates the passed string from left to right. During the parsing process it gathers 
 information like parsed parameters, parsing errors and so on. All this information is stored in the
@@ -68,22 +114,51 @@ the cursor to right after the literal. Then it will try to parse the tree-struct
 over a literal, it will try to parse the literal. If there is a parameter, it will call the parse() method of the Parameter.
 
 
-## 3. Command creation
+## Command creation
 
-Everything starts with the Command class. You can extend this class, but in 3. Paper and Waterfall in detail 
+Everything starts with the Command class. You can extend this class, but in [Paper and Waterfall in detail](#paper-and-waterfall-in-detail) 
 we will discuss why there are better options. Weather you do it or not at some point you have to implement the generateCommand
-method which is called right after instantiating the command. There is one parameter, which is the base-literal treeCommandBuilder 
+method which is called right after instantiating the command. There is one parameter, which is the base-literal CommandNodeBuilder 
 you can build upon. At the end the complete tree-structure has to be returned for the command to work.
+
+<details>
+<summary>Example</summary>
+
+This example creates a simple command with two sub-commands "add" and "remove".
+Add has an enum parameter as a subcommand with no executor.
+Remove has an integer parameter as a subcommand and prints the passed amount into the console on execute.
+```java
+public class CommandExample extends Command {
+    //...
+    @Override
+    public LiteralCommandNodeBuilder<String> generateCommand(LiteralCommandNodeBuilder<String> builder) {
+        return builder
+            .then(
+                literal("add").then(
+                    parameter("material", enumparam(ExampleEnum.class, ExampleEnum.values()))
+                )
+            ).then(
+                literal("remove").then(
+                    parameter("amount", integer(0, 105))
+                        .run((context, source) ->
+                            System.out.println(context.getParsedParameter("amount"))))
+            );
+    }
+    //...
+}
+```
+</details>
+
 
 ### The tree structure
 
-The base class for implementing the tree-structure is the LiteralTreeCommand and the ParameterTreeCommand. As the name describes,
-LiteralTreeCommand is for literals and ParameterTreeCommand is for parameters. However, you actually do not use these classes at all.
+The base class for implementing the tree-structure is the LiteralCommandNode and the ParameterCommandNode. As the name describes,
+LiteralCommandNode is for literals and ParameterCommandNode is for parameters. However, you actually do not use these classes at all.
 There are corresponding builder classes, which simplify the implementation drastically. 
 
-If you instantiate a new TreeCommandBuilder you have several options:
-- .then -> adds a child treeCommand to this treeCommand
-- .run -> specifies the CommandExecutor that should be executed when this treeCommand gets parsed successfully and there is nothing more to parse.
+If you instantiate a new CommandNodeBuilder you have several options:
+- .then -> adds a child commandNode to this commandNode
+- .run -> specifies the CommandExecutor that should be executed when this commandNode gets parsed successfully and there is nothing more to parse.
 - .withDescription -> specifies the description that should show up in the help message
 - .withPermission -> specifies the permission needed to access this tree command
 
@@ -92,8 +167,8 @@ Particularly for Literals:
 
 ### Parameters
 
-You have already learned that you use the ParameterTreeCommand for specifying parameters. In the constructor of this class you have to 
-provide the parameter that is used for this ParameterTreeCommand. There are many ready-to-use parameters implemented:
+You have already learned that you use the ParameterCommandNode for specifying parameters. In the constructor of this class you have to 
+provide the parameter that is used for this ParameterCommandNode. There are many ready-to-use parameters implemented:
 - BooleanParameter
 - DoubleParameter
 - EnumParameter
@@ -103,16 +178,36 @@ provide the parameter that is used for this ParameterTreeCommand. There are many
 - EnumParameter
 
 If you want to add your own parameter you can do that by implementing the Parameter interface.
+In the parse method you should throw a CommandParseException if the Parameter couldn't get parsed.
 
 Accessing parsed parameters in the CommandExecutor is quite easy. As already described, all information gathered while parsing the command is
-stored in the ParsedCommand instance, which is then passed to the CommandExecutor. Providing the name of the ParameterTreeCommand you can access
+stored in the ParsedCommand instance, which is then passed to the CommandExecutor. Providing the name of the ParameterCommandNode you can access
 parsed parameters there.
 
 Attention: In the parse method of a parameter you have access to the ParsedCommand too, which means you can access already parsed parameters while
 parsing another. This can be really helpful for tab-completing a list of elements from an object that is specified by another parameter.
 
+## Design & Error Messages
+Where are the messages??? This question is now to be answered! Maybe you have noticed that when you throw an exception in the parse method of your parameter,
+you cannot specify an error-message anymore. The old version of the CommandAPI used to implement them directly into the parameters. However, because of this,
+api-users couldn't set their own error-messages for already existing parameters. This is where the CommandDesign class flights directly into the screen. Every
+Command you create has a CommandDesign attribute. If you don't set it via the constructor, it will use the global CommandDesign in the static field Command.DESIGN.
+In this class you can register messages for specific exceptions. If the command throws an exception while parsing, it will get the according message
+from the CommandDesign. 
 
-## 4. Paper and Waterfall in detail
+<span>By default there are no error-messages registered</span>. 
+<br>
+To register the default messages use 
+```java
+new DefaultMessages().register(design)
+```
+The Implementations are named after the package-name + DefaultMessages:
+- CoreDefaultMessages
+- PaperDefaultMessages
+
+By using registerDefaultMessages without providing a design it will register the messages directly to the global design.
+
+## Paper and Waterfall in detail
 
 ### How to work with Paper and Waterfall
 
@@ -131,7 +226,7 @@ However if you use these two you are forced to use the Paper Player or the Water
 
 In conclusion, you can say that if you just want to create very simple commands you just extend one of these classes.
 
-### Generics
+### The problem with generics
 
 If you instantiate the tree-structure as described in 2. you will see quite fast that it's really annoying
 to always specify the generics for the CommandSource. This is because Java's type-inferring does not work here.

@@ -7,19 +7,25 @@ plugins {
 
 subprojects {
     group = this.rootProject.group
-    apply<JavaPlugin>()
+    apply<JavaLibraryPlugin>()
     repositories {
         mavenCentral()
     }
     dependencies {
         compileOnly("org.projectlombok:lombok:1.18.28")
         annotationProcessor("org.projectlombok:lombok:1.18.28")
+
+        testImplementation(platform("org.junit:junit-bom:5.9.1"))
+        testImplementation("org.junit.jupiter:junit-jupiter")
     }
     java {
         withJavadocJar()
         withSourcesJar()
         // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
         toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    }
+    tasks.test {
+        useJUnitPlatform()
     }
 }
 

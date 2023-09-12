@@ -3,7 +3,7 @@ plugins {
     id("signing")
 }
 
-version = "2.2.2"
+version = "2.2.3"
 
 repositories {
     maven {
@@ -15,7 +15,7 @@ dependencies {
     compileOnly("io.github.waterfallmc:waterfall-api:1.20-R0.1-SNAPSHOT")
     compileOnly("net.kyori:adventure-platform-bungeecord:4.3.0")
     compileOnly(project(":core"))
-    implementation(project(":bridge"))
+    implementation(project(":minecraft"))
 }
 
 tasks {
@@ -52,6 +52,7 @@ publishing {
             artifact(tasks["jar"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
+            version = project.version.toString()
             pom {
                 packaging = "jar"
                 name.set("Waterfall Bridge")

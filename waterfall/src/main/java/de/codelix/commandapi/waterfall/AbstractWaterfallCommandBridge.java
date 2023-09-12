@@ -1,11 +1,10 @@
 package de.codelix.commandapi.waterfall;
 
-import de.codelix.commandapi.bridge.CommandBridge;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
-import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
+import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
+import de.codelix.commandapi.minecraft.MCCommandBridge;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -22,7 +21,7 @@ import java.util.List;
  * Author: Placeblock
  */
 @SuppressWarnings("unused")
-public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> extends Command implements CommandBridge<ProxiedPlayer, P, CommandSender, WaterfallCommandSource<P>>, TabExecutor {
+public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> extends Command implements MCCommandBridge<ProxiedPlayer, P, CommandSender, WaterfallCommandSource<P>>, TabExecutor {
     @Getter
     private de.codelix.commandapi.core.Command<WaterfallCommandSource<P>> command;
 
@@ -60,25 +59,18 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
     public void init() {
         this.command = new de.codelix.commandapi.core.Command<>(this.getName(), this.isAsync()) {
             @Override
-            public LiteralTreeCommandBuilder<WaterfallCommandSource<P>> generateCommand(LiteralTreeCommandBuilder<WaterfallCommandSource<P>> builder) {
+            public LiteralCommandNodeBuilder<WaterfallCommandSource<P>> generateCommand(LiteralCommandNodeBuilder<WaterfallCommandSource<P>> builder) {
                 return AbstractWaterfallCommandBridge.this.generateCommand(builder);
             }
 
             @Override
             public boolean hasPermission(WaterfallCommandSource<P> source, String permission) {
-                if (source.getPlayer() != null) {
-                    return AbstractWaterfallCommandBridge.this.hasPermission(source.getPlayer(), permission);
-                }
-                return true;
+                return AbstractWaterfallCommandBridge.this.hasPermission(source, permission);
             }
 
             @Override
             public void sendMessage(WaterfallCommandSource<P> source, TextComponent message) {
-                if (source.isPlayer()) {
-                    AbstractWaterfallCommandBridge.this.sendMessage(source.getPlayer(), message);
-                } else {
-                    source.getSender().sendMessage(BungeeComponentSerializer.get().serialize(message));
-                }
+                AbstractWaterfallCommandBridge.this.sendMessage(source, message);
             }
         };
 

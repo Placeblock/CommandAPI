@@ -3,7 +3,7 @@ plugins {
     id("signing")
 }
 
-version = "2.2.2"
+version = "2.2.3"
 
 repositories {
     maven {
@@ -14,7 +14,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
     compileOnly(project(":core"))
-    implementation(project(":bridge"))
+    implementation(project(":minecraft"))
 }
 
 tasks {
@@ -51,6 +51,7 @@ publishing {
             artifact(tasks["jar"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
+            version = project.version.toString()
             pom {
                 packaging = "jar"
                 name.set("Paper Bridge")

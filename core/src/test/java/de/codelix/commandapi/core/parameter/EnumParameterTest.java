@@ -1,10 +1,10 @@
-package de.codelix.commandapi.core;
+package de.codelix.commandapi.core.parameter;
 
+import de.codelix.commandapi.core.ParseTestCommand;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Author: Placeblock
@@ -12,7 +12,6 @@ import java.util.logging.Level;
 public class EnumParameterTest {
     @Test
     public void testEnumParameterSuggestions() {
-        Command.LOGGER.setLevel(Level.FINE);
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "";
         List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse add ", source);

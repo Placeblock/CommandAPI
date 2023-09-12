@@ -1,8 +1,8 @@
 package de.codelix.commandapi.core.parser;
 
 import de.codelix.commandapi.core.exception.CommandParseException;
-import de.codelix.commandapi.core.tree.ParameterTreeCommand;
-import de.codelix.commandapi.core.tree.TreeCommand;
+import de.codelix.commandapi.core.tree.ParameterCommandNode;
+import de.codelix.commandapi.core.tree.CommandNode;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 public class ParsedCommandBranch<S> extends ParameterHolder {
     private final StringReader reader;
-    private final List<TreeCommand<S>> branch;
+    private final List<CommandNode<S>> branch;
     private CommandParseException exception;
 
     public ParsedCommandBranch(StringReader reader) {
@@ -32,17 +32,17 @@ public class ParsedCommandBranch<S> extends ParameterHolder {
         this.exception = parsedCommandBranch.getException();
     }
 
-    public TreeCommand<S> getLastParsedTreeCommand() {
+    public CommandNode<S> getLastParsedTreeCommand() {
         if (this.branch.size() == 0) return null;
         return this.branch.get(this.branch.size() - 1);
     }
 
-    public void addParsedParameter(ParameterTreeCommand<?, ?> command, Object parameter) {
+    public void addParsedParameter(ParameterCommandNode<?, ?> command, Object parameter) {
         this.parsedParameters.put(command, parameter);
     }
 
 
-    public void setException(TreeCommand<S> command, CommandParseException exception) {
+    public void setException(CommandNode<S> command, CommandParseException exception) {
         this.exception = exception;
     }
 

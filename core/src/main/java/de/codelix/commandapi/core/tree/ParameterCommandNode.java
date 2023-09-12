@@ -17,10 +17,10 @@ import java.util.List;
  * Author: Placeblock
  */
 @Getter
-public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
+public class ParameterCommandNode<S, T> extends CommandNode<S> {
     private final Parameter<S, T> parameter;
 
-    public ParameterTreeCommand(Command<S> command, String name, List<TreeCommand<S>> children, TextComponent description,
+    public ParameterCommandNode(Command<S> command, String name, List<CommandNode<S>> children, TextComponent description,
                                 String permission, CommandExecutor<S> run, Parameter<S, T> parameter) {
         super(command, name, children, description, permission, run);
         this.parameter = parameter;
@@ -44,15 +44,5 @@ public class ParameterTreeCommand<S, T> extends TreeCommand<S> {
         SuggestionBuilder<S> suggestionBuilder = new SuggestionBuilder<>(this, command.getReader().getRemaining(), source, new HashMap<>(command.getParsedParameters()));
         this.parameter.getSuggestions(suggestionBuilder);
         return suggestionBuilder.getSuggestions();
-    }
-
-    @Override
-    public TextComponent getHelpComponent() {
-        return this.getCommand().getDesign().getHelpParameterTreeCommand(this);
-    }
-
-    @Override
-    public TextComponent getHelpExtraDescription() {
-        return this.getCommand().getDesign().getHelpParameterTreeCommandDescription(this);
     }
 }

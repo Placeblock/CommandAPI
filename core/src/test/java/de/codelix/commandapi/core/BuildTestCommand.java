@@ -1,8 +1,8 @@
 package de.codelix.commandapi.core;
 
 import de.codelix.commandapi.core.parameter.Parameter;
-import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
-import de.codelix.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
+import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
+import de.codelix.commandapi.core.tree.builder.ParameterCommandNodeBuilder;
 import net.kyori.adventure.text.TextComponent;
 
 import static de.codelix.commandapi.core.parameter.IntegerParameter.integer;
@@ -17,7 +17,7 @@ public class BuildTestCommand extends Command<String> {
     }
 
     @Override
-    public LiteralTreeCommandBuilder<String> generateCommand(LiteralTreeCommandBuilder<String> builder) {
+    public LiteralCommandNodeBuilder<String> generateCommand(LiteralCommandNodeBuilder<String> builder) {
         return builder
         .then(
             parameter("amount", integer(0, 100))
@@ -28,13 +28,13 @@ public class BuildTestCommand extends Command<String> {
         );
     }
 
-    private static LiteralTreeCommandBuilder<String> literal(String name) {
-        return new LiteralTreeCommandBuilder<>(name);
+    private static LiteralCommandNodeBuilder<String> literal(String name) {
+        return new LiteralCommandNodeBuilder<>(name);
     }
 
     @SuppressWarnings("SameParameterValue")
-    private static ParameterTreeCommandBuilder<String, ?> parameter(String name, Parameter<String, ?> parameter) {
-        return new ParameterTreeCommandBuilder<>(name, parameter);
+    private static ParameterCommandNodeBuilder<String, ?> parameter(String name, Parameter<String, ?> parameter) {
+        return new ParameterCommandNodeBuilder<>(name, parameter);
     }
 
     @Override

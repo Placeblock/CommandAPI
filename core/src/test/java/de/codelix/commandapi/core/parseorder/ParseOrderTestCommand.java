@@ -4,8 +4,8 @@ import de.codelix.commandapi.core.Command;
 import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.core.parameter.StringOfListParameter;
 import de.codelix.commandapi.core.parameter.StringParameter;
-import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
-import de.codelix.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
+import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
+import de.codelix.commandapi.core.tree.builder.ParameterCommandNodeBuilder;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class ParseOrderTestCommand extends Command<String> {
     }
 
     @Override
-    public LiteralTreeCommandBuilder<String> generateCommand(LiteralTreeCommandBuilder<String> builder) {
+    public LiteralCommandNodeBuilder<String> generateCommand(LiteralCommandNodeBuilder<String> builder) {
         return builder
             .then(parameter("player", StringOfListParameter.stringoflist(List.of("felix", "paula")))
                 .then(parameter("message", StringParameter.greedyString())
@@ -39,7 +39,7 @@ public class ParseOrderTestCommand extends Command<String> {
         System.out.println(message.content());
     }
 
-    private static ParameterTreeCommandBuilder<String, ?> parameter(String name, Parameter<String, ?> parameter) {
-        return new ParameterTreeCommandBuilder<>(name, parameter);
+    private static ParameterCommandNodeBuilder<String, ?> parameter(String name, Parameter<String, ?> parameter) {
+        return new ParameterCommandNodeBuilder<>(name, parameter);
     }
 }

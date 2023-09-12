@@ -1,8 +1,8 @@
 package de.codelix.commandapi.core;
 
 import de.codelix.commandapi.core.parser.ParameterHolder;
-import de.codelix.commandapi.core.tree.ParameterTreeCommand;
-import de.codelix.commandapi.core.tree.TreeCommand;
+import de.codelix.commandapi.core.tree.CommandNode;
+import de.codelix.commandapi.core.tree.ParameterCommandNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -15,14 +15,14 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class SuggestionBuilder<S> extends ParameterHolder {
 
-    private final TreeCommand<S> treeCommand;
+    private final CommandNode<S> commandNode;
     private final String remaining;
     private final S source;
     private final List<String> suggestions = new ArrayList<>();
 
-    public SuggestionBuilder(TreeCommand<S> treeCommand, String remaining, S source, Map<ParameterTreeCommand<?, ?>, Object> parsedParameters) {
+    public SuggestionBuilder(CommandNode<S> commandNode, String remaining, S source, Map<ParameterCommandNode<?, ?>, Object> parsedParameters) {
         super(parsedParameters);
-        this.treeCommand = treeCommand;
+        this.commandNode = commandNode;
         this.remaining = remaining;
         this.source = source;
     }

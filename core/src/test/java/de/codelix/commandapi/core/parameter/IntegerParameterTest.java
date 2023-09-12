@@ -1,7 +1,6 @@
-package de.codelix.commandapi.core;
+package de.codelix.commandapi.core.parameter;
 
 import de.codelix.commandapi.core.exception.CommandParseException;
-import de.codelix.commandapi.core.parameter.IntegerParameter;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
 import de.codelix.commandapi.core.parser.StringReader;
 import org.junit.jupiter.api.Test;
