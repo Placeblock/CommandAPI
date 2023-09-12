@@ -1,4 +1,4 @@
-package de.codelix.commandapi.bridge;
+package de.codelix.commandapi.minecraft;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public class CommandSource<P, C> {
+public class MCCommandSource<P, C> {
     private final P player;
     private final C sender;
 

@@ -4,6 +4,8 @@ import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.core.tree.builder.LiteralTreeCommandBuilder;
 import de.codelix.commandapi.core.tree.builder.ParameterTreeCommandBuilder;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -23,13 +25,18 @@ public abstract class WaterfallCommandBridge<PL extends Plugin> extends Abstract
 
 
     @Override
-    public boolean hasPermission(ProxiedPlayer customPlayer, String permission) {
+    public boolean hasPermissionPlayer(ProxiedPlayer customPlayer, String permission) {
         return customPlayer.hasPermission(permission);
     }
 
     @Override
-    public void sendMessage(ProxiedPlayer customPlayer, TextComponent message) {
-        customPlayer.sendMessage();
+    public void sendMessagePlayer(ProxiedPlayer customPlayer, TextComponent message) {
+        customPlayer.sendMessage(BungeeComponentSerializer.get().serialize(message));
+    }
+
+    @Override
+    public void sendMessageConsole(CommandSender sender, TextComponent message) {
+        sender.sendMessage(BungeeComponentSerializer.get().serialize(message));
     }
 
     @Override
