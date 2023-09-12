@@ -28,6 +28,7 @@ public abstract class Command<S> {
     public static Logger LOGGER;
     public static CommandDesign DESIGN = new DefaultCommandDesign();
 
+    @SuppressWarnings("unused")
     public static void registerDefaultMessages(CommandDesign design) {
         design.register(QuotedStringRequiredException.class, e -> Component.text("Quoted String required for " + e.getTreeCommand().getName()));
         design.register(BooleanRequiredException.class, e -> Component.text("Boolean required for " + e.getTreeCommand().getName()));
@@ -42,6 +43,7 @@ public abstract class Command<S> {
         design.register(NumberTooBigException.class, e -> Component.text("Number " + e.getNumber() + " is too big for " + e.getTreeCommand().getName() + ". Maximum is " + e.getMax()));
         design.register(NumberTooSmallException.class, e -> Component.text("Number " + e.getNumber() + " is too small for " + e.getTreeCommand().getName() + ". Minimum is " + e.getMin()));
         design.register(EmptyGreedyException.class, e -> Component.text("Empty Greedy String is invalid for " + e.getTreeCommand().getName()));
+        design.register(NotEnoughDimensionsException.class, e -> Component.text("Not enough values provided for " + e.getTreeCommand().getName() + " (" + e.getProvided() + "/"+e.getDimensions()+")"));
     }
 
     static {
