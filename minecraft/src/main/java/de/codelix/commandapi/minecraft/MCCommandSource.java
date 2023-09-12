@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MCCommandSource<P, C> {
     private final P player;
-    private final C sender;
+    private final C console;
 
     public boolean isPlayer() {
         return player != null;

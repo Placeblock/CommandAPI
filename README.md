@@ -1,30 +1,33 @@
+<style>
+    :root {
+        --primary-color: #6ffcb6
+    }
+    h1 {
+        color: var(--primary-color);
+    }
+</style>
 # CommandAPI DOC >2.0.0
 
 Builds are availible at the mavenCentral Repository
 ```kotlin
-implementation("de.codelix.commandapi:core:2.2.2")
-implementation("de.codelix.commandapi:paper:2.2.2") //Paper-Bridge
-implementation("de.codelix.commandapi:waterfall:2.2.2") //Waterfall-Bridge
+implementation("de.codelix.commandapi:core:VERSION")
+implementation("de.codelix.commandapi:paper:VERSION") //Paper-Bridge
+implementation("de.codelix.commandapi:waterfall:VERSION") //Waterfall-Bridge
 ```
-<br>
+You can get the current version from [here](https://central.sonatype.com/search?q=de.codelix.commandapi)
+
+## Introduction
+
 Implementing commands in Spigot can be quite challenging. 
 As soon as they get more complex, things get complicated and unreadable quite fast.
 This is what CommandAPI tries to solve. The goal is to create a structured and safe way to 
 implement such commands and handle the execution of them.
 
-For easier understanding this documentation is split up into four parts:
-1. The CommandSource
-2. The parser
-3. Command creation
-4. Paper and Waterfall in detail
+## The CommandSource
 
-## 1. The CommandSource
+A command gets always executed by a human. This is the CommandSource.
 
-A command gets always executed by a human. This is the CommandSource. However, as many applications offer clients as well as
-an admin-panel the source is split up into the player and the sender (the admin-panel and yea I know it's not the right name). If the command gets executed by
-a client the sender is null, otherwise it's the other way around.
-
-## 2. The parser
+## The parser
 
 ### Why do we need the parser?
 
@@ -36,8 +39,8 @@ Before the parser can evaluate any string, you have to give the parser instructi
 in specific situations. These instructions are called the command-structure or command-tree and
  define, as the name already tells, the structure of the command.
 
-Here is an example of such a command-tree, however you can find the detailed documentation on how to
-implement them in 3. Command creation.
+Here is an example of such a command-tree. How you can implement them is described 
+in [Command Creation](#command-creation).
 
 /file save   ->   should safe the file<br>
 /file append [line]   -> should append a line to the file<br>
@@ -49,9 +52,9 @@ The purpose of the parser is to evaluate strings like:<br>
 
 This tree-structure is stored in the TreeCommand class. It contains its children TreeCommands, the permission
 required to access itself and the CommandExecutor, which is basically a lambda method, which is called when
-this specific TreeCommand should be executed.
+this specific TreeCommand is executed.
 
-### How the parser works
+### How the parser works (In detail)
 
 The parser evaluates the passed string from left to right. During the parsing process it gathers 
 information like parsed parameters, parsing errors and so on. All this information is stored in the
@@ -68,12 +71,41 @@ the cursor to right after the literal. Then it will try to parse the tree-struct
 over a literal, it will try to parse the literal. If there is a parameter, it will call the parse() method of the Parameter.
 
 
-## 3. Command creation
+## Command creation
 
-Everything starts with the Command class. You can extend this class, but in 3. Paper and Waterfall in detail 
+Everything starts with the Command class. You can extend this class, but in [Paper and Waterfall in detail](#paper-and-waterfall-in-detail) 
 we will discuss why there are better options. Weather you do it or not at some point you have to implement the generateCommand
 method which is called right after instantiating the command. There is one parameter, which is the base-literal treeCommandBuilder 
 you can build upon. At the end the complete tree-structure has to be returned for the command to work.
+
+<details>
+<summary>Example</summary>
+
+This example creates a simple command with two sub-commands "add" and "remove".
+Add has an enum parameter as a subcommand with no executor.
+Remove has an integer parameter as a subcommand and prints the passed amount into the console on execute.
+```java
+public class CommandExample extends Command {
+    //...
+    @Override
+    public LiteralTreeCommandBuilder<String> generateCommand(LiteralTreeCommandBuilder<String> builder) {
+        return builder
+            .then(
+                literal("add").then(
+                    parameter("material", enumparam(ExampleEnum.class, ExampleEnum.values()))
+                )
+            ).then(
+                literal("remove").then(
+                    parameter("amount", integer(0, 105))
+                        .run((context, source) ->
+                            System.out.println(context.getParsedParameter("amount"))))
+            );
+    }
+    //...
+}
+```
+</details>
+
 
 ### The tree structure
 
@@ -118,9 +150,21 @@ you cannot specify an error-message anymore. The old version of the CommandAPI u
 api-users couldn't set their own error-messages for already existing parameters. This is where the CommandDesign class flights directly into the screen. Every
 Command you create has a CommandDesign attribute. If you don't set it via the constructor, it will use the global CommandDesign in the static field Command.DESIGN.
 In this class you can register messages for specific exceptions. If the command throws an exception while parsing, it will get the according message
-from the CommandDesign.
+from the CommandDesign. 
 
-## 4. Paper and Waterfall in detail
+<span>By default there are no error-messages registered</span>. 
+<br>
+To register the default messages use 
+```java
+new DefaultMessages().register(design)
+```
+The Implementations are named after the package-name + DefaultMessages:
+- CoreDefaultMessages
+- PaperDefaultMessages
+
+By using registerDefaultMessages without providing a design it will register the messages directly to the global design.
+
+## Paper and Waterfall in detail
 
 ### How to work with Paper and Waterfall
 
@@ -139,7 +183,7 @@ However if you use these two you are forced to use the Paper Player or the Water
 
 In conclusion, you can say that if you just want to create very simple commands you just extend one of these classes.
 
-### Generics
+### The problem with generics
 
 If you instantiate the tree-structure as described in 2. you will see quite fast that it's really annoying
 to always specify the generics for the CommandSource. This is because Java's type-inferring does not work here.

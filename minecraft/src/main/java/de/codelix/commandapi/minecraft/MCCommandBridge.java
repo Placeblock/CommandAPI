@@ -9,13 +9,13 @@ import net.kyori.adventure.text.TextComponent;
 public interface MCCommandBridge<DP, P, C, S extends MCCommandSource<P, C>> {
     P getCustomPlayer(DP defaultPlayer);
     void sendMessagePlayer(P customPlayer, TextComponent message);
-    void sendMessageConsole(C sender, TextComponent message);
+    void sendMessageConsole(C console, TextComponent message);
     boolean hasPermissionPlayer(P customPlayer, String permission);
     default void sendMessage(S source, TextComponent message) {
         if (source.isPlayer()) {
             this.sendMessagePlayer(source.getPlayer(), message);
         } else {
-            this.sendMessageConsole(source.getSender(), message);
+            this.sendMessageConsole(source.getConsole(), message);
         }
     }
     default boolean hasPermission(S source, String permission) {

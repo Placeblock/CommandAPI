@@ -1,4 +1,4 @@
-package de.codelix.commandapi.core.messages;
+package de.codelix.commandapi.core.design;
 
 import de.codelix.commandapi.core.Command;
 import de.codelix.commandapi.core.exception.CommandParseException;

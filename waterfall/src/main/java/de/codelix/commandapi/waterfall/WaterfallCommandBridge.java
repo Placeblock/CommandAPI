@@ -35,8 +35,8 @@ public abstract class WaterfallCommandBridge<PL extends Plugin> extends Abstract
     }
 
     @Override
-    public void sendMessageConsole(CommandSender sender, TextComponent message) {
-        sender.sendMessage(BungeeComponentSerializer.get().serialize(message));
+    public void sendMessageConsole(CommandSender console, TextComponent message) {
+        console.sendMessage(BungeeComponentSerializer.get().serialize(message));
     }
 
     @Override
