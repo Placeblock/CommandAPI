@@ -47,8 +47,9 @@ public class DefaultCommandDesign extends CommandDesign {
 
     public TextComponent getHelpHeadline(Command<?> command) {
         return Component.text("---===[ ")
-            .append( command.getPrefix())
+            .append( Component.text(command.getBase().getName()) )
             .append( Component.text(" ]===---"))
+            .append( Component.newline())
             .color(this.primaryColor);
     }
 
