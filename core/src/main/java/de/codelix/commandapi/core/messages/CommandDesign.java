@@ -12,7 +12,7 @@ public abstract class CommandDesign {
     private final Map<Class<? extends CommandParseException>, Function<CommandParseException, TextComponent>> messages = new HashMap<>();
 
     public <T extends CommandParseException> void register(Class<T> clazz, Function<T, TextComponent> message) {
-        this.messages.put(clazz, ex -> message.apply(clazz.cast(message)));
+        this.messages.put(clazz, ex -> message.apply(clazz.cast(ex)));
     }
 
     public <T extends CommandParseException>  TextComponent getMessage(T exception) {
