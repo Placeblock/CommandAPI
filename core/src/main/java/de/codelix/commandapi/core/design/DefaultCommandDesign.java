@@ -28,12 +28,12 @@ public class DefaultCommandDesign extends CommandDesign {
 
     @Override
     public TextComponent getPrefix(Command<?> command) {
-        return Component.text(command.getBase().getName()).append(Component.text(" > ")).color(this.primaryColor);
+        return command.getBase().getDisplayName().append(Component.text(" » ")).color(this.primaryColor);
     }
 
     public TextComponent getHelpHeadline(Command<?> command) {
         return Component.text("---===[ ")
-            .append( Component.text(command.getBase().getName()) )
+            .append( command.getBase().getDisplayName() )
             .append( Component.text(" ]===---"))
             .append( Component.newline())
             .color(this.primaryColor);
@@ -43,7 +43,9 @@ public class DefaultCommandDesign extends CommandDesign {
         if (commandNode instanceof LiteralCommandNode<?>) {
             return Component.text(commandNode.getName()).color(this.inferiorColor);
         } else if (commandNode instanceof ParameterCommandNode<?, ?>) {
-            return Component.text("[" + commandNode.getName() + "]").color(this.inferiorColor);
+            return Component.text("[")
+                .append( commandNode.getDisplayName())
+                .append( Component.text("]")).color(this.inferiorColor);
         }
         return null;
     }

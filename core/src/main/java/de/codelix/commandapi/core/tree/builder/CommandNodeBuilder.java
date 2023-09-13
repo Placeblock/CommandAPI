@@ -19,6 +19,7 @@ import java.util.List;
 public abstract class CommandNodeBuilder<S, CT extends CommandNodeBuilder<S, CT>> {
 
     private final String name;
+    private TextComponent displayName;
     private final List<CommandNodeBuilder<S, ?>> children = new ArrayList<>();
     private CommandExecutor<S> run = null;
     private TextComponent description;
@@ -38,6 +39,11 @@ public abstract class CommandNodeBuilder<S, CT extends CommandNodeBuilder<S, CT>
 
     public CT withDescription(TextComponent description) {
         this.description = description;
+        return getThis();
+    }
+
+    public CT displayName(TextComponent displayName) {
+        this.displayName = displayName;
         return getThis();
     }
 

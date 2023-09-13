@@ -35,6 +35,7 @@ public class LiteralCommandNodeBuilder<S> extends CommandNodeBuilder<S, LiteralC
         return new LiteralCommandNode<>(
             command,
             this.getName(),
+            this.getDisplayName(),
             this.getChildren().stream().map(treeCommand -> treeCommand.build(command)).toList(),
             this.getDescription(),
             this.getPermission(),

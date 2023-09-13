@@ -29,6 +29,7 @@ public class ParameterCommandNodeBuilder<S, T> extends CommandNodeBuilder<S, Par
         return new ParameterCommandNode<>(
             command,
             this.getName(),
+            this.getDisplayName(),
             this.getChildren().stream().map(treeCommand -> treeCommand.build(command)).toList(),
             this.getDescription(),
             this.getPermission(),

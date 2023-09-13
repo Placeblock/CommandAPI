@@ -8,6 +8,7 @@ import de.codelix.commandapi.core.parser.ParsedCommandBranch;
 import de.codelix.commandapi.core.parser.StringReader;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public abstract class CommandNode<S> {
 
     private final Command<S> command;
     private final String name;
+    private final TextComponent displayName;
     private final List<CommandNode<S>> children;
     private final TextComponent description;
     private final String permission;
@@ -88,4 +90,11 @@ public abstract class CommandNode<S> {
     }
 
     public abstract List<String> getSuggestions(ParsedCommandBranch<S> command, S source);
+
+    public TextComponent getDisplayName() {
+        if (this.displayName == null) {
+            return Component.text(this.name);
+        }
+        return this.displayName;
+    }
 }
