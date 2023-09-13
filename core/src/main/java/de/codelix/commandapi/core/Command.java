@@ -70,7 +70,19 @@ public abstract class Command<S> {
     public abstract LiteralCommandNodeBuilder<S> generateCommand(LiteralCommandNodeBuilder<S> builder);
 
     public abstract boolean hasPermission(S source, String permission);
-    public abstract void sendMessage(S source, TextComponent message);
+
+    public void sendMessage(S source, TextComponent message) {
+        this.sendMessage(source, message, true);
+    }
+    public void sendMessage(S source, TextComponent message, boolean prefix) {
+        if (prefix && this.prefix != null) {
+            this.sendMessageRaw(source, this.prefix.append(message));
+        } else {
+            this.sendMessageRaw(source, message);
+        }
+    }
+
+    public abstract void sendMessageRaw(S source, TextComponent message);
 
     public void parseAndExecute(String text, S source) {
         List<ParsedCommandBranch<S>> parseResult = this.parse(text, source);
@@ -87,7 +99,7 @@ public abstract class Command<S> {
             this.executeRaw(result, source);
         } catch (CommandHelpException e) {
             TextComponent message = this.design.generateHelpMessage(this, source);
-            this.sendMessage(source, message);
+            this.sendMessage(source, message, false);
         } catch (CommandParseException e) {
             TextComponent message = this.design.getMessage(e);
             if (message == null) {
