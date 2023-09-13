@@ -20,9 +20,10 @@ import java.util.List;
 public class ParameterCommandNode<S, T> extends CommandNode<S> {
     private final Parameter<S, T> parameter;
 
-    public ParameterCommandNode(Command<S> command, String name, List<CommandNode<S>> children, TextComponent description,
+    public ParameterCommandNode(Command<S> command, String name, TextComponent displayName,
+                                List<CommandNode<S>> children, TextComponent description,
                                 String permission, CommandExecutor<S> run, Parameter<S, T> parameter) {
-        super(command, name, children, description, permission, run);
+        super(command, name, displayName, children, description, permission, run);
         this.parameter = parameter;
     }
 

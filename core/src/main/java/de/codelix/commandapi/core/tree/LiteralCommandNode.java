@@ -18,9 +18,10 @@ import java.util.List;
 public class LiteralCommandNode<S> extends CommandNode<S> {
     private final List<String> aliases;
 
-    public LiteralCommandNode(Command<S> command, String name, List<CommandNode<S>> children, TextComponent description,
+    public LiteralCommandNode(Command<S> command, String name, TextComponent displayName,
+                              List<CommandNode<S>> children, TextComponent description,
                               String permission, CommandExecutor<S>  run, List<String> aliases) {
-        super(command, name, children, description, permission, run);
+        super(command, name, displayName, children, description, permission, run);
         this.aliases = aliases;
     }
 
