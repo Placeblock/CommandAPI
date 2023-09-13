@@ -57,14 +57,18 @@ public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> exten
             }
 
             @Override
-            public void sendMessage(PaperCommandSource<P> source, TextComponent message) {
-                AbstractPaperCommandBridge.this.sendMessage(source, message);
+            public void sendMessageRaw(PaperCommandSource<P> source, TextComponent message) {
+                AbstractPaperCommandBridge.this.sendMessageSource(source, message);
             }
         };
         this.setPermission(this.command.getBase().getPermission());
         this.setAliases(this.command.getBase().getAliases());
     }
 
+    @Override
+    public void sendMessage(PaperCommandSource<P> source, TextComponent message) {
+        this.command.sendMessage(source, message);
+    }
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {

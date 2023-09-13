@@ -69,8 +69,8 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
             }
 
             @Override
-            public void sendMessage(WaterfallCommandSource<P> source, TextComponent message) {
-                AbstractWaterfallCommandBridge.this.sendMessage(source, message);
+            public void sendMessageRaw(WaterfallCommandSource<P> source, TextComponent message) {
+                AbstractWaterfallCommandBridge.this.sendMessageSource(source, message);
             }
         };
 
@@ -86,6 +86,11 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void sendMessage(WaterfallCommandSource<P> source, TextComponent message) {
+        this.command.sendMessage(source, message);
     }
 
     @Override

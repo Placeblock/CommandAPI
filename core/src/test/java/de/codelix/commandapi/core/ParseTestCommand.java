@@ -61,7 +61,7 @@ public class ParseTestCommand extends Command<String> {
     }
 
     @Override
-    public void sendMessage(String source, TextComponent message) {
+    public void sendMessageRaw(String source, TextComponent message) {
         System.out.println(message.content());
     }
 }
