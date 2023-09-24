@@ -77,7 +77,7 @@ public abstract class Command<S> {
     }
     public void sendMessage(S source, TextComponent message, boolean prefix) {
         if (prefix && this.prefix != null) {
-            message = this.prefix.append(Component.space().style(Style.empty())).append(message);
+            message = this.prefix.append(Component.empty().style(Style.empty())).append(message);
         }
         this.sendMessageRaw(source, message);
     }

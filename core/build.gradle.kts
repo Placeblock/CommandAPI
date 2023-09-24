@@ -4,7 +4,7 @@ plugins {
 }
 
 description = "API for an easier use of Commands"
-version = "2.2.7"
+version = "2.2.8"
 
 dependencies {
     compileOnly("net.kyori:adventure-api:4.14.0")
