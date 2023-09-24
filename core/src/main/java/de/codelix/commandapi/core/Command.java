@@ -11,6 +11,7 @@ import de.codelix.commandapi.core.parser.StringReader;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.Style;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,10 +77,9 @@ public abstract class Command<S> {
     }
     public void sendMessage(S source, TextComponent message, boolean prefix) {
         if (prefix && this.prefix != null) {
-            this.sendMessageRaw(source, this.prefix.append(message));
-        } else {
-            this.sendMessageRaw(source, message);
+            message = this.prefix.append(Component.space().style(Style.empty())).append(message);
         }
+        this.sendMessageRaw(source, message);
     }
 
     public abstract void sendMessageRaw(S source, TextComponent message);
