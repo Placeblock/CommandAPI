@@ -1,5 +1,6 @@
 package de.codelix.commandapi.waterfall;
 
+import de.codelix.commandapi.core.design.CommandDesign;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
 import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
 import de.codelix.commandapi.minecraft.MCCommandBridge;
@@ -21,9 +22,10 @@ import java.util.List;
  * Author: Placeblock
  */
 @SuppressWarnings("unused")
-public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> extends Command implements MCCommandBridge<ProxiedPlayer, P, CommandSender, WaterfallCommandSource<P>>, TabExecutor {
+public abstract class AbstractWaterfallCommandAdapter<PL extends Plugin, P> extends Command implements MCCommandBridge<ProxiedPlayer, P, CommandSender, WaterfallCommandSource<P>>, TabExecutor {
     @Getter
     private de.codelix.commandapi.core.Command<WaterfallCommandSource<P>> command;
+    private final CommandDesign design;
 
     @Getter
     private final PL plugin;
@@ -43,34 +45,51 @@ public abstract class AbstractWaterfallCommandBridge<PL extends Plugin, P> exten
         }
     }
 
-    public AbstractWaterfallCommandBridge(PL plugin, String label, boolean async) {
+    public AbstractWaterfallCommandAdapter(PL plugin, String label) {
+        this(plugin, label, true);
+    }
+
+    public AbstractWaterfallCommandAdapter(PL plugin, String label, CommandDesign design) {
+        this(plugin, label, true, design);
+    }
+
+    public AbstractWaterfallCommandAdapter(PL plugin, String label, boolean async) {
         this(plugin, label, async, true);
     }
 
-    public AbstractWaterfallCommandBridge(PL plugin, String label, boolean async, boolean autoInit) {
+    public AbstractWaterfallCommandAdapter(PL plugin, String label, boolean async, CommandDesign design) {
+        this(plugin, label, async, true, design);
+    }
+
+    public AbstractWaterfallCommandAdapter(PL plugin, String label, boolean async, boolean autoInit) {
+        this(plugin, label, async, autoInit, de.codelix.commandapi.core.Command.DESIGN);
+    }
+
+    public AbstractWaterfallCommandAdapter(PL plugin, String label, boolean async, boolean autoInit, CommandDesign design) {
         super(label);
         this.plugin = plugin;
         this.async = async;
+        this.design = design;
         if (autoInit) {
             this.init();
         }
     }
 
     public void init() {
-        this.command = new de.codelix.commandapi.core.Command<>(this.getName(), this.isAsync()) {
+        this.command = new de.codelix.commandapi.core.Command<>(this.getName(), this.isAsync(), this.design) {
             @Override
             public LiteralCommandNodeBuilder<WaterfallCommandSource<P>> generateCommand(LiteralCommandNodeBuilder<WaterfallCommandSource<P>> builder) {
-                return AbstractWaterfallCommandBridge.this.generateCommand(builder);
+                return AbstractWaterfallCommandAdapter.this.generateCommand(builder);
             }
 
             @Override
             public boolean hasPermission(WaterfallCommandSource<P> source, String permission) {
-                return AbstractWaterfallCommandBridge.this.hasPermission(source, permission);
+                return AbstractWaterfallCommandAdapter.this.hasPermission(source, permission);
             }
 
             @Override
             public void sendMessageRaw(WaterfallCommandSource<P> source, TextComponent message) {
-                AbstractWaterfallCommandBridge.this.sendMessageSource(source, message);
+                AbstractWaterfallCommandAdapter.this.sendMessageSource(source, message);
             }
         };
 

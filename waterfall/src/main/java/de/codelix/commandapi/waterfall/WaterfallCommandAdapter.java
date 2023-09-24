@@ -1,5 +1,6 @@
 package de.codelix.commandapi.waterfall;
 
+import de.codelix.commandapi.core.design.CommandDesign;
 import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
 import de.codelix.commandapi.core.tree.builder.ParameterCommandNodeBuilder;
@@ -13,14 +14,30 @@ import net.md_5.bungee.api.plugin.Plugin;
  * Author: Placeblock
  */
 @SuppressWarnings("unused")
-public abstract class WaterfallCommandBridge<PL extends Plugin> extends AbstractWaterfallCommandBridge<PL, ProxiedPlayer> {
+public abstract class WaterfallCommandAdapter<PL extends Plugin> extends AbstractWaterfallCommandAdapter<PL, ProxiedPlayer> {
 
-    public WaterfallCommandBridge(PL plugin, String label, boolean async) {
-        super(plugin, label, async);
+    public WaterfallCommandAdapter(PL plugin, String label) {
+        this(plugin, label, true);
     }
 
-    public WaterfallCommandBridge(PL plugin, String label, boolean async, boolean autoInit) {
-        super(plugin, label, async, autoInit);
+    public WaterfallCommandAdapter(PL plugin, String label, CommandDesign design) {
+        this(plugin, label, true, design);
+    }
+
+    public WaterfallCommandAdapter(PL plugin, String label, boolean async) {
+        this(plugin, label, async, true);
+    }
+
+    public WaterfallCommandAdapter(PL plugin, String label, boolean async, CommandDesign design) {
+        this(plugin, label, async, true, design);
+    }
+
+    public WaterfallCommandAdapter(PL plugin, String label, boolean async, boolean autoInit) {
+        this(plugin, label, async, autoInit, de.codelix.commandapi.core.Command.DESIGN);
+    }
+
+    public WaterfallCommandAdapter(PL plugin, String label, boolean async, boolean autoInit, CommandDesign design) {
+        super(plugin, label, async, autoInit, design);
     }
 
 

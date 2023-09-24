@@ -1,5 +1,6 @@
 package de.codelix.commandapi.paper;
 
+import de.codelix.commandapi.core.design.CommandDesign;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
 import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
 import de.codelix.commandapi.minecraft.MCCommandBridge;
@@ -22,43 +23,61 @@ import java.util.Map;
  * Author: Placeblock
  */
 @SuppressWarnings("unused")
-public abstract class AbstractPaperCommandBridge<PL extends JavaPlugin, P> extends Command implements MCCommandBridge<Player, P, CommandSender, PaperCommandSource<P>>, Listener {
+public abstract class AbstractPaperCommandAdapter<PL extends JavaPlugin, P> extends Command implements MCCommandBridge<Player, P, CommandSender, PaperCommandSource<P>>, Listener {
     @Getter
     private de.codelix.commandapi.core.Command<PaperCommandSource<P>> command;
+    private final CommandDesign design;
 
     @Getter
     private final PL plugin;
     @Getter
     private final boolean async;
 
-    public AbstractPaperCommandBridge(PL plugin, String label, boolean async) {
+    public AbstractPaperCommandAdapter(PL plugin, String label) {
+        this(plugin, label, true);
+    }
+
+    public AbstractPaperCommandAdapter(PL plugin, String label, CommandDesign design) {
+        this(plugin, label, true, design);
+    }
+
+    public AbstractPaperCommandAdapter(PL plugin, String label, boolean async) {
         this(plugin, label, async, true);
     }
 
-    public AbstractPaperCommandBridge(PL plugin, String label, boolean async, boolean autoInit) {
+    public AbstractPaperCommandAdapter(PL plugin, String label, boolean async, CommandDesign design) {
+        this(plugin, label, async, true, design);
+    }
+
+    public AbstractPaperCommandAdapter(PL plugin, String label, boolean async, boolean autoInit) {
+        this(plugin, label, async, autoInit, de.codelix.commandapi.core.Command.DESIGN);
+    }
+
+    public AbstractPaperCommandAdapter(PL plugin, String label, boolean async, boolean autoInit, CommandDesign design) {
         super(label);
         this.plugin = plugin;
         this.async = async;
+        this.design = design;
         if (autoInit) {
             this.init();
         }
     }
 
     public void init() {
-        this.command = new de.codelix.commandapi.core.Command<>(this.getLabel(), this.isAsync()) {
+        this.command = new de.codelix.commandapi.core.Command<>(this.getLabel(), this.isAsync(), this.design) {
             @Override
             public LiteralCommandNodeBuilder<PaperCommandSource<P>> generateCommand(LiteralCommandNodeBuilder<PaperCommandSource<P>> builder) {
-                return AbstractPaperCommandBridge.this.generateCommand(builder);
+                return AbstractPaperCommandAdapter.this.generateCommand(builder);
             }
 
             @Override
             public boolean hasPermission(PaperCommandSource<P> source, String permission) {
-                return AbstractPaperCommandBridge.this.hasPermission(source, permission);
+                return AbstractPaperCommandAdapter.this.hasPermission(source, permission);
             }
 
             @Override
             public void sendMessageRaw(PaperCommandSource<P> source, TextComponent message) {
-                AbstractPaperCommandBridge.this.sendMessageSource(source, message);
+                AbstractPaperCommandAdapter.this.sendMessageSource(source, message);
             }
         };
         this.setPermission(this.command.getBase().getPermission());

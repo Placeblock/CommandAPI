@@ -1,5 +1,6 @@
 package de.codelix.commandapi.paper;
 
+import de.codelix.commandapi.core.design.CommandDesign;
 import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
 import de.codelix.commandapi.core.tree.builder.ParameterCommandNodeBuilder;
@@ -12,13 +13,30 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Author: Placeblock
  */
 @SuppressWarnings("unused")
-public abstract class PaperCommandBridge<PL extends JavaPlugin> extends AbstractPaperCommandBridge<PL, Player> {
+public abstract class PaperCommandAdapter<PL extends JavaPlugin> extends AbstractPaperCommandAdapter<PL, Player> {
 
-    public PaperCommandBridge(PL plugin, String label, boolean async) {
-        super(plugin, label, async);
+    public PaperCommandAdapter(PL plugin, String label) {
+        this(plugin, label, true);
     }
-    public PaperCommandBridge(PL plugin, String label, boolean async, boolean autoInnit) {
-        super(plugin, label, async, autoInnit);
+
+    public PaperCommandAdapter(PL plugin, String label, CommandDesign design) {
+        this(plugin, label, true, design);
+    }
+
+    public PaperCommandAdapter(PL plugin, String label, boolean async) {
+        this(plugin, label, async, true);
+    }
+
+    public PaperCommandAdapter(PL plugin, String label, boolean async, CommandDesign design) {
+        this(plugin, label, async, true, design);
+    }
+
+    public PaperCommandAdapter(PL plugin, String label, boolean async, boolean autoInit) {
+        this(plugin, label, async, autoInit, de.codelix.commandapi.core.Command.DESIGN);
+    }
+
+    public PaperCommandAdapter(PL plugin, String label, boolean async, boolean autoInit, CommandDesign design) {
+        super(plugin, label, async, autoInit, design);
     }
 
     @Override
