@@ -2,17 +2,13 @@ package de.codelix.commandapi.minecraft;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.TextComponent;
 
 /**
  * Author: Placeblock
  */
-@Getter
-@RequiredArgsConstructor
-public class MCCommandSource<P, C> {
-    private final P player;
-    private final C console;
+public interface MCCommandSource {
 
-    public boolean isPlayer() {
-        return player != null;
-    }
+    void sendMessage(TextComponent message);
+
 }
