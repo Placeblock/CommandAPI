@@ -4,8 +4,10 @@ import de.codelix.commandapi.core.design.CommandDesign;
 import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
 import de.codelix.commandapi.core.tree.builder.ParameterCommandNodeBuilder;
+import de.codelix.commandapi.minecraft.MCCommandAudience;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -40,30 +42,20 @@ public abstract class PaperCommandAdapter<PL extends JavaPlugin> extends Abstrac
     }
 
     @Override
-    public boolean hasPermissionPlayer(Player player, String permission) {
-        return player.hasPermission(permission);
+    public boolean hasPermission(MCCommandAudience<Player> source, String permission) {
+        return source instanceof ConsoleCommandSender || source.getPlayer().hasPermission(permission);
     }
 
     @Override
-    public void sendMessagePlayer(Player player, TextComponent message) {
-        player.sendMessage(message);
+    public Player getCustomPlayer(MCCommandAudience<Player> source) {
+        return source.getPlayer();
     }
 
-    @Override
-    public void sendMessageConsole(CommandSender console, TextComponent message) {
-        console.sendMessage(message);
-    }
-
-    @Override
-    public Player getCustomPlayer(Player bukkitPlayer) {
-        return bukkitPlayer;
-    }
-
-    public static LiteralCommandNodeBuilder<PaperCommandSource<Player>> literal(final String name) {
+    public static LiteralCommandNodeBuilder<MCCommandAudience<Player>> literal(final String name) {
         return new LiteralCommandNodeBuilder<>(name);
     }
 
-    public static <T> ParameterCommandNodeBuilder<PaperCommandSource<Player>, T> parameter(final String name, Parameter<PaperCommandSource<Player>, T> parameter) {
+    public static <T> ParameterCommandNodeBuilder<MCCommandAudience<Player>, T> parameter(final String name, Parameter<MCCommandAudience<Player>, T> parameter) {
         return new ParameterCommandNodeBuilder<>(name, parameter);
     }
 }

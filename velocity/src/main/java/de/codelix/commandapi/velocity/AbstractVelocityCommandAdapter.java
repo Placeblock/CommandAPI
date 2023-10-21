@@ -2,19 +2,16 @@ package de.codelix.commandapi.velocity;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.RawCommand;
-import com.velocitypowered.api.proxy.ConsoleCommandSource;
-import com.velocitypowered.api.proxy.Player;
 import de.codelix.commandapi.core.Command;
 import de.codelix.commandapi.core.design.CommandDesign;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
+import de.codelix.commandapi.minecraft.MCCommandAudience;
 import de.codelix.commandapi.minecraft.MCCommandBridge;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.TextComponent;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class AbstractVelocityCommandAdapter<P> extends Command<CommandSource> implements RawCommand, MCCommandBridge<Player, P, ConsoleCommandSource, CommandSource>  {
+public abstract class AbstractVelocityCommandAdapter<P> extends Command<MCCommandAudience<P>> implements RawCommand, MCCommandBridge<P, MCCommandAudience<P>>  {
 
     public AbstractVelocityCommandAdapter(String label, boolean async, CommandDesign commandDesign) {
         super(label, async, commandDesign);
@@ -22,28 +19,24 @@ public abstract class AbstractVelocityCommandAdapter<P> extends Command<CommandS
 
     @Override
     public void execute(Invocation invocation) {
-        Audience.audience(invocation.source());
-        invocation.source()
-        this.parseAndExecute(invocation.alias() + invocation.arguments(), invocation.source());
+        MCCommandAudience<P> commandAudience = new MCCommandAudience<>(invocation.source(), this.getPrefix());
+        this.parseAndExecute(invocation.alias() + invocation.arguments(), commandAudience);
     }
 
     @Override
     public List<String> suggest(Invocation invocation) {
-        List<ParsedCommandBranch<CommandSource>> parsed = this.parse(invocation.alias() + invocation.arguments(), invocation.source());
-        return this.getSuggestions(parsed, invocation.source());
+        MCCommandAudience<P> commandAudience = new MCCommandAudience<>(invocation.source(), this.getPrefix());
+        List<ParsedCommandBranch<MCCommandAudience<P>>> parsed = this.parse(invocation.alias() + invocation.arguments(), commandAudience);
+        return this.getSuggestions(parsed, commandAudience);
     }
 
     @Override
     public CompletableFuture<List<String>> suggestAsync(Invocation invocation) {
-        List<ParsedCommandBranch<CommandSource>> parsed = this.parse(invocation.alias() + invocation.arguments(), invocation.source());
+        MCCommandAudience<P> commandAudience = new MCCommandAudience<>(invocation.source(), this.getPrefix());
+        List<ParsedCommandBranch<MCCommandAudience<P>>> parsed = this.parse(invocation.alias() + invocation.arguments(), commandAudience);
         CompletableFuture<List<String>> completableFuture = new CompletableFuture<>();
-        completableFuture.complete(this.getSuggestions(parsed, invocation.source()));
+        completableFuture.complete(this.getSuggestions(parsed, commandAudience));
         return completableFuture;
-    }
-
-    @Override
-    public boolean hasPermission(Invocation invocation) {
-        return this.hasPermission(invocation.source());
     }
 
     @Override
@@ -59,20 +52,5 @@ public abstract class AbstractVelocityCommandAdapter<P> extends Command<CommandS
     @Override
     public void unregister() {
 
-    }
-
-    @Override
-    public void sendMessage(CommandSource source, TextComponent message) {
-        source.sendMessage(message);
-    }
-
-    @Override
-    public boolean hasPermissionPlayer(P customPlayer, String permission) {
-        return false;
-    }
-
-    @Override
-    public boolean hasPermission(CommandSource source, String permission) {
-        return source.hasPermission(permission);
     }
 }

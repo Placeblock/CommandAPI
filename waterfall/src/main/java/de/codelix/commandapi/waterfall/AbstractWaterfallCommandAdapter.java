@@ -22,7 +22,7 @@ import java.util.List;
  * Author: Placeblock
  */
 @SuppressWarnings("unused")
-public abstract class AbstractWaterfallCommandAdapter<PL extends Plugin, P> extends Command implements MCCommandBridge<ProxiedPlayer, P, CommandSender, WaterfallCommandSource<P>>, TabExecutor {
+public abstract class AbstractWaterfallCommandAdapter<PL extends Plugin, P> extends Command implements MCCommandBridge<P, WaterfallCommandSource<P>>, TabExecutor {
     @Getter
     private de.codelix.commandapi.core.Command<WaterfallCommandSource<P>> command;
     private final CommandDesign design;

@@ -11,7 +11,6 @@ import de.codelix.commandapi.core.parser.StringReader;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.Style;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,17 +70,7 @@ public abstract class Command<S> {
     public abstract LiteralCommandNodeBuilder<S> generateCommand(LiteralCommandNodeBuilder<S> builder);
 
     public abstract boolean hasPermission(S source, String permission);
-
-    public void sendMessage(S source, TextComponent message) {
-        this.sendMessage(source, message, true);
-    }
-    public void sendMessage(S source, TextComponent message, boolean prefix) {
-        if (prefix && this.prefix != null) {
-            message = this.prefix.append(Component.empty().style(Style.empty())).append(message);
-        }
-        this.sendMessageRaw(source, message);
-    }
-
+    public abstract void sendMessage(S source, TextComponent message);
     public abstract void sendMessageRaw(S source, TextComponent message);
 
     public void parseAndExecute(String text, S source) {
@@ -99,7 +88,7 @@ public abstract class Command<S> {
             this.executeRaw(result, source);
         } catch (CommandHelpException e) {
             TextComponent message = this.design.generateHelpMessage(this, source);
-            this.sendMessage(source, message, false);
+            this.sendMessageRaw(source, message);
         } catch (CommandParseException e) {
             TextComponent message = this.design.getMessage(e);
             if (message == null) {
