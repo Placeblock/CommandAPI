@@ -12,11 +12,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
-import org.bukkit.craftbukkit.v1_20_R2.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -131,7 +131,11 @@ public abstract class AbstractPaperCommandAdapter<PL extends JavaPlugin, P> exte
         Server server = this.plugin.getServer();
         CommandMap commandMap = server.getCommandMap();
         commandMap.register(this.getLabel(), "commandapi", this);
-        ((CraftServer) server).syncCommands();
+        try {
+            server.getClass().getMethod("syncCommands").invoke(server);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

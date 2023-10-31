@@ -3,7 +3,7 @@ plugins {
     id("signing")
 }
 
-version = "3.0.1"
+version = "3.0.2"
 
 repositories {
     maven {
@@ -14,7 +14,6 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
-    compileOnly("org.spigotmc:spigot:1.20.2-R0.1-SNAPSHOT")
     compileOnly(project(":core"))
     implementation(project(":minecraft"))
 }
