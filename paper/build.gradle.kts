@@ -3,7 +3,7 @@ plugins {
     id("signing")
 }
 
-version = "3.0.2"
+version = "3.0.3"
 
 repositories {
     maven {

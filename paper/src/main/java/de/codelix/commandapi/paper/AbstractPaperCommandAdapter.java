@@ -131,11 +131,7 @@ public abstract class AbstractPaperCommandAdapter<PL extends JavaPlugin, P> exte
         Server server = this.plugin.getServer();
         CommandMap commandMap = server.getCommandMap();
         commandMap.register(this.getLabel(), "commandapi", this);
-        try {
-            server.getClass().getMethod("syncCommands").invoke(server);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        this.sync();
     }
 
     @Override
@@ -145,5 +141,15 @@ public abstract class AbstractPaperCommandAdapter<PL extends JavaPlugin, P> exte
         Map<String, Command> knownCommands = commandMap.getKnownCommands();
         knownCommands.remove("commandapi:" + this.getLabel());
         knownCommands.remove(this.getLabel());
+        this.sync();
+    }
+
+    private void sync() {
+        Server server = this.plugin.getServer();
+        try {
+            server.getClass().getMethod("syncCommands").invoke(server);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
