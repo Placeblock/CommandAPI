@@ -10,6 +10,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import sun.misc.Unsafe;
 
@@ -142,11 +143,13 @@ public abstract class AbstractWaterfallCommandAdapter<PL extends Plugin, P> exte
 
     @Override
     public void register() {
-        this.plugin.getProxy().getPluginManager().registerCommand(this.plugin, this);
+        PluginManager pluginManager = this.plugin.getProxy().getPluginManager();
+        pluginManager.registerCommand(this.plugin, this);
     }
 
     @Override
     public void unregister() {
-        this.plugin.getProxy().getPluginManager().unregisterCommand(this);
+        PluginManager pluginManager = this.plugin.getProxy().getPluginManager();
+        pluginManager.unregisterCommand(this);
     }
 }

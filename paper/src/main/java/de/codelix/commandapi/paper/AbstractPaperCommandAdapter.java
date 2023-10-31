@@ -7,12 +7,13 @@ import de.codelix.commandapi.minecraft.MCCommandBridge;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.defaults.BukkitCommand;
+import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +24,7 @@ import java.util.Map;
  * Author: Placeblock
  */
 @SuppressWarnings("unused")
-public abstract class AbstractPaperCommandAdapter<PL extends JavaPlugin, P> extends Command implements MCCommandBridge<Player, P, CommandSender, PaperCommandSource<P>>, Listener {
+public abstract class AbstractPaperCommandAdapter<PL extends JavaPlugin, P> extends BukkitCommand implements MCCommandBridge<Player, P, CommandSender, PaperCommandSource<P>> {
     @Getter
     private de.codelix.commandapi.core.Command<PaperCommandSource<P>> command;
     private final CommandDesign design;
@@ -127,13 +128,14 @@ public abstract class AbstractPaperCommandAdapter<PL extends JavaPlugin, P> exte
 
     @Override
     public void register() {
-        this.plugin.getServer().getCommandMap().register(this.getLabel(), "commandapi", this);
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+        Server server = this.plugin.getServer();
+        CommandMap commandMap = server.getCommandMap();
+        commandMap.register(this.getLabel(), "commandapi", this);
+        ((CraftServer) server).syncCommands();
     }
 
     @Override
     public void unregister() {
-        HandlerList.unregisterAll(this);
         CommandMap commandMap = this.plugin.getServer().getCommandMap();
         this.unregister(commandMap);
         Map<String, Command> knownCommands = commandMap.getKnownCommands();
