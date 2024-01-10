@@ -19,6 +19,7 @@ tasks {
     compileJava {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
         options.release.set(17)
+        options.compilerArgs.add("-parameters")
     }
     processResources {
         filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything

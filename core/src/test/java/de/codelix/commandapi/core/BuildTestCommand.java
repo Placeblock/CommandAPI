@@ -1,6 +1,7 @@
 package de.codelix.commandapi.core;
 
 import de.codelix.commandapi.core.parameter.Parameter;
+import de.codelix.commandapi.core.tree.Parameter;
 import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
 import de.codelix.commandapi.core.tree.builder.ParameterCommandNodeBuilder;
 import net.kyori.adventure.text.TextComponent;

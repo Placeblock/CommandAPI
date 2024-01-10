@@ -15,8 +15,8 @@ public class ParseTest {
     public void testParse() {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "TestPlayer";
-        List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse remove 22  ", source);
-        ParsedCommandBranch<String> result = Command.getBestResult(results);
+        List<Branch<String>> results = parseTestCommand.parse("testcommandparse remove 22  ", source);
+        Branch<String> result = Command.getBestResult(results);
         assert result.getReader().getCursor() == 26;
         assert result.getBranch().size() != 0;
         assert result.getLastParsedTreeCommand() instanceof ParameterCommandNode<?,?>;
@@ -31,7 +31,7 @@ public class ParseTest {
     public void testSuggestions() {
         ParseTestCommand parseTestCommand = new ParseTestCommand();
         String source = "TestPlayer";
-        List<ParsedCommandBranch<String>> results = parseTestCommand.parse("testcommandparse remove", source);
+        List<Branch<String>> results = parseTestCommand.parse("testcommandparse remove", source);
         List<String> suggestions = parseTestCommand.getSuggestions(results, source);
         assert suggestions.isEmpty();
         results = parseTestCommand.parse("testcommandparse remove  ", source);
