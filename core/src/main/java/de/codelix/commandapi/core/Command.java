@@ -1,5 +1,6 @@
 package de.codelix.commandapi.core;
 
+import de.codelix.commandapi.core.design.CoreDefaultMessages;
 import de.codelix.commandapi.core.exception.*;
 import de.codelix.commandapi.core.design.CommandDesign;
 import de.codelix.commandapi.core.design.DefaultCommandDesign;
@@ -32,6 +33,7 @@ public abstract class Command<S> {
     static {
         LOGGER = Logger.getLogger("commandapi");
         LOGGER.setLevel(Level.WARNING);
+        new CoreDefaultMessages().register();
     }
 
     private final LiteralCommandNode<S> base;

@@ -34,6 +34,10 @@ public abstract class AbstractPaperCommandAdapter<PL extends JavaPlugin, P> exte
     @Getter
     private final boolean async;
 
+    static {
+        new PaperDefaultMessages().register();
+    }
+
     public AbstractPaperCommandAdapter(PL plugin, String label) {
         this(plugin, label, true);
     }
