@@ -1,13 +1,11 @@
 package de.codelix.commandapi.minecraft;
 
 import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.TextComponent;
 
 /**
  * Author: Placeblock
  */
-public interface MCCommandBridge<P, S> {
+public interface MinecraftCommandBridge<P, S> {
     P getCustomPlayer(S source);
     LiteralCommandNodeBuilder<S> generateCommand(LiteralCommandNodeBuilder<S> builder);
     void init();

@@ -4,9 +4,7 @@ import de.codelix.commandapi.core.design.CommandDesign;
 import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
 import de.codelix.commandapi.core.tree.builder.ParameterCommandNodeBuilder;
-import de.codelix.commandapi.minecraft.MCCommandAudience;
-import net.kyori.adventure.text.TextComponent;
-import org.bukkit.command.CommandSender;
+import de.codelix.commandapi.minecraft.MinecraftCommandAudience;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -42,20 +40,20 @@ public abstract class PaperCommandAdapter<PL extends JavaPlugin> extends Abstrac
     }
 
     @Override
-    public boolean hasPermission(MCCommandAudience<Player> source, String permission) {
+    public boolean hasPermission(MinecraftCommandAudience<Player> source, String permission) {
         return source instanceof ConsoleCommandSender || source.getPlayer().hasPermission(permission);
     }
 
     @Override
-    public Player getCustomPlayer(MCCommandAudience<Player> source) {
+    public Player getCustomPlayer(MinecraftCommandAudience<Player> source) {
         return source.getPlayer();
     }
 
-    public static LiteralCommandNodeBuilder<MCCommandAudience<Player>> literal(final String name) {
+    public static LiteralCommandNodeBuilder<MinecraftCommandAudience<Player>> literal(final String name) {
         return new LiteralCommandNodeBuilder<>(name);
     }
 
-    public static <T> ParameterCommandNodeBuilder<MCCommandAudience<Player>, T> parameter(final String name, Parameter<MCCommandAudience<Player>, T> parameter) {
+    public static <T> ParameterCommandNodeBuilder<MinecraftCommandAudience<Player>, T> parameter(final String name, Parameter<MinecraftCommandAudience<Player>, T> parameter) {
         return new ParameterCommandNodeBuilder<>(name, parameter);
     }
 }

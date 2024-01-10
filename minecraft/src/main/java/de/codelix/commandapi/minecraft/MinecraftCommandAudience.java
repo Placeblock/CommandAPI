@@ -3,8 +3,8 @@ package de.codelix.commandapi.minecraft;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.TextComponent;
 
-public class MCCommandAudience<P> extends CommandAudience {
-    public MCCommandAudience(Audience sourceAudience, TextComponent prefix) {
+public class MinecraftCommandAudience<P extends Audience> extends CommandAudience {
+    public MinecraftCommandAudience(Audience sourceAudience, TextComponent prefix) {
         super(sourceAudience, prefix);
     }
 

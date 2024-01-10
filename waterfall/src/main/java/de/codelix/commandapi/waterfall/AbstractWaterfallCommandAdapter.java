@@ -3,13 +3,14 @@ package de.codelix.commandapi.waterfall;
 import de.codelix.commandapi.core.design.CommandDesign;
 import de.codelix.commandapi.core.parser.ParsedCommandBranch;
 import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
-import de.codelix.commandapi.minecraft.MCCommandBridge;
+import de.codelix.commandapi.minecraft.MinecraftCommandBridge;
 import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import sun.misc.Unsafe;
 
@@ -22,7 +23,7 @@ import java.util.List;
  * Author: Placeblock
  */
 @SuppressWarnings("unused")
-public abstract class AbstractWaterfallCommandAdapter<PL extends Plugin, P> extends Command implements MCCommandBridge<P, WaterfallCommandSource<P>>, TabExecutor {
+public abstract class AbstractWaterfallCommandAdapter<PL extends Plugin, P> extends Command implements MinecraftCommandBridge<P, WaterfallCommandSource<P>>, TabExecutor {
     @Getter
     private de.codelix.commandapi.core.Command<WaterfallCommandSource<P>> command;
     private final CommandDesign design;
@@ -142,11 +143,13 @@ public abstract class AbstractWaterfallCommandAdapter<PL extends Plugin, P> exte
 
     @Override
     public void register() {
-        this.plugin.getProxy().getPluginManager().registerCommand(this.plugin, this);
+        PluginManager pluginManager = this.plugin.getProxy().getPluginManager();
+        pluginManager.registerCommand(this.plugin, this);
     }
 
     @Override
     public void unregister() {
-        this.plugin.getProxy().getPluginManager().unregisterCommand(this);
+        PluginManager pluginManager = this.plugin.getProxy().getPluginManager();
+        pluginManager.unregisterCommand(this);
     }
 }

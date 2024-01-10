@@ -3,16 +3,17 @@ plugins {
     id("signing")
 }
 
-version = "3.0.0"
+version = "3.0.3"
 
 repositories {
     maven {
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
+    mavenLocal()
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
     compileOnly(project(":core"))
     implementation(project(":minecraft"))
 }
