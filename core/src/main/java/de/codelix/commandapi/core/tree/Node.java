@@ -1,8 +1,12 @@
 package de.codelix.commandapi.core.tree;
 
-import de.codelix.commandapi.core.Branch;
+import de.codelix.commandapi.core.parser.ParseContext;
+import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.Permission;
+import de.codelix.commandapi.core.exception.SyntaxException;
+import de.codelix.commandapi.core.run.RunConsumer;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -22,18 +26,21 @@ public interface Node {
      */
     String getDisplayName();
 
+    boolean isOptional();
+
+    Collection<RunConsumer> getRunConsumers();
+
     /**
      * Parses this node into a branch
-     * @param branch The branch
+     * @param parsedCommand The branch
      */
-    void parse(Branch branch);
+    void parse(ParseContext ctx, ParsedCommand parsedCommand) throws SyntaxException;
 
     /**
      * Parses this node recursive. It tries to parse everything it can and creates a new branch for every children
-     * @param branch The current branch
-     * @return All branches that were created while parsing
+     * @param parsedCommand The current branch
      */
-    List<Branch> parseRecursive(Branch branch);
+    void parseRecursive(ParseContext ctx, ParsedCommand parsedCommand) throws SyntaxException;
 
     /**
      * The permission that is required to access that Node

@@ -1,56 +1,72 @@
 package de.codelix.commandapi.core;
 
-import de.codelix.commandapi.core.parser.ParsedCommandBranch;
-import de.codelix.commandapi.core.tree.ParameterCommandNode;
+import de.codelix.commandapi.core.exception.SyntaxException;
+import de.codelix.commandapi.core.parameter.impl.WordParameter;
+import de.codelix.commandapi.core.parser.Param;
+import de.codelix.commandapi.core.parser.ParseContext;
+import de.codelix.commandapi.core.parser.ParsedCommand;
+import de.codelix.commandapi.core.run.RunConsumer;
+import de.codelix.commandapi.core.tree.Node;
+import de.codelix.commandapi.core.tree.builder.AttributeBuilder;
+import de.codelix.commandapi.core.tree.builder.LiteralBuilder;
+import de.codelix.commandapi.core.tree.impl.LiteralImpl;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Author: Placeblock
- */
 public class ParseTest {
 
     @Test
-    public void testParse() {
-        ParseTestCommand parseTestCommand = new ParseTestCommand();
-        String source = "TestPlayer";
-        List<Branch<String>> results = parseTestCommand.parse("testcommandparse remove 22  ", source);
-        Branch<String> result = Command.getBestResult(results);
-        assert result.getReader().getCursor() == 26;
-        assert result.getBranch().size() != 0;
-        assert result.getLastParsedTreeCommand() instanceof ParameterCommandNode<?,?>;
-        results = parseTestCommand.parse("testcommandparse", source);
-        result = Command.getBestResult(results);
-        assert result.getReader().getCursor() == 16;
-        assert result.getBranch().size() == 1;
-        assert result.getLastParsedTreeCommand() != null;
+    public void testParse() throws SyntaxException, InvocationTargetException, IllegalAccessException {
+        LiteralBuilder b = new LiteralBuilder("felix");
+        b.then(new LiteralBuilder("kann", "kanns")
+            .then(new LiteralBuilder("nicht")
+                .optional()
+                .then(new LiteralBuilder("essen")
+                )
+            )
+            .then(new LiteralBuilder("nichta")
+                .then(new LiteralBuilder("essen2")
+                )
+            )
+            .then(new AttributeBuilder<>("name", new WordParameter())
+                .run((@Param("name") String playerName) -> {
+                    System.out.println(playerName + " xD xD");
+                })
+            )
+        );
+        LiteralImpl literal = b.build();
+        ParsedCommand cmd = new ParsedCommand();
+        LinkedList<String> input = new LinkedList<>(List.of("felix", "kanns", "awdawd"));
+        ParseContext ctx = new ParseContext(input);
+        literal.parseRecursive(ctx, cmd);
+        for (RunConsumer runConsumer : cmd.getNodes().get(cmd.getNodes().size() - 1).getRunConsumers()) {
+            Method lambdaMethod = runConsumer.method();
+            this.invokeWithParameters(cmd, runConsumer, lambdaMethod);
+        }
+        System.out.println(cmd.getParameter("name"));
     }
 
-    @Test
-    public void testSuggestions() {
-        ParseTestCommand parseTestCommand = new ParseTestCommand();
-        String source = "TestPlayer";
-        List<Branch<String>> results = parseTestCommand.parse("testcommandparse remove", source);
-        List<String> suggestions = parseTestCommand.getSuggestions(results, source);
-        assert suggestions.isEmpty();
-        results = parseTestCommand.parse("testcommandparse remove  ", source);
-        assert parseTestCommand.getSuggestions(results, source).isEmpty();
-        results = parseTestCommand.parse("testcommandparse add awd", source);
-        assert parseTestCommand.getSuggestions(results, source).isEmpty();
-        results = parseTestCommand.parse("testcommandparse remove awd", source);
-        assert parseTestCommand.getSuggestions(results, source).isEmpty();
-        results = parseTestCommand.parse("testcommandparse remove ", source);
-        assert parseTestCommand.getSuggestions(results, source).contains("0");
-        results = parseTestCommand.parse("testcommandparse rem", source);
-        assert parseTestCommand.getSuggestions(results, source).contains("remove");
-        results = parseTestCommand.parse("testcommandparse ", source);
-        assert parseTestCommand.getSuggestions(results, source).containsAll(List.of("remove", "add"));
-        results = parseTestCommand.parse("testcommandparse", source);
-        assert parseTestCommand.getSuggestions(results, source).isEmpty();
-        results = parseTestCommand.parse("testcommandparse remove 10", source);
-        suggestions = parseTestCommand.getSuggestions(results, source);
-        assert suggestions.contains("100") && !suggestions.contains("106");
+
+
+    public void invokeWithParameters(ParsedCommand cmd, Object obj, Method method) throws InvocationTargetException, IllegalAccessException {
+        java.lang.reflect.Parameter[] parameters = method.getParameters();
+        Object[] params = new Object[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            java.lang.reflect.Parameter parameter = parameters[i];
+            Param annotation = parameter.getAnnotation(Param.class);
+            if (annotation != null) {
+                String name = annotation.value();
+                params[i] = cmd.getParameter(name);
+            } else {
+                params[i] = null;
+            }
+        }
+        method.invoke(obj, params);
     }
 
 }

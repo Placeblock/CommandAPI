@@ -4,16 +4,7 @@ plugins {
 }
 
 description = "API for an easier use of Commands"
-version = "2.2.8"
-
-dependencies {
-    compileOnly("net.kyori:adventure-api:4.14.0")
-    testImplementation("net.kyori:adventure-api:4.14.0")
-
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
+version = "3.0.0"
 
 tasks {
     compileJava {
@@ -23,9 +14,6 @@ tasks {
     }
     processResources {
         filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything
-    }
-    test {
-        useJUnitPlatform()
     }
     javadoc {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
