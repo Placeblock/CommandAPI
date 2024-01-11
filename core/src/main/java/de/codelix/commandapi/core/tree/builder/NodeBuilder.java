@@ -41,31 +41,6 @@ public abstract class NodeBuilder<B extends NodeBuilder<B, R>, R extends Node> {
         return this.getThis();
     }
 
-    public B run(RunConsumer2<?, ?> runConsumer) {
-        this.runConsumers.add(runConsumer);
-        return this.getThis();
-    }
-
-    public B run(RunConsumer3<?, ?, ?> runConsumer) {
-        this.runConsumers.add(runConsumer);
-        return this.getThis();
-    }
-
-    public B run(RunConsumer4<?, ?, ?, ?> runConsumer) {
-        this.runConsumers.add(runConsumer);
-        return this.getThis();
-    }
-
-    public B run(RunConsumer5<?, ?, ?, ?, ?> runConsumer) {
-        this.runConsumers.add(runConsumer);
-        return this.getThis();
-    }
-
-    public B run(RunConsumer6<?, ?, ?, ?, ?, ?> runConsumer) {
-        this.runConsumers.add(runConsumer);
-        return this.getThis();
-    }
-
     protected List<Node> buildChildren() {
         List<Node> children = new ArrayList<>();
         for (NodeBuilder<?, ?> child : this.children) {

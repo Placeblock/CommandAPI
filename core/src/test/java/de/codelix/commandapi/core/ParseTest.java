@@ -6,7 +6,6 @@ import de.codelix.commandapi.core.parser.Param;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.run.RunConsumer;
-import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.core.tree.builder.AttributeBuilder;
 import de.codelix.commandapi.core.tree.builder.LiteralBuilder;
 import de.codelix.commandapi.core.tree.impl.LiteralImpl;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,8 +32,8 @@ public class ParseTest {
                 )
             )
             .then(new AttributeBuilder<>("name", new WordParameter())
-                .run((@Param("name") String playerName) -> {
-                    System.out.println(playerName + " xD xD");
+                .run((@Param("name") String lololol) -> {
+                    System.out.println(lololol);
                 })
             )
         );
@@ -48,7 +46,6 @@ public class ParseTest {
             Method lambdaMethod = runConsumer.method();
             this.invokeWithParameters(cmd, runConsumer, lambdaMethod);
         }
-        System.out.println(cmd.getParameter("name"));
     }
 
 
@@ -59,6 +56,7 @@ public class ParseTest {
         for (int i = 0; i < parameters.length; i++) {
             java.lang.reflect.Parameter parameter = parameters[i];
             Param annotation = parameter.getAnnotation(Param.class);
+            System.out.println(parameter.getName());
             if (annotation != null) {
                 String name = annotation.value();
                 params[i] = cmd.getParameter(name);
