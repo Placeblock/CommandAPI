@@ -13,12 +13,12 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class CoreArgument<T> implements ArgumentImpl<T> {
+public class CoreArgument<T, S> implements ArgumentImpl<T, S> {
     private final String name;
-    private final Parameter<T> parameter;
+    private final Parameter<T, S> parameter;
     private final String displayName;
-    private final List<Node> children;
+    private final List<Node<S>> children;
     private final Permission permission;
     private final boolean optional;
-    private final Collection<RunConsumer> runConsumers;
+    private final Collection<RunConsumer<S>> runConsumers;
 }

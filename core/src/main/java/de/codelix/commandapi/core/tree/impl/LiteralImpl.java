@@ -13,9 +13,9 @@ import lombok.Getter;
 import java.util.Collection;
 import java.util.List;
 
-public interface LiteralImpl extends NodeImpl, Literal {
+public interface LiteralImpl<S> extends NodeImpl<S>, Literal<S> {
     @Override
-    default void parse(ParseContext ctx, ParsedCommand parsedCommand) throws SyntaxException {
+    default void parse(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws SyntaxException {
         String next = ctx.getInput().poll();
         if (next == null) throw new EOLSyntaxException();
         if (!this.getNames().contains(next)) {

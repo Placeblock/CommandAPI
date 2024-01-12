@@ -6,7 +6,7 @@ import de.codelix.commandapi.core.parameter.Parameter;
  * An argument is a node that can parse any value. How and if it is parsed is specified by the parameter
  * @param <T>
  */
-public interface Argument<T> extends Node {
+public interface Argument<T, S> extends Node<S> {
 
     /**
      * The name of the argument to access it later
@@ -18,6 +18,6 @@ public interface Argument<T> extends Node {
      * The parameter that parses the argument
      * @return The parameter
      */
-    Parameter<T> getParameter();
+    Parameter<T, S> getParameter();
 
 }

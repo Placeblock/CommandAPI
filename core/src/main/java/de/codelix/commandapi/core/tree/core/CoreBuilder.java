@@ -5,14 +5,14 @@ import de.codelix.commandapi.core.tree.builder.ArgumentBuilder;
 import de.codelix.commandapi.core.tree.builder.Builder;
 import de.codelix.commandapi.core.tree.builder.LiteralBuilder;
 
-public class CoreBuilder implements Builder {
+public class CoreBuilder<S> implements Builder<CoreLiteralBuilder<S>, CoreArgumentBuilder<?, S>, S> {
     @Override
-    public LiteralBuilder literal(String name, String... aliases) {
-        return new LiteralBuilder(name, aliases);
+    public CoreLiteralBuilder<S> literal(String name, String... aliases) {
+        return new CoreLiteralBuilder<>(name, aliases);
     }
 
     @Override
-    public <T> ArgumentBuilder<T> argument(String name, Parameter<T> parameter) {
-        return new ArgumentBuilder<>(name, parameter);
+    public <T> CoreArgumentBuilder<T, S> argument(String name, Parameter<T, S> parameter) {
+        return new CoreArgumentBuilder<>(name, parameter);
     }
 }

@@ -13,9 +13,9 @@ import lombok.Getter;
 import java.util.Collection;
 import java.util.List;
 
-public interface ArgumentImpl<T> extends NodeImpl, Argument<T> {
+public interface ArgumentImpl<T, S> extends NodeImpl<S>, Argument<T, S> {
     @Override
-    default void parse(ParseContext ctx, ParsedCommand cmd) throws SyntaxException {
+    default void parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws SyntaxException {
         T value = this.getParameter().parse(ctx, cmd);
         cmd.storeArgument(this, value);
     }

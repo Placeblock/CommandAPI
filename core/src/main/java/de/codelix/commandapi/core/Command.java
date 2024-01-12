@@ -10,18 +10,18 @@ import java.util.List;
 
 public interface Command<S> {
 
-    Node getRootNode();
+    Node<S> getRootNode();
 
-    default ParsedCommand execute(List<String> input, S source) throws SyntaxException {
-        ParseContext ctx = this.createParseContext(input);
-        ParsedCommand cmd = new ParsedCommand();
+    default ParsedCommand<S> execute(List<String> input, S source) throws SyntaxException {
+        ParseContext<S> ctx = this.createParseContext(input, source);
+        ParsedCommand<S> cmd = new ParsedCommand<>();
         this.getRootNode().parseRecursive(ctx, cmd);
         return cmd;
     }
 
-    default ParseContext createParseContext(List<String> input) {
+    default ParseContext<S> createParseContext(List<String> input, S source) {
         LinkedList<String> linkedInput = new LinkedList<>(input);
-        return new ParseContext(linkedInput);
+        return new ParseContext<>(linkedInput, source);
     }
 
 }

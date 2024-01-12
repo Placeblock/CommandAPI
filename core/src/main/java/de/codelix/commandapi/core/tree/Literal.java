@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * A literal is a static node with one or more values
  */
-public interface Literal extends Node {
+public interface Literal<S> extends Node<S> {
 
     /**
      * All names that match a literal

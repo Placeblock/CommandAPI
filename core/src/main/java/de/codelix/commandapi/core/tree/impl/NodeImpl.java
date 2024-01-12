@@ -8,10 +8,10 @@ import de.codelix.commandapi.core.tree.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface NodeImpl extends Node {
-    default List<Node> getChildrenOptional() {
-        List<Node> children = new ArrayList<>();
-        for (Node child : this.getChildren()) {
+public interface NodeImpl<S> extends Node<S> {
+    default List<Node<S>> getChildrenOptional() {
+        List<Node<S>> children = new ArrayList<>();
+        for (Node<S> child : this.getChildren()) {
             children.add(child);
             if (child.isOptional()) {
                 children.addAll(child.getChildren());
@@ -21,13 +21,13 @@ public interface NodeImpl extends Node {
     }
 
     @Override
-    default void parseRecursive(ParseContext ctx, ParsedCommand cmd) throws SyntaxException {
+    default void parseRecursive(ParseContext<S> ctx, ParsedCommand<S> cmd) throws SyntaxException {
         this.parse(ctx, cmd);
         cmd.addNode(this);
         if (ctx.getInput().isEmpty()) return;
 
         SyntaxException ex = null;
-        for (Node child : this.getChildrenOptional()) {
+        for (Node<S> child : this.getChildrenOptional()) {
             try {
                 child.parseRecursive(ctx.copy(), cmd);
                 return;

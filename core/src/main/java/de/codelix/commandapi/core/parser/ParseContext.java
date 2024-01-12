@@ -8,12 +8,14 @@ import java.util.Queue;
 
 @Getter
 @RequiredArgsConstructor
-public class ParseContext {
+public class ParseContext<S> {
 
     private final Queue<String> input;
 
-    public ParseContext copy() {
-        return new ParseContext(new LinkedList<>(this.input));
+    private final S source;
+
+    public ParseContext<S> copy() {
+        return new ParseContext<>(new LinkedList<>(this.input), this.source);
     }
 
 }

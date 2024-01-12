@@ -4,8 +4,8 @@ import de.codelix.commandapi.core.exception.SyntaxException;
 import de.codelix.commandapi.core.parameter.impl.WordParameter;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
-import de.codelix.commandapi.core.tree.builder.ArgumentBuilder;
-import de.codelix.commandapi.core.tree.builder.LiteralBuilder;
+import de.codelix.commandapi.core.tree.core.CoreBuilder;
+import de.codelix.commandapi.core.tree.core.CoreLiteralBuilder;
 import de.codelix.commandapi.core.tree.impl.LiteralImpl;
 import org.junit.jupiter.api.Test;
 
@@ -16,36 +16,34 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ParseTest {
-
     @Test
     public void testParse() throws SyntaxException, InvocationTargetException, IllegalAccessException {
-        LiteralBuilder b = new LiteralBuilder("felix");
-        b.then(new ArgumentBuilder<>("start", new WordParameter())
-            .then(new ArgumentBuilder<>("end", new WordParameter())
-                .runNative(this::test)
+        CoreBuilder<String> coreBuilder = new CoreBuilder<>();
+        CoreLiteralBuilder<String> b = coreBuilder.literal("felix");
+        b.then(coreBuilder.argument("start", new WordParameter<>())
+            .then(coreBuilder.argument("end", new WordParameter<>())
+                .run((source, arg0, arg1) -> {
+                    System.out.println(arg0);
+                    System.out.println(arg1);
+                })
             )
         );
 
-        LiteralImpl literal = b.build();
-        ParsedCommand cmd = new ParsedCommand();
+        LiteralImpl<String> literal = b.build();
+        ParsedCommand<String> cmd = new ParsedCommand<>();
         LinkedList<String> input = new LinkedList<>(List.of("felix", "kanns", "awdawd"));
-        ParseContext ctx = new ParseContext(input);
+        ParseContext<String> ctx = new ParseContext<>(input, "Test Lol");
         literal.parseRecursive(ctx, cmd);
-        for (RunConsumer runConsumer : cmd.getNodes().get(cmd.getNodes().size() - 1).getRunConsumers()) {
+        for (RunConsumer<String> runConsumer : cmd.getNodes().get(cmd.getNodes().size() - 1).getRunConsumers()) {
             for (Method method : runConsumer.getClass().getDeclaredMethods()) {
                 this.invokeWithParameters(cmd, runConsumer, method);
             }
         }
     }
 
-    private void test(Integer source, ParsedCommand cmd) {
-        System.out.println(source);
-    }
 
-
-    public void invokeWithParameters(ParsedCommand cmd, Object obj, Method method) throws InvocationTargetException, IllegalAccessException {
+    public void invokeWithParameters(ParsedCommand<String> cmd, Object obj, Method method) throws InvocationTargetException, IllegalAccessException {
         java.lang.reflect.Parameter[] parameters = method.getParameters();
-        System.out.println(Arrays.toString(parameters));
         Object[] params = new Object[parameters.length];
         if (params.length > 0) {
             params[0] = "Placeblock";
@@ -57,9 +55,7 @@ public class ParseTest {
                 params[i] = cmd.getArgument(i-1);
             }
         }
-        try {
-            method.invoke(obj, params);
-        } catch (ClassCastException ignored) {}
+        method.invoke(obj, params);
     }
 
 }

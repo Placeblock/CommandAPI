@@ -12,13 +12,13 @@ import java.util.List;
 /**
  * A node represents one element of a command
  */
-public interface Node {
+public interface Node<S> {
 
     /**
      * Children are sub-elements of a node
      * @return Children of this node
      */
-    List<Node> getChildren();
+    List<Node<S>> getChildren();
 
     /**
      * DisplayName is the name that is shown to the user
@@ -26,21 +26,29 @@ public interface Node {
      */
     String getDisplayName();
 
+    /**
+     * Indicates whether this argument can be skipped
+     * @return true if skipping is allowed
+     */
     boolean isOptional();
 
-    Collection<RunConsumer> getRunConsumers();
+    /**
+     * Consumers that run if this command is executed
+     * @return all consumers that run if this command is executed
+     */
+    Collection<RunConsumer<S>> getRunConsumers();
 
     /**
      * Parses this node into a branch
      * @param parsedCommand The branch
      */
-    void parse(ParseContext ctx, ParsedCommand parsedCommand) throws SyntaxException;
+    void parse(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws SyntaxException;
 
     /**
-     * Parses this node recursive. It tries to parse everything it can and creates a new branch for every children
+     * Parses this node recursive. It tries to parse everything it can and creates a new branch for every child
      * @param parsedCommand The current branch
      */
-    void parseRecursive(ParseContext ctx, ParsedCommand parsedCommand) throws SyntaxException;
+    void parseRecursive(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws SyntaxException;
 
     /**
      * The permission that is required to access that Node

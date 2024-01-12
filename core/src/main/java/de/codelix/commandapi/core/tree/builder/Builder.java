@@ -2,10 +2,10 @@ package de.codelix.commandapi.core.tree.builder;
 
 import de.codelix.commandapi.core.parameter.Parameter;
 
-public interface Builder {
+public interface Builder<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBuilder<?, ?, ?, S>, S> {
 
-    LiteralBuilder literal(String name, String... aliases);
+    L literal(String name, String... aliases);
 
-    <T> ArgumentBuilder<T> argument(String name, Parameter<T> parameter);
+    <T> A argument(String name, Parameter<T, S> parameter);
 
 }

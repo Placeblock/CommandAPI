@@ -6,17 +6,17 @@ import lombok.Getter;
 
 import java.util.*;
 
-public class ParsedCommand {
+public class ParsedCommand<S> {
     @Getter
-    private final List<Node> nodes = new ArrayList<>();
-    private final LinkedHashMap<Argument<?>, Object> arguments = new LinkedHashMap<>();
+    private final List<Node<S>> nodes = new ArrayList<>();
+    private final LinkedHashMap<Argument<?, S>, Object> arguments = new LinkedHashMap<>();
 
-    public void storeArgument(Argument<?> argument, Object value) {
+    public void storeArgument(Argument<?, S> argument, Object value) {
         this.arguments.put(argument, value);
     }
 
     public Object getArgument(String name) {
-        for (Map.Entry<Argument<?>, Object> parameterEntry : this.arguments.entrySet()) {
+        for (Map.Entry<Argument<?, S>, Object> parameterEntry : this.arguments.entrySet()) {
             if (parameterEntry.getKey().getName().equals(name)) {
                 return this.arguments.get(parameterEntry.getKey());
             }
@@ -28,7 +28,7 @@ public class ParsedCommand {
         return this.arguments.values().toArray()[index];
     }
 
-    public void addNode(Node node) {
+    public void addNode(Node<S> node) {
         this.nodes.add(node);
     }
 }

@@ -8,15 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public interface Parameter<D> {
+public interface Parameter<D, S> {
 
-    D parse(ParseContext ctx, ParsedCommand cmd) throws SyntaxException;
+    D parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws SyntaxException;
 
-    default CompletableFuture<List<D>> getSuggestionsAsync(ParseContext ctx, ParsedCommand cmd) {
+    default CompletableFuture<List<D>> getSuggestionsAsync(ParseContext<S> ctx, ParsedCommand<S> cmd) {
         return CompletableFuture.completedFuture(this.getSuggestions(ctx, cmd));
     }
 
-    default List<D> getSuggestions(ParseContext ctx, ParsedCommand cmd) {
+    default List<D> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd) {
         return new ArrayList<>();
     }
 }
