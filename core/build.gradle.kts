@@ -24,7 +24,7 @@ tasks {
     }
 }
 
-tasks.withType<PublishToMavenRepository>() {
+tasks.withType<PublishToMavenRepository> {
     doFirst {
         println("Publishing ${publication.groupId}:${publication.artifactId}:${publication.version} to ${repository.url}")
         publication.artifacts.forEach {

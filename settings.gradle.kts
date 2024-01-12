@@ -7,3 +7,4 @@ pluginManagement {
 
 rootProject.name = "CommandAPI"
 include("core")
+include("minecraft")

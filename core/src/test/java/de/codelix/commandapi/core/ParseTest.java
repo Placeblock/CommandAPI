@@ -4,21 +4,20 @@ import de.codelix.commandapi.core.exception.SyntaxException;
 import de.codelix.commandapi.core.parameter.impl.WordParameter;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
-import de.codelix.commandapi.core.tree.core.CoreBuilder;
+import de.codelix.commandapi.core.tree.core.CoreFactory;
 import de.codelix.commandapi.core.tree.core.CoreLiteralBuilder;
 import de.codelix.commandapi.core.tree.impl.LiteralImpl;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 public class ParseTest {
     @Test
     public void testParse() throws SyntaxException, InvocationTargetException, IllegalAccessException {
-        CoreBuilder<String> coreBuilder = new CoreBuilder<>();
+        CoreFactory<String> coreBuilder = new CoreFactory<>();
         CoreLiteralBuilder<String> b = coreBuilder.literal("felix");
         b.then(coreBuilder.argument("start", new WordParameter<>())
             .then(coreBuilder.argument("end", new WordParameter<>())
