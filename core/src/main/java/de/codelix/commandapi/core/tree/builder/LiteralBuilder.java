@@ -1,6 +1,7 @@
 package de.codelix.commandapi.core.tree.builder;
 
 import de.codelix.commandapi.core.tree.Node;
+import de.codelix.commandapi.core.tree.core.CoreLiteral;
 import de.codelix.commandapi.core.tree.impl.LiteralImpl;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class LiteralBuilder extends NodeBuilder<LiteralBuilder, LiteralImpl> {
     @Override
     public LiteralImpl build() {
         List<Node> children = this.buildChildren();
-        return new LiteralImpl(this.names, this.displayName, children, this.permission, this.optional, this.runConsumers);
+        return new CoreLiteral(this.names, this.displayName, children, this.permission, this.optional, this.runConsumers);
     }
 
     @Override

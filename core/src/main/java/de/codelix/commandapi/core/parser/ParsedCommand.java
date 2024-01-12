@@ -1,32 +1,31 @@
 package de.codelix.commandapi.core.parser;
 
 import de.codelix.commandapi.core.tree.Node;
-import de.codelix.commandapi.core.tree.Attribute;
+import de.codelix.commandapi.core.tree.Argument;
 import lombok.Getter;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ParsedCommand {
     @Getter
     private final List<Node> nodes = new ArrayList<>();
-    private final Map<Attribute<?>, Object> attributes = new HashMap<>();
+    private final LinkedHashMap<Argument<?>, Object> arguments = new LinkedHashMap<>();
 
-    public void storeParam(Attribute<?> attribute, Object value) {
-        this.attributes.put(attribute, value);
+    public void storeArgument(Argument<?> argument, Object value) {
+        this.arguments.put(argument, value);
     }
 
-    public Object getParameter(String name) {
-        for (Map.Entry<Attribute<?>, Object> parameterEntry : this.attributes.entrySet()) {
+    public Object getArgument(String name) {
+        for (Map.Entry<Argument<?>, Object> parameterEntry : this.arguments.entrySet()) {
             if (parameterEntry.getKey().getName().equals(name)) {
-                return this.attributes.get(parameterEntry.getKey());
+                return this.arguments.get(parameterEntry.getKey());
             }
         }
         return null;
+    }
+
+    public Object getArgument(int index) {
+        return this.arguments.values().toArray()[index];
     }
 
     public void addNode(Node node) {

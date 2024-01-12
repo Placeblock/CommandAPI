@@ -4,7 +4,7 @@ import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.Permission;
 import de.codelix.commandapi.core.exception.SyntaxException;
-import de.codelix.commandapi.core.run.RunConsumer;
+import de.codelix.commandapi.core.RunConsumer;
 
 import java.util.Collection;
 import java.util.List;
