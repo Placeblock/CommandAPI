@@ -1,7 +1,6 @@
 package de.codelix.commandapi.core.tree;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * A literal is a static node with one or more values

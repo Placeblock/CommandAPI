@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Deprecated(forRemoval = true)
 public abstract class MinecraftNodeBuilderImpl<B extends MinecraftNodeBuilderImpl<B, R, S, P, C>, R extends CoreNode<S>, S extends MinecraftSource<P, C>, P, C> implements NodeBuilder<B, R, S> {
     protected String displayName;
     protected List<NodeBuilder<?, ?, S>> children = new ArrayList<>();
