@@ -3,6 +3,7 @@ package de.codelix.commandapi.paper;
 import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
 import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.minecraft.MinecraftCommand;
+import de.codelix.commandapi.minecraft.tree.MinecraftLiteralBuilder;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.Server;
@@ -58,8 +59,18 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
         this.getSuggestions(args, source);
     }
 
+    private void build() {
+        String[] aliases = this.getAliases().toArray(String[]::new);
+        MinecraftLiteralBuilder<PaperSource<P>, P> builder = new MinecraftLiteralBuilder<>(this.getLabel(), aliases);
+        this.build(builder);
+        this.rootNode = builder.build();
+    }
+
     @Override
     public void register() {
+        if (this.rootNode == null) {
+            this.build();
+        }
         Server server = this.plugin.getServer();
         CommandMap commandMap = server.getCommandMap();
         commandMap.register(this.getLabel(), "commandapi", this);

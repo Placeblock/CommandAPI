@@ -17,6 +17,8 @@ public interface Command<S> {
 
     Node<S> getRootNode();
 
+    boolean hasPermission(S source);
+
     default void run(List<String> input, S source) throws SyntaxException {
         ParseContext<S> ctx = this.createParseContext(input, source);
         this.run(ctx);
