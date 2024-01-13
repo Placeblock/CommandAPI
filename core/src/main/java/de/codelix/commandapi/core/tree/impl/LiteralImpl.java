@@ -1,6 +1,7 @@
 package de.codelix.commandapi.core.tree.impl;
 
 import de.codelix.commandapi.core.exception.EOLSyntaxException;
+import de.codelix.commandapi.core.exception.InvalidLiteralSyntaxException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.Permission;
@@ -19,7 +20,7 @@ public interface LiteralImpl<S> extends NodeImpl<S>, Literal<S> {
         String next = ctx.getInput().poll();
         if (next == null) throw new EOLSyntaxException();
         if (!this.getNames().contains(next)) {
-            throw new SyntaxException();
+            throw new InvalidLiteralSyntaxException();
         }
     }
 }
