@@ -1,6 +1,7 @@
 package de.codelix.commandapi.paper;
 
 import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
+import de.codelix.commandapi.core.exception.SyntaxException;
 import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.minecraft.MinecraftCommand;
 import de.codelix.commandapi.minecraft.tree.MinecraftLiteralBuilder;
@@ -38,7 +39,15 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NonNull @NotNull String[] args) {
-        return false;
+        List<String> arguments = new ArrayList<>(List.of(commandLabel));
+        arguments.addAll(List.of(args));
+        PaperSource<P> source = this.getSource(sender);
+        try {
+            this.run(arguments, source);
+        } catch (SyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        return true;
     }
 
     @EventHandler
@@ -49,6 +58,11 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
             args.add("");
         }
         CommandSender sender = event.getSender();
+        PaperSource<P> source = this.getSource(sender);
+        this.getSuggestions(args, source);
+    }
+
+    private PaperSource<P> getSource(CommandSender sender) {
         PaperSource<P> source;
         if (sender instanceof Player player) {
             P customPlayer = this.getPlayer(player);
@@ -56,7 +70,7 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
         } else {
             source = new PaperSource<>(null, sender);
         }
-        this.getSuggestions(args, source);
+        return source;
     }
 
     private void build() {
