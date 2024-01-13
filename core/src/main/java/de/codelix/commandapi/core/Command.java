@@ -1,6 +1,7 @@
 package de.codelix.commandapi.core;
 
 import de.codelix.commandapi.core.exception.SyntaxException;
+import de.codelix.commandapi.core.message.CommandMessages;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.tree.Node;
@@ -11,20 +12,31 @@ import de.codelix.commandapi.core.tree.builder.LiteralBuilder;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("unused")
-public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBuilder<?, ?, ?, S>, S> {
+public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBuilder<?, ?, ?, S>, S, M> {
 
     Factory<L, A, S> factory();
 
     Node<S> getRootNode();
 
+    CommandMessages<M> getMessages();
+
+    void sendMessage(S source, M message);
+
     boolean hasPermission(S source, String permission);
+
+    default void runSafe(List<String> input, S source) {
+        try {
+            this.run(input, source);
+        } catch (SyntaxException e) {
+            M message = this.getMessages().
+        }
+    }
 
     default void run(List<String> input, S source) throws SyntaxException {
         ParseContext<S> ctx = this.createParseContext(input, source);

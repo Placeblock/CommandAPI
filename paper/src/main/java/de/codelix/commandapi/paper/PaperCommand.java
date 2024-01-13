@@ -9,6 +9,7 @@ import de.codelix.commandapi.minecraft.tree.MinecraftLiteralBuilder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public abstract class PaperCommand<P> extends BukkitCommand implements MinecraftCommand<PaperSource<P>, P>, Listener {
+public abstract class PaperCommand<P> extends BukkitCommand implements MinecraftCommand<PaperSource<P>, P, TextComponent>, Listener {
     private final Plugin plugin;
     @Getter
     private final boolean async;
@@ -41,6 +42,15 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
         super(label);
         this.async = asnyc;
         this.plugin = plugin;
+    }
+
+    @Override
+    public void sendMessage(PaperSource<P> source, TextComponent message) {
+        if (source.isPlayer()) {
+            this.sendMessagePlayer(source.getPlayer(), message);
+        } else {
+            source.getConsole().sendMessage(message);
+        }
     }
 
     @Override
@@ -140,6 +150,8 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
         if (source.isConsole()) return true;
         return this.hasPermissionPlayer(source.getPlayer(), permission);
     }
+
+    abstract void sendMessagePlayer(P source, TextComponent message);
 
     abstract boolean hasPermissionPlayer(P player, String permission);
 }

@@ -1,5 +1,6 @@
 package de.codelix.commandapi.paper;
 
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -17,5 +18,10 @@ public abstract class DefaultPaperCommand extends PaperCommand<Player> {
     @Override
     public boolean hasPermissionPlayer(Player player, String permission) {
         return player.hasPermission(permission);
+    }
+
+    @Override
+    public void sendMessagePlayer(Player player, TextComponent message) {
+        player.sendMessage(message);
     }
 }
