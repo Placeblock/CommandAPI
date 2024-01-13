@@ -4,9 +4,11 @@ import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
 import de.codelix.commandapi.core.exception.SyntaxException;
 import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.minecraft.MinecraftCommand;
+import de.codelix.commandapi.minecraft.tree.MinecraftFactory;
 import de.codelix.commandapi.minecraft.tree.MinecraftLiteralBuilder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.Accessors;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -23,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public abstract class PaperCommand<P> extends BukkitCommand implements MinecraftCommand<PaperSource<P>, P>, Listener {
     private final Plugin plugin;
@@ -30,6 +33,9 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
     private final boolean async;
     @Getter
     private Node<PaperSource<P>> rootNode;
+    @Getter
+    @Accessors(fluent = true)
+    private final MinecraftFactory<PaperSource<P>, P> factory = new MinecraftFactory<>();
 
     public PaperCommand(Plugin plugin, String label, boolean asnyc) {
         super(label);
@@ -52,14 +58,20 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
 
     @EventHandler
     public void on(AsyncTabCompleteEvent event) {
-        String buffer = event.getBuffer();
+        String buffer = event.getBuffer().substring(1);
         List<String> args = new ArrayList<>(List.of(buffer.split(" ")));
         if (buffer.endsWith(" ")) {
             args.add("");
         }
         CommandSender sender = event.getSender();
         PaperSource<P> source = this.getSource(sender);
-        this.getSuggestions(args, source);
+        try {
+            List<String> suggestions = this.getSuggestions(args, source).get();
+            List<AsyncTabCompleteEvent.Completion> completions = suggestions.stream().map(AsyncTabCompleteEvent.Completion::completion).toList();
+            event.completions(completions);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private PaperSource<P> getSource(CommandSender sender) {

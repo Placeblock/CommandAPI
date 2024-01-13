@@ -4,6 +4,9 @@ import de.codelix.commandapi.core.exception.SyntaxException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.tree.Node;
+import de.codelix.commandapi.core.tree.builder.ArgumentBuilder;
+import de.codelix.commandapi.core.tree.builder.Factory;
+import de.codelix.commandapi.core.tree.builder.LiteralBuilder;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,7 +16,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public interface Command<S> {
+public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBuilder<?, ?, ?, S>, S> {
+
+    Factory<L, A, S> factory();
 
     Node<S> getRootNode();
 
@@ -49,8 +54,10 @@ public interface Command<S> {
 
     default CompletableFuture<List<String>> getSuggestions(ParseContext<S> ctx) {
         ParsedCommand<S> cmd = this.execute(ctx);
+        System.out.println(ctx.getInput());
         if (ctx.getInput().isEmpty()) return CompletableFuture.completedFuture(List.of());
         List<Node<S>> nodes = cmd.getNodes();
+        if (nodes.isEmpty()) return this.getRootNode().getSuggestions(ctx, cmd);
         Node<S> lastNode = nodes.get(nodes.size() - 1);
         List<CompletableFuture<List<String>>> futures = new ArrayList<>();
         for (Node<S> child : lastNode.getChildren()) {
@@ -66,7 +73,8 @@ public interface Command<S> {
             List<String> suggestions = new ArrayList<>();
             for (CompletableFuture<List<String>> future : futures) {
                 try {
-                    suggestions.addAll(future.get());
+                    List<String> futureSuggestions = future.get();
+                    suggestions.addAll(futureSuggestions);
                 } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);
                 }

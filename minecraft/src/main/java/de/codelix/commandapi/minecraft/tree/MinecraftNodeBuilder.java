@@ -25,11 +25,13 @@ public abstract class MinecraftNodeBuilder<B extends MinecraftNodeBuilder<B, R, 
 
     @Override
     public B then(NodeBuilder<?, ?, S> child) {
+        this.children.add(child);
         return this.getThis();
     }
 
     @Override
     public B permission(String permission) {
+        this.permission = permission;
         return this.getThis();
     }
 

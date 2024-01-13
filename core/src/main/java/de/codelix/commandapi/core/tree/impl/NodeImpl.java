@@ -24,11 +24,13 @@ public interface NodeImpl<S> extends Node<S> {
 
     @Override
     default void parseRecursive(ParseContext<S> ctx, ParsedCommand<S> cmd) {
-        ParseContext<S> ctxCopy = ctx.copy();
         if (!this.isUnsafePermission() && !ctx.hasPermission(this.getPermission())) {
             cmd.setException(new NoPermissionException(this));
             return;
         }
+        System.out.println("PARSING: " + this.getDisplayNameSafe());
+        System.out.println(ctx.getInput());
+        ParseContext<S> ctxCopy = ctx.copy();
         try {
             this.parse(ctx, cmd);
             cmd.setException(null);
@@ -50,9 +52,11 @@ public interface NodeImpl<S> extends Node<S> {
         if (this.getChildrenOptional().size()==0 && !ctx.getInput().isEmpty()) {
             cmd.setException(new EndOfCommandSyntaxException());
         }
+        ctxCopy = ctx.copy();
         for (Node<S> child : this.getChildrenOptional()) {
-            child.parseRecursive(ctx.copy(), cmd);
+            child.parseRecursive(ctx, cmd);
             if (cmd.getException() == null) break;
+            ctx.setInput(ctxCopy.getInput());
         }
     }
 
