@@ -1,16 +1,29 @@
 package de.codelix.commandapi.core.tree.core;
 
 import de.codelix.commandapi.core.parameter.Parameter;
+import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.core.tree.builder.ArgumentBuilder;
+import de.codelix.commandapi.core.tree.builder.NodeBuilder;
 
-public class CoreArgumentBuilder<T, S> extends ArgumentBuilder<T, CoreArgumentBuilder<T, S>, CoreArgument<T, S>, S> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class CoreArgumentBuilder<T, S> extends CoreNodeBuilder<CoreArgumentBuilder<T, S>, CoreArgument<T, S>, S> implements ArgumentBuilder<T, CoreArgumentBuilder<T, S>, CoreArgument<T, S>, S> {
+    private final String name;
+    private final Parameter<T, S> parameter;
+
     public CoreArgumentBuilder(String name, Parameter<T, S> parameter) {
-        super(name, parameter);
+        this.name = name;
+        this.parameter = parameter;
     }
 
     @Override
     public CoreArgument<T, S> build() {
-        return new CoreArgument<>(this.name, this.parameter, this.displayName, this.buildChildren(), this.permission, this.optional, this.runConsumers);
+        List<Node<S>> children = new ArrayList<>();
+        for (NodeBuilder<?, ?, S> child : this.children) {
+            children.add(child.build());
+        }
+        return new CoreArgument<>(this.name, this.parameter, this.displayName, children, this.permission, this.optional, this.runConsumers);
     }
 
     @Override

@@ -19,9 +19,4 @@ public interface ArgumentImpl<T, S> extends NodeImpl<S>, Argument<T, S> {
         T value = this.getParameter().parse(ctx, cmd);
         cmd.storeArgument(this, value);
     }
-
-    default String getDisplayNameSafe() {
-        if (this.getDisplayName() != null) return this.getDisplayName();
-        return this.getName();
-    }
 }

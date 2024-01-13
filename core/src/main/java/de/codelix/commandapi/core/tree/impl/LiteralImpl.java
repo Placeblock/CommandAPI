@@ -22,9 +22,4 @@ public interface LiteralImpl<S> extends NodeImpl<S>, Literal<S> {
             throw new SyntaxException();
         }
     }
-
-    default String getDisplayNameSafe() {
-        if (this.getDisplayName() != null) return this.getDisplayName();
-        return this.getNames().get(0);
-    }
 }

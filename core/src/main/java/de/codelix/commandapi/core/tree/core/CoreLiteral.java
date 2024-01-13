@@ -11,9 +11,9 @@ import java.util.List;
 
 @Getter
 public class CoreLiteral<S> extends CoreNode<S> implements LiteralImpl<S> {
-    private final List<String> names;
+    private final Collection<String> names;
 
-    public CoreLiteral(List<String> names, String displayName, List<Node<S>> children, Permission permission, boolean optional, Collection<RunConsumer<S>> runConsumers) {
+    public CoreLiteral(Collection<String> names, String displayName, List<Node<S>> children, Permission permission, boolean optional, Collection<RunConsumer<S>> runConsumers) {
         super(displayName, children, permission, optional, runConsumers);
         this.names = names;
     }

@@ -1,5 +1,6 @@
 package de.codelix.commandapi.core.tree;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -11,6 +12,5 @@ public interface Literal<S> extends Node<S> {
      * All names that match a literal
      * @return the names
      */
-    List<String> getNames();
-
+    Collection<String> getNames();
 }
