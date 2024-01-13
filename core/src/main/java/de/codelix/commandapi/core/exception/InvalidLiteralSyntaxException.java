@@ -1,9 +1,10 @@
 package de.codelix.commandapi.core.exception;
 
-import de.codelix.commandapi.core.tree.Node;
+import de.codelix.commandapi.core.tree.Literal;
 
 public class InvalidLiteralSyntaxException extends SyntaxException {
-    public InvalidLiteralSyntaxException(Node<?> node) {
-        super(node);
+    private final Literal<?> node;
+    public InvalidLiteralSyntaxException(Literal<?> node) {
+        this.node = node;
     }
 }

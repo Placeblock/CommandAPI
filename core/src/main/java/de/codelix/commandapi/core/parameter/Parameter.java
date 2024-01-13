@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public interface Parameter<D, S> {
+public interface Parameter<T, S> {
 
-    D parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws SyntaxException;
+    T parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws SyntaxException;
 
     default CompletableFuture<List<String>> getSuggestionsAsync(ParseContext<S> ctx, ParsedCommand<S> cmd) {
         return CompletableFuture.completedFuture(this.getSuggestions(ctx, cmd));

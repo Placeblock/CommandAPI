@@ -1,5 +1,6 @@
 package de.codelix.commandapi.core.tree.impl;
 
+import de.codelix.commandapi.core.exception.EndOfCommandSyntaxException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.exception.SyntaxException;
@@ -33,6 +34,9 @@ public interface NodeImpl<S> extends Node<S> {
         }
         cmd.addNode(this);
         if (ctx.getInput().isEmpty()) return;
+        if (this.getChildrenOptional().size()==0 && !ctx.getInput().isEmpty()) {
+            cmd.setException(new EndOfCommandSyntaxException());
+        }
         for (Node<S> child : this.getChildrenOptional()) {
             child.parseRecursive(ctx.copy(), cmd);
             if (cmd.getException() == null) break;

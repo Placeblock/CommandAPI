@@ -1,5 +1,6 @@
 package de.codelix.commandapi.core;
 
+import de.codelix.commandapi.core.exception.SyntaxException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.tree.Node;
@@ -16,8 +17,11 @@ public interface Command<S> {
 
     Node<S> getRootNode();
 
-    default void run(List<String> input, S source) {
+    default void run(List<String> input, S source) throws SyntaxException {
         ParsedCommand<S> cmd = this.execute(input, source);
+        if (cmd.getException() != null) {
+            throw cmd.getException();
+        }
         for (RunConsumer<S> runConsumer : cmd.getNodes().get(cmd.getNodes().size() - 1).getRunConsumers()) {
             for (Method method : runConsumer.getClass().getDeclaredMethods()) {
                 this.invokeWithParameters(cmd, runConsumer, method);
