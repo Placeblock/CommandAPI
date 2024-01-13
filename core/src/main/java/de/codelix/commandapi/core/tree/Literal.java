@@ -1,6 +1,5 @@
 package de.codelix.commandapi.core.tree;
 
-import java.util.Collection;
 import java.util.List;
 
 /**

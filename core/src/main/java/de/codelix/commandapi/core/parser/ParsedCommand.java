@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class ParsedCommand<S> {
     @Getter
     private final List<Node<S>> nodes = new ArrayList<>();

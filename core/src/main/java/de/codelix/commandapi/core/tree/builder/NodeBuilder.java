@@ -3,10 +3,12 @@ package de.codelix.commandapi.core.tree.builder;
 import de.codelix.commandapi.core.RunConsumer;
 import de.codelix.commandapi.core.tree.Node;
 
+@SuppressWarnings("unused")
 public interface NodeBuilder<B extends NodeBuilder<B, R, S>, R extends Node<S>, S> {
 
     B displayName(String displayName);
 
+    @SuppressWarnings("UnusedReturnValue")
     B then(NodeBuilder<?, ?, S> child);
 
     B permission(String permission);

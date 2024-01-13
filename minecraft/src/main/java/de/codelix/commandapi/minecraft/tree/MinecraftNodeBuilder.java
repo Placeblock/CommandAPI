@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public abstract class MinecraftNodeBuilder<B extends MinecraftNodeBuilder<B, R, S, P>, R extends CoreNode<S>, S extends MinecraftSource<P, ?>, P> implements NodeBuilder<B, R, S> {
     protected String displayName;
     protected List<NodeBuilder<?, ?, S>> children = new ArrayList<>();

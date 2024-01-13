@@ -48,10 +48,20 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
         List<String> arguments = new ArrayList<>(List.of(commandLabel));
         arguments.addAll(List.of(args));
         PaperSource<P> source = this.getSource(sender);
-        try {
-            this.run(arguments, source);
-        } catch (SyntaxException e) {
-            throw new RuntimeException(e);
+        if (this.isAsync()) {
+            this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                try {
+                    this.run(arguments, source);
+                } catch (SyntaxException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } else {
+            try {
+                this.run(arguments, source);
+            } catch (SyntaxException e) {
+                throw new RuntimeException(e);
+            }
         }
         return true;
     }

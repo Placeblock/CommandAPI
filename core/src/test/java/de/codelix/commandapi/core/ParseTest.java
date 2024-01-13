@@ -21,9 +21,7 @@ public class ParseTest {
         );
         CoreCommand<String> command = new CoreCommand<>(b.build());
         command.run(List.of("felix", "isst"), null);
-        command.getSuggestions(List.of("felix", "is"), null).whenComplete((suggestions, e) -> {
-            System.out.println(suggestions);
-        });
+        command.getSuggestions(List.of("felix", "is"), null).whenComplete((suggestions, e) -> System.out.println(suggestions));
 
     }
 

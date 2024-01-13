@@ -11,11 +11,13 @@ import de.codelix.commandapi.core.tree.builder.LiteralBuilder;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+@SuppressWarnings("unused")
 public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBuilder<?, ?, ?, S>, S> {
 
     Factory<L, A, S> factory();
@@ -36,7 +38,7 @@ public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBu
         }
         for (RunConsumer<S> runConsumer : cmd.getNodes().get(cmd.getNodes().size() - 1).getRunConsumers()) {
             for (Method method : runConsumer.getClass().getDeclaredMethods()) {
-                this.invokeWithParameters(cmd, runConsumer, method);
+                this.invokeWithParameters(ctx, cmd, runConsumer, method);
             }
         }
     }
@@ -89,11 +91,11 @@ public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBu
     }
 
 
-    default void invokeWithParameters(ParsedCommand<S> cmd, Object obj, Method method) {
+    default void invokeWithParameters(ParseContext<S> ctx, ParsedCommand<S> cmd, Object obj, Method method) {
         java.lang.reflect.Parameter[] parameters = method.getParameters();
         Object[] params = new Object[parameters.length];
         if (params.length > 0) {
-            params[0] = "Placeblock";
+            params[0] = ctx.getSource();
         }
         if (obj instanceof RunConsumer.RC<?>) {
             params[1] = cmd;
@@ -103,6 +105,7 @@ public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBu
             }
         }
         try {
+            method.setAccessible(true);
             method.invoke(obj, params);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
