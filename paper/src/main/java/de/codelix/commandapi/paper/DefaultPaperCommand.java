@@ -12,4 +12,9 @@ public abstract class DefaultPaperCommand extends PaperCommand<Player> {
     protected Player getPlayer(Player player) {
         return player;
     }
+
+    @Override
+    public boolean hasPermissionPlayer(Player player, String permission) {
+        return player.hasPermission(permission);
+    }
 }

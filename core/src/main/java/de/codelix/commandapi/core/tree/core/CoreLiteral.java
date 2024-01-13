@@ -1,6 +1,5 @@
 package de.codelix.commandapi.core.tree.core;
 
-import de.codelix.commandapi.core.Permission;
 import de.codelix.commandapi.core.RunConsumer;
 import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.core.tree.impl.LiteralImpl;
@@ -13,8 +12,8 @@ import java.util.List;
 public class CoreLiteral<S> extends CoreNode<S> implements LiteralImpl<S> {
     private final List<String> names;
 
-    public CoreLiteral(List<String> names, String displayName, List<Node<S>> children, Permission permission, boolean optional, Collection<RunConsumer<S>> runConsumers) {
-        super(displayName, children, permission, optional, runConsumers);
+    public CoreLiteral(List<String> names, String displayName, List<Node<S>> children, String permission, boolean unsafePermission, boolean optional, Collection<RunConsumer<S>> runConsumers) {
+        super(displayName, children, permission, unsafePermission, optional, runConsumers);
         this.names = names;
     }
 }

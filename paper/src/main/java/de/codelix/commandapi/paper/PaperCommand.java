@@ -98,4 +98,12 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
     }
 
     protected abstract P getPlayer(Player player);
+
+    @Override
+    public boolean hasPermission(PaperSource<P> source, String permission) {
+        if (source.isConsole()) return true;
+        return this.hasPermissionPlayer(source.getPlayer(), permission);
+    }
+
+    abstract boolean hasPermissionPlayer(P player, String permission);
 }

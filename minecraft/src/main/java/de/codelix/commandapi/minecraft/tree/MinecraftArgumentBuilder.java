@@ -25,7 +25,8 @@ public class MinecraftArgumentBuilder<T, S extends MinecraftSource<P, ?>, P> ext
         for (NodeBuilder<?, ?, S> child : this.children) {
             children.add(child.build());
         }
-        return new CoreArgument<>(this.name, this.parameter, this.displayName, children, this.permission, this.optional, this.runConsumers);
+        return new CoreArgument<>(this.name, this.parameter, this.displayName, children, this.permission,
+            this.unsafePermission, this.optional, this.runConsumers);
     }
     @Override
     protected MinecraftArgumentBuilder<T, S, P> getThis() {

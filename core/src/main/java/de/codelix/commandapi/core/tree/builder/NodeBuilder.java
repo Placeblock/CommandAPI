@@ -1,6 +1,5 @@
 package de.codelix.commandapi.core.tree.builder;
 
-import de.codelix.commandapi.core.Permission;
 import de.codelix.commandapi.core.RunConsumer;
 import de.codelix.commandapi.core.tree.Node;
 
@@ -10,9 +9,11 @@ public interface NodeBuilder<B extends NodeBuilder<B, R, S>, R extends Node<S>, 
 
     B then(NodeBuilder<?, ?, S> child);
 
-    B permission(Permission permission);
+    B permission(String permission);
 
     B optional();
+
+    B unsafePermission();
 
     B runNative(RunConsumer.RC<S> runConsumer);
 

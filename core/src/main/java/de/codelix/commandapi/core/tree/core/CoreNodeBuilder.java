@@ -1,6 +1,5 @@
 package de.codelix.commandapi.core.tree.core;
 
-import de.codelix.commandapi.core.Permission;
 import de.codelix.commandapi.core.RunConsumer;
 import de.codelix.commandapi.core.tree.builder.NodeBuilder;
 
@@ -11,8 +10,9 @@ import java.util.List;
 public abstract class CoreNodeBuilder<B extends CoreNodeBuilder<B, R, S>, R extends CoreNode<S>, S> implements NodeBuilder<B, R, S> {
     protected String displayName;
     protected List<NodeBuilder<?, ?, S>> children = new ArrayList<>();
-    protected Permission permission;
+    protected String permission;
     protected boolean optional = false;
+    protected boolean unsafePermission = false;
     protected Collection<RunConsumer<S>> runConsumers = new ArrayList<>();
 
     @Override
@@ -28,7 +28,14 @@ public abstract class CoreNodeBuilder<B extends CoreNodeBuilder<B, R, S>, R exte
     }
 
     @Override
-    public B permission(Permission permission) {
+    public B permission(String permission) {
+        this.permission = permission;
+        return this.getThis();
+    }
+
+    @Override
+    public B unsafePermission() {
+        this.unsafePermission = true;
         return this.getThis();
     }
 

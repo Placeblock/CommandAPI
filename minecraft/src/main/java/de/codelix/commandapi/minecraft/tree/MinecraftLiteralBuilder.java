@@ -28,7 +28,8 @@ public class MinecraftLiteralBuilder<S extends MinecraftSource<P, ?>, P> extends
         for (NodeBuilder<?, ?, S> child : this.children) {
             children.add(child.build());
         }
-        return new CoreLiteral<>(this.names, this.displayName, children, this.permission, this.optional, this.runConsumers);
+        return new CoreLiteral<>(this.names, this.displayName, children, this.permission,
+            this.unsafePermission, this.optional, this.runConsumers);
     }
 
     @Override

@@ -2,7 +2,6 @@ package de.codelix.commandapi.core.tree;
 
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
-import de.codelix.commandapi.core.Permission;
 import de.codelix.commandapi.core.exception.SyntaxException;
 import de.codelix.commandapi.core.RunConsumer;
 import lombok.NonNull;
@@ -62,7 +61,14 @@ public interface Node<S> {
      * The permission that is required to access that Node
      * @return The permission as a string
      */
-    Permission getPermission();
+    String getPermission();
+
+    /**
+     * Permissions usually block the whole underlying tree.
+     * If this is true it should only block if this specific node is executed.
+     * @return true or false xD
+     */
+    boolean isUnsafePermission();
 
     CompletableFuture<List<String>> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd);
 }

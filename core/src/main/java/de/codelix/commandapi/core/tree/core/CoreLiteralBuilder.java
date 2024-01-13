@@ -5,7 +5,6 @@ import de.codelix.commandapi.core.tree.builder.LiteralBuilder;
 import de.codelix.commandapi.core.tree.builder.NodeBuilder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class CoreLiteralBuilder<S> extends CoreNodeBuilder<CoreLiteralBuilder<S>, CoreLiteral<S>, S> implements LiteralBuilder<CoreLiteralBuilder<S>, CoreLiteral<S>, S> {
@@ -28,7 +27,7 @@ public class CoreLiteralBuilder<S> extends CoreNodeBuilder<CoreLiteralBuilder<S>
         for (NodeBuilder<?, ?, S> child : this.children) {
             children.add(child.build());
         }
-        return new CoreLiteral<>(this.names, this.displayName, children, this.permission, this.optional, this.runConsumers);
+        return new CoreLiteral<>(this.names, this.displayName, children, this.permission, this.unsafePermission, this.optional, this.runConsumers);
     }
 
     @Override

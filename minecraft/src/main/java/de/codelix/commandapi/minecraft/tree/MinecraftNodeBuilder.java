@@ -1,6 +1,5 @@
 package de.codelix.commandapi.minecraft.tree;
 
-import de.codelix.commandapi.core.Permission;
 import de.codelix.commandapi.core.RunConsumer;
 import de.codelix.commandapi.core.tree.builder.NodeBuilder;
 import de.codelix.commandapi.core.tree.core.CoreNode;
@@ -13,7 +12,8 @@ import java.util.List;
 public abstract class MinecraftNodeBuilder<B extends MinecraftNodeBuilder<B, R, S, P>, R extends CoreNode<S>, S extends MinecraftSource<P, ?>, P> implements NodeBuilder<B, R, S> {
     protected String displayName;
     protected List<NodeBuilder<?, ?, S>> children = new ArrayList<>();
-    protected Permission permission;
+    protected String permission;
+    protected boolean unsafePermission = false;
     protected boolean optional = false;
     protected Collection<RunConsumer<S>> runConsumers = new ArrayList<>();
 
@@ -29,7 +29,13 @@ public abstract class MinecraftNodeBuilder<B extends MinecraftNodeBuilder<B, R, 
     }
 
     @Override
-    public B permission(Permission permission) {
+    public B permission(String permission) {
+        return this.getThis();
+    }
+
+    @Override
+    public B unsafePermission() {
+        this.unsafePermission = true;
         return this.getThis();
     }
 

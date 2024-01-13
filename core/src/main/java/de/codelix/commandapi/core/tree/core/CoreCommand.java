@@ -10,4 +10,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CoreCommand<S> implements Command<S> {
    private final Node<S> rootNode;
+
+    @Override
+    public boolean hasPermission(S source, String permission) {
+        return true;
+    }
 }

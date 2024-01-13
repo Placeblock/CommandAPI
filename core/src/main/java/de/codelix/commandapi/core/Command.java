@@ -17,7 +17,7 @@ public interface Command<S> {
 
     Node<S> getRootNode();
 
-    boolean hasPermission(S source);
+    boolean hasPermission(S source, String permission);
 
     default void run(List<String> input, S source) throws SyntaxException {
         ParseContext<S> ctx = this.createParseContext(input, source);
@@ -78,7 +78,7 @@ public interface Command<S> {
 
     default ParseContext<S> createParseContext(List<String> input, S source) {
         LinkedList<String> linkedInput = new LinkedList<>(input);
-        return new ParseContext<>(linkedInput, source);
+        return new ParseContext<>(linkedInput, source, this::hasPermission);
     }
 
 

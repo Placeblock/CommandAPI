@@ -2,7 +2,6 @@ package de.codelix.commandapi.core.parser;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.LinkedList;
@@ -16,9 +15,13 @@ public class ParseContext<S> {
     private Queue<String> input;
 
     private final S source;
+    private final PermissionChecker<S> permissionChecker;
 
     public ParseContext<S> copy() {
-        return new ParseContext<>(new LinkedList<>(this.input), this.source);
+        return new ParseContext<>(new LinkedList<>(this.input), this.source, this.permissionChecker);
     }
 
+    public boolean hasPermission(String permission) {
+        return permission == null || this.permissionChecker.hasPermission(this.source, permission);
+    }
 }

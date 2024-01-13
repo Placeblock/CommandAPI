@@ -1,6 +1,7 @@
 package de.codelix.commandapi.core.tree.impl;
 
 import de.codelix.commandapi.core.exception.EndOfCommandSyntaxException;
+import de.codelix.commandapi.core.exception.NoPermissionException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.exception.SyntaxException;
@@ -24,6 +25,10 @@ public interface NodeImpl<S> extends Node<S> {
     @Override
     default void parseRecursive(ParseContext<S> ctx, ParsedCommand<S> cmd) {
         ParseContext<S> ctxCopy = ctx.copy();
+        if (!this.isUnsafePermission() && !ctx.hasPermission(this.getPermission())) {
+            cmd.setException(new NoPermissionException(this));
+            return;
+        }
         try {
             this.parse(ctx, cmd);
             cmd.setException(null);
@@ -32,8 +37,16 @@ public interface NodeImpl<S> extends Node<S> {
             cmd.setException(ex);
             return;
         }
+        if (ctx.getInput().isEmpty()) {
+            if (ctx.hasPermission(this.getPermission())) {
+                cmd.addNode(this);
+            } else {
+                ctx.setInput(ctxCopy.getInput());
+                cmd.setException(new NoPermissionException(this));
+            }
+            return;
+        }
         cmd.addNode(this);
-        if (ctx.getInput().isEmpty()) return;
         if (this.getChildrenOptional().size()==0 && !ctx.getInput().isEmpty()) {
             cmd.setException(new EndOfCommandSyntaxException());
         }
