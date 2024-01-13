@@ -54,13 +54,12 @@ public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBu
 
     default CompletableFuture<List<String>> getSuggestions(ParseContext<S> ctx) {
         ParsedCommand<S> cmd = this.execute(ctx);
-        System.out.println(ctx.getInput());
         if (ctx.getInput().isEmpty()) return CompletableFuture.completedFuture(List.of());
         List<Node<S>> nodes = cmd.getNodes();
         if (nodes.isEmpty()) return this.getRootNode().getSuggestions(ctx, cmd);
         Node<S> lastNode = nodes.get(nodes.size() - 1);
         List<CompletableFuture<List<String>>> futures = new ArrayList<>();
-        for (Node<S> child : lastNode.getChildren()) {
+        for (Node<S> child : lastNode.getChildrenOptional()) {
             futures.add(child.getSuggestions(ctx.copy(), cmd));
         }
         return this.combine(futures);

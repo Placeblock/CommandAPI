@@ -6,6 +6,7 @@ import de.codelix.commandapi.core.exception.SyntaxException;
 import de.codelix.commandapi.core.RunConsumer;
 import lombok.NonNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -20,6 +21,17 @@ public interface Node<S> {
      * @return Children of this node
      */
     List<Node<S>> getChildren();
+
+    default List<Node<S>> getChildrenOptional() {
+        List<Node<S>> children = new ArrayList<>();
+        for (Node<S> child : this.getChildren()) {
+            children.add(child);
+            if (child.isOptional()) {
+               children.addAll(child.getChildrenOptional());
+            }
+        }
+        return children;
+    }
 
     /**
      * DisplayName is the name that is shown to the user
