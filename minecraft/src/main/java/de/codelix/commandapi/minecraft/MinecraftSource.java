@@ -5,7 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public record MinecraftSource<P, C>(P player, C console) {
+public class MinecraftSource<P, C> {
+    private final P player;
+    private final C console;
+
     public boolean isPlayer() {
         return this.player != null;
     }

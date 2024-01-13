@@ -18,7 +18,12 @@ public interface Command<S> {
     Node<S> getRootNode();
 
     default void run(List<String> input, S source) throws SyntaxException {
-        ParsedCommand<S> cmd = this.execute(input, source);
+        ParseContext<S> ctx = this.createParseContext(input, source);
+        this.run(ctx);
+    }
+
+    default void run(ParseContext<S> ctx) throws SyntaxException {
+        ParsedCommand<S> cmd = this.execute(ctx);
         if (cmd.getException() != null) {
             throw cmd.getException();
         }
@@ -29,12 +34,7 @@ public interface Command<S> {
         }
     }
 
-    default ParsedCommand<S> execute(List<String> input, S source) {
-        ParseContext<S> ctx = this.createParseContext(input, source);
-        return this.execute(ctx);
-    }
-
-    default ParsedCommand<S> execute(ParseContext<S> ctx) {
+    private ParsedCommand<S> execute(ParseContext<S> ctx) {
         ParsedCommand<S> cmd = new ParsedCommand<>();
         this.getRootNode().parseRecursive(ctx, cmd);
         return cmd;
@@ -47,6 +47,7 @@ public interface Command<S> {
 
     default CompletableFuture<List<String>> getSuggestions(ParseContext<S> ctx) {
         ParsedCommand<S> cmd = this.execute(ctx);
+        if (ctx.getInput().isEmpty()) return CompletableFuture.completedFuture(List.of());
         List<Node<S>> nodes = cmd.getNodes();
         Node<S> lastNode = nodes.get(nodes.size() - 1);
         List<CompletableFuture<List<String>>> futures = new ArrayList<>();
