@@ -5,9 +5,11 @@ import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.Permission;
 import de.codelix.commandapi.core.exception.SyntaxException;
 import de.codelix.commandapi.core.RunConsumer;
+import lombok.NonNull;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A node represents one element of a command
@@ -27,6 +29,12 @@ public interface Node<S> {
     String getDisplayName();
 
     /**
+     * DisplayName is the name that is shown to the user.
+     * @return The display name
+     */
+    @NonNull String getDisplayNameSafe();
+
+    /**
      * Indicates whether this argument can be skipped
      * @return true if skipping is allowed
      */
@@ -39,7 +47,7 @@ public interface Node<S> {
     Collection<RunConsumer<S>> getRunConsumers();
 
     /**
-     * Parses this node into a branch
+     * Parses this node into a branch.
      * @param parsedCommand The branch
      */
     void parse(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws SyntaxException;
@@ -48,7 +56,7 @@ public interface Node<S> {
      * Parses this node recursive. It tries to parse everything it can and creates a new branch for every child
      * @param parsedCommand The current branch
      */
-    void parseRecursive(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws SyntaxException;
+    void parseRecursive(ParseContext<S> ctx, ParsedCommand<S> parsedCommand);
 
     /**
      * The permission that is required to access that Node
@@ -56,4 +64,5 @@ public interface Node<S> {
      */
     Permission getPermission();
 
+    CompletableFuture<List<String>> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd);
 }

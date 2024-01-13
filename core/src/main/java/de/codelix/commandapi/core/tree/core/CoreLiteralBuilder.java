@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class CoreLiteralBuilder<S> extends CoreNodeBuilder<CoreLiteralBuilder<S>, CoreLiteral<S>, S> implements LiteralBuilder<CoreLiteralBuilder<S>, CoreLiteral<S>, S> {
-    private final Collection<String> names;
+    private final List<String> names;
 
     public CoreLiteralBuilder(String name, String... aliases) {
         this.names = new ArrayList<>(List.of(name));

@@ -1,16 +1,19 @@
 package de.codelix.commandapi.core.parser;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ParseContext<S> {
 
-    private final Queue<String> input;
+    @Setter
+    private Queue<String> input;
 
     private final S source;
 

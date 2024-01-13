@@ -23,6 +23,7 @@ public abstract class CoreNodeBuilder<B extends CoreNodeBuilder<B, R, S>, R exte
 
     @Override
     public B then(NodeBuilder<?, ?, S> child) {
+        this.children.add(child);
         return this.getThis();
     }
 

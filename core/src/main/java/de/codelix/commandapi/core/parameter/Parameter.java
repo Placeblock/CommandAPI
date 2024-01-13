@@ -12,11 +12,11 @@ public interface Parameter<D, S> {
 
     D parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws SyntaxException;
 
-    default CompletableFuture<List<D>> getSuggestionsAsync(ParseContext<S> ctx, ParsedCommand<S> cmd) {
+    default CompletableFuture<List<String>> getSuggestionsAsync(ParseContext<S> ctx, ParsedCommand<S> cmd) {
         return CompletableFuture.completedFuture(this.getSuggestions(ctx, cmd));
     }
 
-    default List<D> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd) {
+    default List<String> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd) {
         return new ArrayList<>();
     }
 }

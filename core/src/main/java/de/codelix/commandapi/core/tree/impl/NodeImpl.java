@@ -21,24 +21,22 @@ public interface NodeImpl<S> extends Node<S> {
     }
 
     @Override
-    default void parseRecursive(ParseContext<S> ctx, ParsedCommand<S> cmd) throws SyntaxException {
-        this.parse(ctx, cmd);
+    default void parseRecursive(ParseContext<S> ctx, ParsedCommand<S> cmd) {
+        ParseContext<S> ctxCopy = ctx.copy();
+        try {
+            this.parse(ctx, cmd);
+            cmd.setException(null);
+        } catch (SyntaxException ex) {
+            ctx.setInput(ctxCopy.getInput());
+            cmd.setException(ex);
+            return;
+        }
         cmd.addNode(this);
         if (ctx.getInput().isEmpty()) return;
-
-        SyntaxException ex = null;
         for (Node<S> child : this.getChildrenOptional()) {
-            try {
-                child.parseRecursive(ctx.copy(), cmd);
-                return;
-            } catch (SyntaxException e) {
-                ex = e;
-            }
-        }
-        if (ex != null) {
-            throw ex;
+            child.parseRecursive(ctx.copy(), cmd);
+            if (cmd.getException() == null) break;
         }
     }
-
 
 }

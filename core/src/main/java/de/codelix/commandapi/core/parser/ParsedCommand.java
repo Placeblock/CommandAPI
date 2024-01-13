@@ -1,8 +1,10 @@
 package de.codelix.commandapi.core.parser;
 
+import de.codelix.commandapi.core.exception.SyntaxException;
 import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.core.tree.Argument;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.*;
 
@@ -10,6 +12,9 @@ public class ParsedCommand<S> {
     @Getter
     private final List<Node<S>> nodes = new ArrayList<>();
     private final LinkedHashMap<Argument<?, S>, Object> arguments = new LinkedHashMap<>();
+    @Getter
+    @Setter
+    private SyntaxException exception;
 
     public void storeArgument(Argument<?, S> argument, Object value) {
         this.arguments.put(argument, value);
