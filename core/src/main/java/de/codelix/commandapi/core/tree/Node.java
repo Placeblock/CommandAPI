@@ -36,11 +36,11 @@ public interface Node<S> {
 
     default List<List<Node<S>>> flatten(S source, PermissionChecker<S> permissionChecker) {
         List<List<Node<S>>> branches = new ArrayList<>();
-        if (this.getPermission() != null && !permissionChecker.hasPermission(source, this.getPermission())) {
+        if (!this.isVisible(source, permissionChecker)) {
             return branches;
         }
         List<Node<S>> children = this.getChildrenOptional();
-        if (children.size() == 0 || !this.getRunConsumers().isEmpty()) {
+        if (children.size() == 0 || (!this.getRunConsumers().isEmpty() && !this.isUnsafePermission())) {
             branches.add(new ArrayList<>(List.of(this)));
         }
         for (Node<S> node : children) {
@@ -107,6 +107,10 @@ public interface Node<S> {
      * @return true or false xD
      */
     boolean isUnsafePermission();
+
+    default boolean isVisible(S source, PermissionChecker<S> permissionChecker) {
+        return this.getPermission() == null || permissionChecker.hasPermission(source, this.getPermission()) || this.isUnsafePermission();
+    }
 
     CompletableFuture<List<String>> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd);
 }

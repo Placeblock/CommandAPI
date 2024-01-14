@@ -87,7 +87,9 @@ public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBu
         Node<S> lastNode = nodes.get(nodes.size() - 1);
         List<CompletableFuture<List<String>>> futures = new ArrayList<>();
         for (Node<S> child : lastNode.getChildrenOptional()) {
-            futures.add(child.getSuggestions(ctx.copy(), cmd));
+            if (child.isVisible(ctx.getSource(), this::hasPermission)) {
+                futures.add(child.getSuggestions(ctx.copy(), cmd));
+            }
         }
         return this.combine(futures);
     }
