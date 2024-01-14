@@ -2,11 +2,11 @@ package de.codelix.commandapi.adventure;
 
 import de.codelix.commandapi.core.Command;
 import de.codelix.commandapi.core.message.CommandMessages;
-import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.core.tree.Argument;
 import de.codelix.commandapi.core.tree.Literal;
 import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.minecraft.MinecraftDesign;
+import lombok.NonNull;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -31,9 +31,9 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
     }
 
     public TextComponent getHelpHeadline(Command<?, ?, S, TextComponent, ?> command) {
-        String displayName = command.getRootNode().getDisplayNameSafe();
+        Node<S> rootNode = command.getRootNode();
         return Component.text("---===[ ")
-            .append( Component.text(displayName) )
+            .append( this.createNodeHelp(rootNode, this.primaryColor) )
             .append( Component.text(" ]===---"))
             .append( Component.newline())
             .color(this.primaryColor);
@@ -74,16 +74,7 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
                     argumentReached = true;
                 }
                 TextColor color = i == 0 ? this.primaryColor : this.inferiorColor;
-                TextComponent nodeHelp = this.getNodeHelp(node).color(color);
-                TextComponent hoverText = Component.empty();
-                String description = node.getDescription();
-                TextComponent extraDescription = this.getNodeDescription(node);
-                if (description != null) hoverText = hoverText.append(Component.text(description).color(this.inferiorColor));
-                if (description != null && extraDescription != null) hoverText = hoverText.append(Component.newline());
-                if (extraDescription != null) hoverText = hoverText.append(extraDescription);
-                if (description != null || extraDescription != null) {
-                    nodeHelp = nodeHelp.hoverEvent(HoverEvent.showText(hoverText));
-                }
+                TextComponent nodeHelp = this.createNodeHelp(node, color);
                 branchMessage = branchMessage.append(nodeHelp).append(Component.space());
                 if (!argumentReached) {
                     branchCommand.append(node.getDisplayNameSafe()).append(" ");
@@ -93,5 +84,20 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
             helpMessage = helpMessage.append(branchMessage.append(Component.newline()));
         }
         return helpMessage;
+    }
+
+    @NonNull
+    private TextComponent createNodeHelp(Node<S> node, TextColor color) {
+        TextComponent nodeHelp = this.getNodeHelp(node).color(color);
+        TextComponent hoverText = Component.empty();
+        String description = node.getDescription();
+        TextComponent extraDescription = this.getNodeDescription(node);
+        if (description != null) hoverText = hoverText.append(Component.text(description).color(this.inferiorColor));
+        if (description != null && extraDescription != null) hoverText = hoverText.append(Component.newline());
+        if (extraDescription != null) hoverText = hoverText.append(extraDescription);
+        if (description != null || extraDescription != null) {
+            nodeHelp = nodeHelp.hoverEvent(HoverEvent.showText(hoverText));
+        }
+        return nodeHelp;
     }
 }
