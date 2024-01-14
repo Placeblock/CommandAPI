@@ -3,6 +3,7 @@ package de.codelix.commandapi.adventure;
 import de.codelix.commandapi.core.Command;
 import de.codelix.commandapi.core.message.CommandMessages;
 import de.codelix.commandapi.core.parameter.Parameter;
+import de.codelix.commandapi.core.tree.Argument;
 import de.codelix.commandapi.core.tree.Literal;
 import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.minecraft.MinecraftDesign;
@@ -41,7 +42,7 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
     public TextComponent getNodeHelp(Node<S> node) {
         if (node instanceof Literal<S>) {
             return Component.text(node.getDisplayNameSafe()).color(this.inferiorColor);
-        } else if (node instanceof Parameter<?,?>) {
+        } else if (node instanceof Argument<?,?>) {
             return Component.text("[")
                 .append( Component.text(node.getDisplayNameSafe()) )
                 .append( Component.text("]")).color(this.inferiorColor);
@@ -64,13 +65,13 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
         TextComponent helpMessage = Component.newline().append(this.getHelpHeadline(command));
         for (List<Node<S>> branch : branches) {
             // We only want to generate the branchCommand to the first Parameter
-            boolean parameterReached = false;
+            boolean argumentReached = false;
             StringBuilder branchCommand = new StringBuilder("/");
             TextComponent branchMessage = Component.text("/").color(this.primaryColor);
             for (int i = 0; i < branch.size(); i++) {
                 Node<S> node = branch.get(i);
-                if (node instanceof Parameter<?,?>) {
-                    parameterReached = true;
+                if (node instanceof Argument<?,?>) {
+                    argumentReached = true;
                 }
                 TextColor color = i == 0 ? this.primaryColor : this.inferiorColor;
                 TextComponent nodeHelp = this.getNodeHelp(node).color(color);
@@ -84,7 +85,7 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
                     nodeHelp = nodeHelp.hoverEvent(HoverEvent.showText(hoverText));
                 }
                 branchMessage = branchMessage.append(nodeHelp).append(Component.space());
-                if (!parameterReached) {
+                if (!argumentReached) {
                     branchCommand.append(node.getDisplayNameSafe()).append(" ");
                 }
             }

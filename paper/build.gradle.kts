@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    `java-library`
 }
 
 group = "de.codelix"
@@ -12,9 +12,8 @@ repositories {
 }
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
-    implementation(project(":minecraft"))
-    implementation(project(":adventure"))
-    implementation(project(":core"))
+    api(project(":adventure"))
+    compileOnly(project(":core"))
 
     compileOnly("org.projectlombok:lombok:1.18.28")
     annotationProcessor("org.projectlombok:lombok:1.18.28")

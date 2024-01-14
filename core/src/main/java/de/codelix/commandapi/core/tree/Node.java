@@ -36,7 +36,7 @@ public interface Node<S> {
 
     default List<List<Node<S>>> flatten(S source, PermissionChecker<S> permissionChecker) {
         List<List<Node<S>>> branches = new ArrayList<>();
-        if (!permissionChecker.hasPermission(source, this.getPermission())) {
+        if (this.getPermission() != null && !permissionChecker.hasPermission(source, this.getPermission())) {
             return branches;
         }
         List<Node<S>> children = this.getChildrenOptional();

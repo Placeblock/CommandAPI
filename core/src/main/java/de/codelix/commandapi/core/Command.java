@@ -1,5 +1,6 @@
 package de.codelix.commandapi.core;
 
+import de.codelix.commandapi.core.exception.NoRunParseException;
 import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.core.message.CommandDesign;
 import de.codelix.commandapi.core.parser.ParseContext;
@@ -12,6 +13,7 @@ import de.codelix.commandapi.core.tree.builder.LiteralBuilder;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -54,7 +56,12 @@ public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBu
         if (cmd.getException() != null) {
             throw cmd.getException();
         }
-        for (RunConsumer<S> runConsumer : cmd.getNodes().get(cmd.getNodes().size() - 1).getRunConsumers()) {
+        Node<S> lastNode = cmd.getNodes().get(cmd.getNodes().size() - 1);
+        Collection<RunConsumer<S>> runConsumers = lastNode.getRunConsumers();
+        if (runConsumers.isEmpty()) {
+            throw new NoRunParseException();
+        }
+        for (RunConsumer<S> runConsumer : runConsumers) {
             for (Method method : runConsumer.getClass().getDeclaredMethods()) {
                 this.invokeWithParameters(ctx, cmd, runConsumer, method);
             }

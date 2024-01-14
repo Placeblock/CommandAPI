@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    `java-library`
 }
 
 group = "de.codelix"
@@ -11,7 +11,7 @@ repositories {
 }
 dependencies {
     compileOnly(project(":core"))
-    compileOnly(project(":minecraft"))
+    api(project(":minecraft"))
     compileOnly("net.kyori:adventure-api:4.14.0")
 
     compileOnly("org.projectlombok:lombok:1.18.28")
