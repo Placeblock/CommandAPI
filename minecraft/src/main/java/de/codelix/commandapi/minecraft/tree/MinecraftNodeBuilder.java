@@ -12,6 +12,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public abstract class MinecraftNodeBuilder<B extends MinecraftNodeBuilder<B, R, S, P>, R extends CoreNode<S>, S extends MinecraftSource<P, ?>, P> implements NodeBuilder<B, R, S> {
     protected String displayName;
+    protected String description;
     protected List<NodeBuilder<?, ?, S>> children = new ArrayList<>();
     protected String permission;
     protected boolean unsafePermission = false;
@@ -21,6 +22,12 @@ public abstract class MinecraftNodeBuilder<B extends MinecraftNodeBuilder<B, R, 
     @Override
     public B displayName(String displayName) {
         this.displayName = displayName;
+        return this.getThis();
+    }
+
+    @Override
+    public B description(String description) {
+        this.description = description;
         return this.getThis();
     }
 

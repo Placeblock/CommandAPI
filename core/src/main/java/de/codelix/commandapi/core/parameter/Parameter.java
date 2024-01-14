@@ -1,6 +1,6 @@
 package de.codelix.commandapi.core.parameter;
 
-import de.codelix.commandapi.core.exception.SyntaxException;
+import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 
@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface Parameter<T, S> {
 
-    T parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws SyntaxException;
+    T parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws ParseException;
 
     default CompletableFuture<List<String>> getSuggestionsAsync(ParseContext<S> ctx, ParsedCommand<S> cmd) {
         return CompletableFuture.completedFuture(this.getSuggestions(ctx, cmd));

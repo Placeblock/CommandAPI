@@ -1,7 +1,7 @@
 package de.codelix.commandapi.core;
 
-import de.codelix.commandapi.core.exception.SyntaxException;
-import de.codelix.commandapi.core.message.CommandMessages;
+import de.codelix.commandapi.core.exception.ParseException;
+import de.codelix.commandapi.core.message.CommandDesign;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.tree.Node;
@@ -18,13 +18,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("unused")
-public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBuilder<?, ?, ?, S>, S, M> {
+public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBuilder<?, ?, ?, S>, S, M, D extends CommandDesign<M>> {
 
     Factory<L, A, S> factory();
 
     Node<S> getRootNode();
 
-    CommandMessages<M> getMessages();
+    D getDesign();
+
+    default List<List<Node<S>>> flatten(S source) {
+        return this.getRootNode().flatten(source, this::hasPermission);
+    }
 
     void sendMessage(S source, M message);
 
@@ -33,17 +37,19 @@ public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBu
     default void runSafe(List<String> input, S source) {
         try {
             this.run(input, source);
-        } catch (SyntaxException e) {
-            M message = this.getMessages().
+        } catch (ParseException e) {
+            M message = this.getDesign().getMessages().getMessage(e);
+            if (message == null) return;
+            this.sendMessage(source, message);
         }
     }
 
-    default void run(List<String> input, S source) throws SyntaxException {
+    default void run(List<String> input, S source) throws ParseException {
         ParseContext<S> ctx = this.createParseContext(input, source);
         this.run(ctx);
     }
 
-    default void run(ParseContext<S> ctx) throws SyntaxException {
+    default void run(ParseContext<S> ctx) throws ParseException {
         ParsedCommand<S> cmd = this.execute(ctx);
         if (cmd.getException() != null) {
             throw cmd.getException();

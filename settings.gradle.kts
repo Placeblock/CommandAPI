@@ -9,3 +9,4 @@ rootProject.name = "CommandAPI"
 include("core")
 include("minecraft")
 include("paper")
+include("adventure")

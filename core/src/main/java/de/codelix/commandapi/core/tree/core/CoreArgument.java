@@ -14,8 +14,8 @@ public class CoreArgument<T, S> extends CoreNode<S> implements ArgumentImpl<T, S
     private final String name;
     private final Parameter<T, S> parameter;
 
-    public CoreArgument(String name, Parameter<T, S> parameter, String displayName, List<Node<S>> children, String permission, boolean unsafePermission, boolean optional, Collection<RunConsumer<S>> runConsumers) {
-        super(displayName, children, permission, unsafePermission, optional, runConsumers);
+    public CoreArgument(String name, Parameter<T, S> parameter, String displayName, String description, List<Node<S>> children, String permission, boolean unsafePermission, boolean optional, Collection<RunConsumer<S>> runConsumers) {
+        super(displayName, description, children, permission, unsafePermission, optional, runConsumers);
         this.name = name;
         this.parameter = parameter;
     }

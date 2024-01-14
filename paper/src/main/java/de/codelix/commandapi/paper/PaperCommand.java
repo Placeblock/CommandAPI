@@ -1,7 +1,7 @@
 package de.codelix.commandapi.paper;
 
 import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
-import de.codelix.commandapi.core.exception.SyntaxException;
+import de.codelix.commandapi.adventure.AdventureDesign;
 import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.minecraft.MinecraftCommand;
 import de.codelix.commandapi.minecraft.tree.MinecraftFactory;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public abstract class PaperCommand<P> extends BukkitCommand implements MinecraftCommand<PaperSource<P>, P, TextComponent>, Listener {
+public abstract class PaperCommand<P> extends BukkitCommand implements MinecraftCommand<PaperSource<P>, P, TextComponent, AdventureDesign<PaperSource<P>>>, Listener {
     private final Plugin plugin;
     @Getter
     private final boolean async;
@@ -37,11 +37,14 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
     @Getter
     @Accessors(fluent = true)
     private final MinecraftFactory<PaperSource<P>, P> factory = new MinecraftFactory<>();
+    @Getter
+    private final AdventureDesign<PaperSource<P>> design;
 
-    public PaperCommand(Plugin plugin, String label, boolean asnyc) {
+    public PaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<PaperSource<P>> design) {
         super(label);
-        this.async = asnyc;
+        this.async = async;
         this.plugin = plugin;
+        this.design = design;
     }
 
     @Override
@@ -59,19 +62,10 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
         arguments.addAll(List.of(args));
         PaperSource<P> source = this.getSource(sender);
         if (this.isAsync()) {
-            this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                try {
-                    this.run(arguments, source);
-                } catch (SyntaxException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () ->
+                this.runSafe(arguments, source));
         } else {
-            try {
-                this.run(arguments, source);
-            } catch (SyntaxException e) {
-                throw new RuntimeException(e);
-            }
+            this.runSafe(arguments, source);
         }
         return true;
     }

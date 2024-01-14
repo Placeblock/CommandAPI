@@ -2,8 +2,9 @@ package de.codelix.commandapi.core.tree;
 
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
-import de.codelix.commandapi.core.exception.SyntaxException;
+import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.core.RunConsumer;
+import de.codelix.commandapi.core.parser.PermissionChecker;
 import lombok.NonNull;
 
 import java.util.ArrayList;
@@ -33,11 +34,36 @@ public interface Node<S> {
         return children;
     }
 
+    default List<List<Node<S>>> flatten(S source, PermissionChecker<S> permissionChecker) {
+        List<List<Node<S>>> branches = new ArrayList<>();
+        if (!permissionChecker.hasPermission(source, this.getPermission())) {
+            return branches;
+        }
+        List<Node<S>> children = this.getChildrenOptional();
+        if (children.size() == 0 || !this.getRunConsumers().isEmpty()) {
+            branches.add(new ArrayList<>(List.of(this)));
+        }
+        for (Node<S> node : children) {
+            List<List<Node<S>>> childBranches = node.flatten(source, permissionChecker);
+            for (List<Node<S>> childBranch : childBranches) {
+                childBranch.add(0, this);
+                branches.add(childBranch);
+            }
+        }
+        return branches;
+    }
+
     /**
      * DisplayName is the name that is shown to the user
      * @return The display name
      */
     String getDisplayName();
+
+    /**
+     * The description of the Node. Can be used in for example help messages
+     * @return The description
+     */
+    String getDescription();
 
     /**
      * DisplayName is the name that is shown to the user.
@@ -61,7 +87,7 @@ public interface Node<S> {
      * Parses this node into a branch.
      * @param parsedCommand The branch
      */
-    void parse(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws SyntaxException;
+    void parse(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws ParseException;
 
     /**
      * Parses this node recursive. It tries to parse everything it can and creates a new branch for every child

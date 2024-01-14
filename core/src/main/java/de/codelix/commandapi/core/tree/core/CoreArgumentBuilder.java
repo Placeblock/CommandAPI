@@ -23,7 +23,7 @@ public class CoreArgumentBuilder<T, S> extends CoreNodeBuilder<CoreArgumentBuild
         for (NodeBuilder<?, ?, S> child : this.children) {
             children.add(child.build());
         }
-        return new CoreArgument<>(this.name, this.parameter, this.displayName, children, this.permission, this.unsafePermission, this.optional, this.runConsumers);
+        return new CoreArgument<>(this.name, this.parameter, this.displayName, this.description, children, this.permission, this.unsafePermission, this.optional, this.runConsumers);
     }
 
     @Override

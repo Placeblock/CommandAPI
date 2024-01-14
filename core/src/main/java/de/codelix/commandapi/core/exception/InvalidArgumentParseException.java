@@ -2,11 +2,10 @@ package de.codelix.commandapi.core.exception;
 
 import de.codelix.commandapi.core.tree.Argument;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-public class InvalidArgumentSyntaxException extends SyntaxException {
+@RequiredArgsConstructor
+public class InvalidArgumentParseException extends ParseException {
     private final Argument<?, ?> node;
-    public InvalidArgumentSyntaxException(Argument<?, ?> node) {
-        this.node = node;
-    }
 }

@@ -13,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public abstract class CoreNode<S> implements NodeImpl<S> {
     protected final String displayName;
+    protected final String description;
     protected final List<Node<S>> children;
     protected final String permission;
     protected final boolean unsafePermission;

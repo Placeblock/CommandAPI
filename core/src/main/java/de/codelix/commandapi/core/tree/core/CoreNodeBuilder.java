@@ -9,6 +9,7 @@ import java.util.List;
 
 public abstract class CoreNodeBuilder<B extends CoreNodeBuilder<B, R, S>, R extends CoreNode<S>, S> implements NodeBuilder<B, R, S> {
     protected String displayName;
+    protected String description;
     protected List<NodeBuilder<?, ?, S>> children = new ArrayList<>();
     protected String permission;
     protected boolean optional = false;
@@ -18,6 +19,12 @@ public abstract class CoreNodeBuilder<B extends CoreNodeBuilder<B, R, S>, R exte
     @Override
     public B displayName(String displayName) {
         this.displayName = displayName;
+        return this.getThis();
+    }
+
+    @Override
+    public B description(String description) {
+        this.description = description;
         return this.getThis();
     }
 

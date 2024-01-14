@@ -8,6 +8,8 @@ public interface NodeBuilder<B extends NodeBuilder<B, R, S>, R extends Node<S>, 
 
     B displayName(String displayName);
 
+    B description(String description);
+
     @SuppressWarnings("UnusedReturnValue")
     B then(NodeBuilder<?, ?, S> child);
 

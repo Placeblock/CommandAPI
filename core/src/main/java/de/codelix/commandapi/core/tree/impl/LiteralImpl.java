@@ -1,9 +1,9 @@
 package de.codelix.commandapi.core.tree.impl;
 
-import de.codelix.commandapi.core.exception.InvalidLiteralSyntaxException;
+import de.codelix.commandapi.core.exception.InvalidLiteralParseException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
-import de.codelix.commandapi.core.exception.SyntaxException;
+import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.core.tree.Literal;
 import lombok.NonNull;
 
@@ -12,10 +12,10 @@ import java.util.concurrent.CompletableFuture;
 
 public interface LiteralImpl<S> extends NodeImpl<S>, Literal<S> {
     @Override
-    default void parse(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws SyntaxException {
+    default void parse(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws ParseException {
         String next = ctx.getInput().poll();
         if (!this.getNames().contains(next)) {
-            throw new InvalidLiteralSyntaxException(this);
+            throw new InvalidLiteralParseException(this, next);
         }
     }
 
