@@ -2,7 +2,7 @@ package de.codelix.commandapi.paper;
 
 import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
 import de.codelix.commandapi.adventure.AdventureDesign;
-import de.codelix.commandapi.core.tree.Node;
+import de.codelix.commandapi.core.tree.Literal;
 import de.codelix.commandapi.minecraft.MinecraftCommand;
 import de.codelix.commandapi.minecraft.tree.MinecraftFactory;
 import de.codelix.commandapi.minecraft.tree.MinecraftLiteralBuilder;
@@ -33,7 +33,7 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
     @Getter
     private final boolean async;
     @Getter
-    private Node<PaperSource<P>> rootNode;
+    private Literal<PaperSource<P>> rootNode;
     @Getter
     @Accessors(fluent = true)
     private final MinecraftFactory<PaperSource<P>, P> factory = new MinecraftFactory<>();
@@ -100,8 +100,7 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
     }
 
     private void build() {
-        String[] aliases = this.getAliases().toArray(String[]::new);
-        MinecraftLiteralBuilder<PaperSource<P>, P> builder = new MinecraftLiteralBuilder<>(this.getLabel(), aliases);
+        MinecraftLiteralBuilder<PaperSource<P>, P> builder = new MinecraftLiteralBuilder<>(this.getLabel());
         this.build(builder);
         this.rootNode = builder.build();
     }
@@ -110,6 +109,8 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
     public void register() {
         if (this.rootNode == null) {
             this.build();
+            List<String> names = this.rootNode.getNames();
+            this.setAliases(names.subList(1, names.size()));
         }
         Server server = this.plugin.getServer();
         CommandMap commandMap = server.getCommandMap();

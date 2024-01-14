@@ -5,6 +5,7 @@ import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -18,5 +19,9 @@ public interface Parameter<T, S> {
 
     default List<String> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd) {
         return new ArrayList<>();
+    }
+
+    default List<String> startsWith(Collection<String> list, String partial) {
+        return list.stream().filter(item -> item.startsWith(partial)).toList();
     }
 }

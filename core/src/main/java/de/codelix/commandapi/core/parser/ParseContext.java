@@ -21,6 +21,10 @@ public class ParseContext<S> {
         return new ParseContext<>(new LinkedList<>(this.input), this.source, this.permissionChecker);
     }
 
+    public String getRemaining() {
+        return String.join(" ", this.input);
+    }
+
     public boolean hasPermission(String permission) {
         return permission == null || this.permissionChecker.hasPermission(this.source, permission);
     }
