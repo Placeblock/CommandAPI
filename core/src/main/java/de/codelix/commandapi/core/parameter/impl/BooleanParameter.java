@@ -20,7 +20,7 @@ public class BooleanParameter<S> implements Parameter<Boolean, S> {
 
     @Override
     public List<String> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd) {
-        String next = ctx.getInput().poll();
+        String next = ctx.getRemaining();
         return this.startsWith(List.of("true", "end"), next);
     }
 }
