@@ -30,10 +30,10 @@ public class DoubleParameter<S> implements Parameter<Double, S> {
             if (parsed > this.max) {
                 throw new DoubleTooLargeParseException(parsed, this.max);
             }
+            return parsed;
         } catch (NumberFormatException ex) {
             throw new InvalidDoubleParseException(next);
         }
-        return null;
     }
 
     @Override

@@ -7,6 +7,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class DoubleTooLargeParseException extends ParseException {
-    private final double number;
+    private final double value;
     private final double max;
 }

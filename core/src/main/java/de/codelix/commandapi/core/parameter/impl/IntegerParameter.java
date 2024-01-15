@@ -29,10 +29,10 @@ public class IntegerParameter<S> implements Parameter<Integer, S> {
             if (parsed > this.max) {
                 throw new IntegerTooSmallParseException(parsed, this.max);
             }
+            return parsed;
         } catch (NumberFormatException ex) {
             throw new InvalidIntegerParseException(next);
         }
-        return null;
     }
 
     @Override
