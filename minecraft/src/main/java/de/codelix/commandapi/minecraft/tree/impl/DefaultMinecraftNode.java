@@ -1,8 +1,9 @@
-package de.codelix.commandapi.core.tree.impl;
+package de.codelix.commandapi.minecraft.tree.impl;
 
 import de.codelix.commandapi.core.RunConsumer;
 import de.codelix.commandapi.core.tree.Node;
-import de.codelix.commandapi.core.tree.def.DefaultNode;
+import de.codelix.commandapi.minecraft.MinecraftSource;
+import de.codelix.commandapi.minecraft.tree.MinecraftNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public abstract class NodeImpl<S> implements DefaultNode<S> {
+public abstract class DefaultMinecraftNode<S extends MinecraftSource<P, C>, P, C> implements MinecraftNode<S, P, C> {
     protected final String displayName;
     protected final String description;
     protected final List<Node<S>> children;

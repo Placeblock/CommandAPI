@@ -1,8 +1,9 @@
-package de.codelix.commandapi.core.tree.core;
+package de.codelix.commandapi.paper.tree.impl;
 
 import de.codelix.commandapi.core.RunConsumer;
 import de.codelix.commandapi.core.tree.Node;
-import de.codelix.commandapi.core.tree.impl.NodeImpl;
+import de.codelix.commandapi.paper.PaperSource;
+import de.codelix.commandapi.paper.tree.PaperNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public abstract class CoreNode<S> implements NodeImpl<S> {
+public abstract class PaperNodeImpl<S extends PaperSource<P>, P> implements PaperNode<S, P> {
     protected final String displayName;
     protected final String description;
     protected final List<Node<S>> children;

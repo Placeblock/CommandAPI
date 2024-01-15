@@ -1,36 +1,19 @@
 package de.codelix.commandapi.core.tree.impl;
 
-import de.codelix.commandapi.core.exception.InvalidLiteralParseException;
-import de.codelix.commandapi.core.parser.ParseContext;
-import de.codelix.commandapi.core.parser.ParsedCommand;
-import de.codelix.commandapi.core.exception.ParseException;
-import de.codelix.commandapi.core.tree.Literal;
-import lombok.NonNull;
+import de.codelix.commandapi.core.RunConsumer;
+import de.codelix.commandapi.core.tree.Node;
+import de.codelix.commandapi.core.tree.def.DefaultLiteral;
+import lombok.Getter;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-public interface LiteralImpl<S> extends NodeImpl<S>, Literal<S> {
-    @Override
-    default void parse(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws ParseException {
-        String next = ctx.getInput().poll();
-        if (!this.getNames().contains(next)) {
-            throw new InvalidLiteralParseException(this, next);
-        }
-    }
+@Getter
+public class LiteralImpl<S> extends NodeImpl<S> implements DefaultLiteral<S> {
+    private final List<String> names;
 
-    @Override
-    default CompletableFuture<List<String>> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd) {
-        String next = ctx.getInput().poll();
-        assert next != null;
-        List<String> suggestions = this.getNames().stream().filter(n -> n.startsWith(next)).toList();
-        return CompletableFuture.completedFuture(suggestions);
-    }
-
-    @Override
-    default @NonNull String getDisplayNameSafe() {
-        String displayName = this.getDisplayName();
-        if (displayName != null) return displayName;
-        return this.getNames().get(0);
+    public LiteralImpl(List<String> names, String displayName, String description, List<Node<S>> children, String permission, boolean unsafePermission, boolean optional, Collection<RunConsumer<S>> runConsumers) {
+        super(displayName, description, children, permission, unsafePermission, optional, runConsumers);
+        this.names = names;
     }
 }

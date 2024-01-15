@@ -7,8 +7,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import de.codelix.commandapi.adventure.AdventureDesign;
 import de.codelix.commandapi.core.tree.Literal;
 import de.codelix.commandapi.minecraft.MinecraftCommand;
-import de.codelix.commandapi.minecraft.tree.MinecraftFactory;
-import de.codelix.commandapi.minecraft.tree.MinecraftLiteralBuilder;
+import de.codelix.commandapi.minecraft.tree.builder.impl.DefaultMinecraftLiteralBuilder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.kyori.adventure.text.TextComponent;
@@ -57,7 +56,7 @@ public abstract class VelocityCommand<P> implements RawCommand, MinecraftCommand
     }
 
     private void build() {
-        MinecraftLiteralBuilder<VelocitySource<P>, P> builder = new MinecraftLiteralBuilder<>(this.label);
+        DefaultMinecraftLiteralBuilder<VelocitySource<P>, P> builder = new DefaultMinecraftLiteralBuilder<>(this.label);
         this.build(builder);
         this.rootNode = builder.build();
     }

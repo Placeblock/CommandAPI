@@ -1,16 +1,17 @@
-package de.codelix.commandapi.minecraft.tree;
+package de.codelix.commandapi.minecraft.tree.builder.impl;
 
 import de.codelix.commandapi.core.RunConsumer;
 import de.codelix.commandapi.core.tree.builder.NodeBuilder;
-import de.codelix.commandapi.core.tree.core.CoreNode;
 import de.codelix.commandapi.minecraft.MinecraftSource;
+import de.codelix.commandapi.minecraft.tree.builder.MinecraftNodeBuilder;
+import de.codelix.commandapi.minecraft.tree.impl.DefaultMinecraftNode;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public abstract class MinecraftNodeBuilder<B extends MinecraftNodeBuilder<B, R, S, P>, R extends CoreNode<S>, S extends MinecraftSource<P, ?>, P> implements NodeBuilder<B, R, S> {
+public abstract class DefaultMinecraftNodeBuilder<B extends DefaultMinecraftNodeBuilder<B, R, S, P, C>, R extends DefaultMinecraftNode<S, P, C>, S extends MinecraftSource<P, C>, P, C> implements MinecraftNodeBuilder<B, R, S, P, C> {
     protected String displayName;
     protected String description;
     protected List<NodeBuilder<?, ?, S>> children = new ArrayList<>();

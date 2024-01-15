@@ -2,14 +2,14 @@ package de.codelix.commandapi.minecraft;
 
 import de.codelix.commandapi.core.Command;
 import de.codelix.commandapi.core.exception.*;
-import de.codelix.commandapi.minecraft.tree.MinecraftArgumentBuilder;
-import de.codelix.commandapi.minecraft.tree.MinecraftLiteralBuilder;
+import de.codelix.commandapi.minecraft.tree.builder.impl.DefaultMinecraftArgumentBuilder;
+import de.codelix.commandapi.minecraft.tree.builder.impl.DefaultMinecraftLiteralBuilder;
 
 import java.util.List;
 
 @SuppressWarnings("unused")
-public interface MinecraftCommand<S extends MinecraftSource<P, ?>, P, M, D extends MinecraftDesign<S, M>> extends Command<MinecraftLiteralBuilder<S, P>, MinecraftArgumentBuilder<?, S, P>, S, M, D> {
-    void build(MinecraftLiteralBuilder<S, P> builder);
+public interface MinecraftCommand<S extends MinecraftSource<P, C>, P, C, M, D extends MinecraftDesign<S, M>> extends Command<DefaultMinecraftLiteralBuilder<S, P, C>, DefaultMinecraftArgumentBuilder<?, S, P, C>, S, M, D> {
+    void build(DefaultMinecraftLiteralBuilder<S, P, C> builder);
 
     void register();
 

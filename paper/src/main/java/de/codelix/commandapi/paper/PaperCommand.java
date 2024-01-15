@@ -1,11 +1,11 @@
 package de.codelix.commandapi.paper;
 
 import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
+import de.codelix.commandapi.adventure.AdventureCommand;
 import de.codelix.commandapi.adventure.AdventureDesign;
 import de.codelix.commandapi.core.tree.Literal;
-import de.codelix.commandapi.minecraft.MinecraftCommand;
-import de.codelix.commandapi.minecraft.tree.MinecraftFactory;
-import de.codelix.commandapi.minecraft.tree.MinecraftLiteralBuilder;
+import de.codelix.commandapi.minecraft.tree.builder.impl.DefaultMinecraftLiteralBuilder;
+import de.codelix.commandapi.paper.tree.PaperFactory;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public abstract class PaperCommand<P> extends BukkitCommand implements MinecraftCommand<PaperSource<P>, P, TextComponent, AdventureDesign<PaperSource<P>>>, Listener {
+public abstract class PaperCommand<P, L, A> extends BukkitCommand implements AdventureCommand<PaperSource<P>, P, CommandSender, AdventureDesign<PaperSource<P>>>, Listener {
     private final Plugin plugin;
     @Getter
     private final boolean async;
@@ -36,7 +36,7 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
     private Literal<PaperSource<P>> rootNode;
     @Getter
     @Accessors(fluent = true)
-    private final MinecraftFactory<PaperSource<P>, P> factory = new MinecraftFactory<>();
+    private final PaperFactory<PaperSource<P>, P> factory = new MinecraftFactory<>();
     @Getter
     private final AdventureDesign<PaperSource<P>> design;
 
@@ -100,7 +100,7 @@ public abstract class PaperCommand<P> extends BukkitCommand implements Minecraft
     }
 
     private void build() {
-        MinecraftLiteralBuilder<PaperSource<P>, P> builder = new MinecraftLiteralBuilder<>(this.getLabel());
+        DefaultMinecraftLiteralBuilder<PaperSource<P>, P> builder = new DefaultMinecraftLiteralBuilder<>(this.getLabel());
         this.build(builder);
         this.rootNode = builder.build();
     }
