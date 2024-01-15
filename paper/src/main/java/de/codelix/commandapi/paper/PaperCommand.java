@@ -4,8 +4,9 @@ import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
 import de.codelix.commandapi.adventure.AdventureCommand;
 import de.codelix.commandapi.adventure.AdventureDesign;
 import de.codelix.commandapi.core.tree.Literal;
-import de.codelix.commandapi.minecraft.tree.builder.impl.DefaultMinecraftLiteralBuilder;
-import de.codelix.commandapi.paper.tree.PaperFactory;
+import de.codelix.commandapi.paper.tree.builder.PaperFactory;
+import de.codelix.commandapi.paper.tree.builder.PaperArgumentBuilder;
+import de.codelix.commandapi.paper.tree.builder.PaperLiteralBuilder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public abstract class PaperCommand<P, L, A> extends BukkitCommand implements AdventureCommand<PaperSource<P>, P, CommandSender, AdventureDesign<PaperSource<P>>>, Listener {
+public abstract class PaperCommand<P, L extends PaperLiteralBuilder<?, ?, PaperSource<P>, P>, A extends PaperArgumentBuilder<?, ?, ?, PaperSource<P>, P>> extends BukkitCommand implements AdventureCommand<PaperSource<P>, P, CommandSender, AdventureDesign<PaperSource<P>>, L, A>, Listener {
     private final Plugin plugin;
     @Getter
     private final boolean async;
@@ -36,15 +37,16 @@ public abstract class PaperCommand<P, L, A> extends BukkitCommand implements Adv
     private Literal<PaperSource<P>> rootNode;
     @Getter
     @Accessors(fluent = true)
-    private final PaperFactory<PaperSource<P>, P> factory = new MinecraftFactory<>();
+    private final PaperFactory<L, A, PaperSource<P>, P> factory;
     @Getter
     private final AdventureDesign<PaperSource<P>> design;
 
-    public PaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<PaperSource<P>> design) {
+    public PaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<PaperSource<P>> design, PaperFactory<L, A, PaperSource<P>, P> factory) {
         super(label);
         this.async = async;
         this.plugin = plugin;
         this.design = design;
+        this.factory = factory;
     }
 
     @Override
@@ -99,8 +101,10 @@ public abstract class PaperCommand<P, L, A> extends BukkitCommand implements Adv
         return source;
     }
 
+    protected abstract L createLiteralBuilder(String label);
+
     private void build() {
-        DefaultMinecraftLiteralBuilder<PaperSource<P>, P> builder = new DefaultMinecraftLiteralBuilder<>(this.getLabel());
+        L builder = this.createLiteralBuilder(this.getLabel());
         this.build(builder);
         this.rootNode = builder.build();
     }

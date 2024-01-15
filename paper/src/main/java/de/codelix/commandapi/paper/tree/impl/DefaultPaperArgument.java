@@ -11,11 +11,11 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter
-public class PaperArgumentImpl<T, S extends PaperSource<P>, P> extends PaperNodeImpl<S, P> implements PaperArgument<T, S, P> {
+public class DefaultPaperArgument<T, S extends PaperSource<P>, P> extends DefaultPaperNode<S, P> implements PaperArgument<T, S, P> {
     private final String name;
     private final Parameter<T, S> parameter;
 
-    public PaperArgumentImpl(String name, Parameter<T, S> parameter, String displayName, String description, List<Node<S>> children, String permission, boolean unsafePermission, boolean optional, Collection<RunConsumer<S>> runConsumers) {
+    public DefaultPaperArgument(String name, Parameter<T, S> parameter, String displayName, String description, List<Node<S>> children, String permission, boolean unsafePermission, boolean optional, Collection<RunConsumer<S>> runConsumers) {
         super(displayName, description, children, permission, unsafePermission, optional, runConsumers);
         this.name = name;
         this.parameter = parameter;

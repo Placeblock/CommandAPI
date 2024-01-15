@@ -10,6 +10,6 @@ public abstract class MinecraftDesign<S, M> extends CommandDesign<M> {
         super(messages);
     }
 
-    public abstract M getHelpMessage(Command<?, ?, S, M, ?>  command, S source);
+    public abstract M getHelpMessage(Command<S, M, ?, ?, ?>  command, S source);
 
 }

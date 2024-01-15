@@ -12,7 +12,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public abstract class PaperNodeImpl<S extends PaperSource<P>, P> implements PaperNode<S, P> {
+public abstract class DefaultPaperNode<S extends PaperSource<P>, P> implements PaperNode<S, P> {
     protected final String displayName;
     protected final String description;
     protected final List<Node<S>> children;

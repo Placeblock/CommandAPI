@@ -2,37 +2,27 @@ package de.codelix.commandapi.paper;
 
 import de.codelix.commandapi.adventure.AdventureDesign;
 import de.codelix.commandapi.adventure.AdventureMessages;
-import net.kyori.adventure.text.TextComponent;
-import org.bukkit.entity.Player;
+import de.codelix.commandapi.paper.tree.builder.impl.DefaultPaperArgumentBuilder;
+import de.codelix.commandapi.paper.tree.builder.impl.DefaultPaperFactory;
+import de.codelix.commandapi.paper.tree.builder.impl.DefaultPaperLiteralBuilder;
 import org.bukkit.plugin.Plugin;
 
 @SuppressWarnings("unused")
-public abstract class DefaultPaperCommand extends PaperCommand<Player> {
-    public DefaultPaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<PaperSource<Player>> design) {
-        super(plugin, label, async, new AdventureDesign<>(new AdventureMessages()));
+public abstract class DefaultPaperCommand<P> extends PaperCommand<P, DefaultPaperLiteralBuilder<PaperSource<P>, P>, DefaultPaperArgumentBuilder<?, PaperSource<P>, P>> {
+    public DefaultPaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<PaperSource<P>> design) {
+        super(plugin, label, async, design, new DefaultPaperFactory<>());
     }
-    public DefaultPaperCommand(Plugin plugin, String label, AdventureDesign<PaperSource<Player>> design) {
-        super(plugin, label, true, new AdventureDesign<>(new AdventureMessages()));
+    public DefaultPaperCommand(Plugin plugin, String label, AdventureDesign<PaperSource<P>> design) {
+        super(plugin, label, true, design, new DefaultPaperFactory<>());
     }
     public DefaultPaperCommand(Plugin plugin, String label, boolean async) {
-        super(plugin, label, async, new AdventureDesign<>(new AdventureMessages()));
+        super(plugin, label, async, new AdventureDesign<>(new AdventureMessages()), new DefaultPaperFactory<>());
     }
     public DefaultPaperCommand(Plugin plugin, String label) {
-        super(plugin, label, true, new AdventureDesign<>(new AdventureMessages()));
+        super(plugin, label, true, new AdventureDesign<>(new AdventureMessages()), new DefaultPaperFactory<>());
     }
 
-    @Override
-    protected Player getPlayer(Player player) {
-        return player;
-    }
-
-    @Override
-    public boolean hasPermissionPlayer(Player player, String permission) {
-        return player.hasPermission(permission);
-    }
-
-    @Override
-    public void sendMessagePlayer(Player player, TextComponent message) {
-        player.sendMessage(message);
+    protected DefaultPaperLiteralBuilder<PaperSource<P>, P> createLiteralBuilder(String label) {
+        return new DefaultPaperLiteralBuilder<>(label);
     }
 }

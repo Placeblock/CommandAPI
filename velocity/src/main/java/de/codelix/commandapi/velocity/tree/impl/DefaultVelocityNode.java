@@ -1,9 +1,9 @@
-package de.codelix.commandapi.minecraft.tree.impl;
+package de.codelix.commandapi.velocity.tree.impl;
 
 import de.codelix.commandapi.core.RunConsumer;
 import de.codelix.commandapi.core.tree.Node;
-import de.codelix.commandapi.minecraft.MinecraftSource;
-import de.codelix.commandapi.minecraft.tree.MinecraftNode;
+import de.codelix.commandapi.velocity.VelocitySource;
+import de.codelix.commandapi.velocity.tree.VelocityNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public abstract class DefaultMinecraftNode<S extends MinecraftSource<P, C>, P, C> implements MinecraftNode<S, P, C> {
+public abstract class DefaultVelocityNode<S extends VelocitySource<P>, P> implements VelocityNode<S, P> {
     protected final String displayName;
     protected final String description;
     protected final List<Node<S>> children;

@@ -1,22 +1,22 @@
 package de.codelix.commandapi.velocity;
 
-import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import de.codelix.commandapi.adventure.AdventureDesign;
-import net.kyori.adventure.text.TextComponent;
+import de.codelix.commandapi.adventure.AdventureMessages;
+import de.codelix.commandapi.velocity.tree.builder.impl.DefaultVelocityArgumentBuilder;
+import de.codelix.commandapi.velocity.tree.builder.impl.DefaultVelocityFactory;
+import de.codelix.commandapi.velocity.tree.builder.impl.DefaultVelocityLiteralBuilder;
 
-public abstract class DefaultVelocityCommand extends VelocityCommand<Player> {
-    public DefaultVelocityCommand(ProxyServer proxy, String label, boolean async, AdventureDesign<VelocitySource<Player>> design) {
-        super(proxy, label, async, design);
+@SuppressWarnings("unused")
+public abstract class DefaultVelocityCommand<P> extends VelocityCommand<P, DefaultVelocityLiteralBuilder<VelocitySource<P>, P>, DefaultVelocityArgumentBuilder<?, VelocitySource<P>, P>> {
+    public DefaultVelocityCommand(ProxyServer proxy, String label, AdventureDesign<VelocitySource<P>> design) {
+        super(proxy, label, design, new DefaultVelocityFactory<>());
+    }
+    public DefaultVelocityCommand(ProxyServer proxy, String label) {
+        super(proxy, label, new AdventureDesign<>(new AdventureMessages()), new DefaultVelocityFactory<>());
     }
 
-    @Override
-    void sendMessagePlayer(Player source, TextComponent message) {
-        source.sendMessage(message);
-    }
-
-    @Override
-    boolean hasPermissionPlayer(Player player, String permission) {
-        return player.hasPermission(permission);
+    protected DefaultVelocityLiteralBuilder<VelocitySource<P>, P> createLiteralBuilder(String label) {
+        return new DefaultVelocityLiteralBuilder<>(label);
     }
 }

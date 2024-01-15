@@ -30,7 +30,7 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
         this.inferiorColor = inferiorColor;
     }
 
-    public TextComponent getHelpHeadline(Command<?, ?, S, TextComponent, ?> command) {
+    public TextComponent getHelpHeadline(Command<S, TextComponent, ?, ?, ?> command) {
         Node<S> rootNode = command.getRootNode();
         return Component.text("---===[ ")
             .append( this.createNodeHelp(rootNode, this.primaryColor) )
@@ -60,7 +60,7 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
     }
 
     @Override
-    public TextComponent getHelpMessage(Command<?, ?, S, TextComponent, ?> command, S source) {
+    public TextComponent getHelpMessage(Command<S, TextComponent, ?, ?, ?> command, S source) {
         List<List<Node<S>>> branches = command.flatten(source);
         TextComponent helpMessage = Component.newline().append(this.getHelpHeadline(command));
         for (List<Node<S>> branch : branches) {

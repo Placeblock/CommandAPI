@@ -30,12 +30,12 @@ public class EnumParameter<T extends Enum<T>, S> implements Parameter<T, S> {
                         return enumValue;
                     }
                 }
-                throw new InvalidParameterValueException(word);
+                return null;
             } else {
                 return Enum.valueOf(this.enumClass, next.toUpperCase());
             }
         } catch (IllegalArgumentException ex) {
-            throw new InvalidParameterValueException(word);
+            return null;
         }
     }
 

@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("unused")
-public interface Command<L extends LiteralBuilder<?, ?, S>, A extends ArgumentBuilder<?, ?, ?, S>, S, M, D extends CommandDesign<M>> {
+public interface Command<S, M, D extends CommandDesign<M>, L extends LiteralBuilder<?, ?, S>, A extends ArgumentBuilder<?, ?, ?, S>> {
 
     Factory<L, A, S> factory();
 
