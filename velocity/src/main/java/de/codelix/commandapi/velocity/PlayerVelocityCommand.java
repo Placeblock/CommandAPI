@@ -5,6 +5,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import de.codelix.commandapi.adventure.AdventureDesign;
 import net.kyori.adventure.text.TextComponent;
 
+@SuppressWarnings("unused")
 public abstract class PlayerVelocityCommand extends DefaultVelocityCommand<Player> {
 
     public PlayerVelocityCommand(ProxyServer proxy, String label, AdventureDesign<VelocitySource<Player>> design) {

@@ -5,6 +5,7 @@ import net.kyori.adventure.text.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+@SuppressWarnings("unused")
 public abstract class PlayerPaperCommand extends DefaultPaperCommand<Player> {
     public PlayerPaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<PaperSource<Player>> design) {
         super(plugin, label, async, design);

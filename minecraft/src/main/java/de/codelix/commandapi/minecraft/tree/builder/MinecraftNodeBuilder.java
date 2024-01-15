@@ -5,6 +5,7 @@ import de.codelix.commandapi.core.tree.builder.NodeBuilder;
 import de.codelix.commandapi.minecraft.MinecraftSource;
 import de.codelix.commandapi.minecraft.tree.MinecraftNode;
 
+@SuppressWarnings("unused")
 public interface MinecraftNodeBuilder<B extends MinecraftNodeBuilder<B, R, S, P, C>, R extends MinecraftNode<S, P, C>, S extends MinecraftSource<P, C>, P, C> extends NodeBuilder<B, R, S> {
 
     B runPlayer(RunConsumer.RC0<P> runConsumer);
