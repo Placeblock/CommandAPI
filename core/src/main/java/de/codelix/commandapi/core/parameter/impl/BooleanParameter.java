@@ -15,7 +15,7 @@ public class BooleanParameter<S> implements Parameter<Boolean, S> {
         String next = ctx.getInput().poll();
         if ("true".equals(next)) return true;
         if ("false".equals(next)) return false;
-        throw new InvalidBooleanParseException();
+        throw new InvalidBooleanParseException(this, next);
     }
 
     @Override

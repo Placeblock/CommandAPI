@@ -17,11 +17,6 @@ public class EnumParameter<T extends Enum<T>, S> implements Parameter<T, S> {
     @Override
     public T parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws ParseException {
         String next = ctx.getInput().poll();
-        // Evtl messages auch für übergeordnete exceptions
-        // Dann könnte man ne InvalidParameterValueParseException oder so machen
-        // Die dann generell mal nen String entgegen nimmt und ne generische nachricht
-        // anzeigt. Enumparameter könnte spezifischere Exceptions machen die
-        // die Invalid Parameter Exception erweitern.
         assert next != null;
         try {
             if (CommandEnum.class.isAssignableFrom(this.enumClass)) {
