@@ -53,6 +53,9 @@ public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, 
     public void execute(Invocation invocation) {
         VelocitySource<P> source = this.getSource(invocation.source());
         List<String> arguments = this.getArguments(invocation);
+        if (invocation.arguments().endsWith(" ")) {
+            arguments.add(" ");
+        }
         this.runSafe(arguments, source);
     }
 

@@ -81,10 +81,13 @@ public interface Command<S, M, D extends CommandDesign<M>, L extends LiteralBuil
 
     default CompletableFuture<List<String>> getSuggestions(ParseContext<S> ctx) {
         ParsedCommand<S> cmd = this.execute(ctx);
-        if (ctx.getInput().isEmpty()) return CompletableFuture.completedFuture(List.of());
         List<Node<S>> nodes = cmd.getNodes();
         if (nodes.isEmpty()) return this.getRootNode().getSuggestions(ctx, cmd);
         Node<S> lastNode = nodes.get(nodes.size() - 1);
+        if (ctx.getInput().isEmpty()) {
+            ctx.getInput().add(cmd.getParsed(lastNode));
+            return lastNode.getSuggestions(ctx, cmd);
+        }
         List<CompletableFuture<List<String>>> futures = new ArrayList<>();
         for (Node<S> child : lastNode.getChildrenOptional()) {
             if (child.isVisible(ctx.getSource(), this::hasPermission)) {

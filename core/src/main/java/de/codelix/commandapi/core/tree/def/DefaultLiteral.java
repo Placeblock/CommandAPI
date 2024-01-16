@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface DefaultLiteral<S> extends DefaultNode<S>, Literal<S> {
     @Override
-    default void parse(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws ParseException {
+    default void parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws ParseException {
         String next = ctx.getInput().poll();
         if (!this.getNames().contains(next)) {
             throw new InvalidLiteralParseException(this, next);

@@ -1,21 +1,21 @@
 plugins {
     id("maven-publish")
     id("signing")
-    id("java")
+    `java-library`
 }
 
 group = "de.codelix"
 description = "API for an easier use of Commands"
-version = "3.0.0"
+version = "4.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
 }
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.28")
-    annotationProcessor("org.projectlombok:lombok:1.18.28")
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
 
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation(platform("org.junit:junit-bom:5.10.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 java {
@@ -33,10 +33,6 @@ tasks {
     compileJava {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
         options.release.set(17)
-        options.compilerArgs.add("-parameters")
-    }
-    compileTestJava {
-        options.compilerArgs.add("-parameters")
     }
     processResources {
         filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything

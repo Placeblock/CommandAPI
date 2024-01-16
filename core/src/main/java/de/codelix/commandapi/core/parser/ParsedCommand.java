@@ -13,12 +13,17 @@ public class ParsedCommand<S> {
     @Getter
     private final List<Node<S>> nodes = new ArrayList<>();
     private final LinkedHashMap<Argument<?, S>, Object> arguments = new LinkedHashMap<>();
+    private final LinkedHashMap<Node<S>, String> parsed = new LinkedHashMap<>();
     @Getter
     @Setter
     private ParseException exception;
 
     public void storeArgument(Argument<?, S> argument, Object value) {
         this.arguments.put(argument, value);
+    }
+
+    public void storeParsed(Node<S> node, String value) {
+        this.parsed.put(node, value);
     }
 
     public Object getArgument(String name) {
@@ -32,6 +37,10 @@ public class ParsedCommand<S> {
 
     public Object getArgument(int index) {
         return this.arguments.values().toArray()[index];
+    }
+
+    public String getParsed(Node<S> node) {
+        return this.parsed.get(node);
     }
 
     public void addNode(Node<S> node) {

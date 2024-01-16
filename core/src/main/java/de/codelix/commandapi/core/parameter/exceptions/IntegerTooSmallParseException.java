@@ -7,6 +7,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class IntegerTooSmallParseException extends ParseException {
-    private final int min;
     private final int value;
+    private final int min;
 }
