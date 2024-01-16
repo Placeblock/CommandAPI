@@ -4,7 +4,7 @@ plugins {
     `java-library`
 }
 
-group = "de.codelix"
+group = "de.codelix.commandapi"
 description = "Paper support for the CommandAPI"
 version = "4.0.0-SNAPSHOT"
 
@@ -38,6 +38,14 @@ tasks {
     javadoc {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
         title = "CommandAPI API Documentation"
+    }
+    jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        dependsOn(configurations.runtimeClasspath)
+        from("${project.rootProject.layout.buildDirectory}/resources/main")
+        from({
+            configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+        })
     }
 }
 
