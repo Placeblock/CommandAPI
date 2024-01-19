@@ -122,7 +122,7 @@ public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, 
         return this.hasPermissionPlayer(source.getPlayer(), permission);
     }
 
-    abstract void sendMessagePlayer(P source, TextComponent message);
+    protected abstract void sendMessagePlayer(P source, TextComponent message);
 
-    abstract boolean hasPermissionPlayer(P player, String permission);
+    protected abstract boolean hasPermissionPlayer(P player, String permission);
 }

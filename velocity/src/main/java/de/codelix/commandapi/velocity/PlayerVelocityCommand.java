@@ -22,12 +22,12 @@ public abstract class PlayerVelocityCommand extends DefaultVelocityCommand<Playe
     }
 
     @Override
-    void sendMessagePlayer(Player source, TextComponent message) {
+    protected void sendMessagePlayer(Player source, TextComponent message) {
         source.sendMessage(message);
     }
 
     @Override
-    boolean hasPermissionPlayer(Player player, String permission) {
+    protected boolean hasPermissionPlayer(Player player, String permission) {
         return player.hasPermission(permission);
     }
 }
