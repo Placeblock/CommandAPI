@@ -6,7 +6,7 @@ import de.codelix.commandapi.minecraft.MinecraftSource;
 import de.codelix.commandapi.minecraft.tree.MinecraftNode;
 
 @SuppressWarnings("unused")
-public interface MinecraftNodeBuilder<B extends MinecraftNodeBuilder<B, R, S, P, C>, R extends MinecraftNode<S, P, C>, S extends MinecraftSource<P, C>, P, C> extends NodeBuilder<B, R, S> {
+public interface MinecraftNodeBuilder<B extends MinecraftNodeBuilder<B, R, S, P, C, M>, R extends MinecraftNode<S, P, C, M>, S extends MinecraftSource<P, C, M>, P, C, M> extends NodeBuilder<B, R, S, M> {
 
     B runPlayer(RunConsumer.RC0<P> runConsumer);
 
@@ -18,7 +18,7 @@ public interface MinecraftNodeBuilder<B extends MinecraftNodeBuilder<B, R, S, P,
 
     <T1, T2, T3, T4> B runPlayer(RunConsumer.RC4<P, T1, T2, T3, T4> runConsumer);
 
-    <T1, T2, T3, T4, T5> B runPlayer(RunConsumer.RC5<P, T1, T2, T3, T4, T5> runConsumer);
+    <T1, T2, T3, T4, T5> B runPlayer(RunConsumer.RC5<P,  T1, T2, T3, T4, T5> runConsumer);
 
     <T1, T2, T3, T4, T5, T6> B runPlayer(RunConsumer.RC6<P, T1, T2, T3, T4, T5, T6> runConsumer);
 }

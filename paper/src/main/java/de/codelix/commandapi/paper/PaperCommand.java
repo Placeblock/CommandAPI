@@ -34,7 +34,7 @@ public abstract class PaperCommand<P, L extends PaperLiteralBuilder<?, ?, PaperS
     @Getter
     private final boolean async;
     @Getter
-    private Literal<PaperSource<P>> rootNode;
+    private Literal<PaperSource<P>, TextComponent> rootNode;
     @Getter
     @Accessors(fluent = true)
     private final PaperFactory<L, A, PaperSource<P>, P> factory;
@@ -47,15 +47,6 @@ public abstract class PaperCommand<P, L extends PaperLiteralBuilder<?, ?, PaperS
         this.plugin = plugin;
         this.design = design;
         this.factory = factory;
-    }
-
-    @Override
-    public void sendMessage(PaperSource<P> source, TextComponent message) {
-        if (source.isPlayer()) {
-            this.sendMessagePlayer(source.getPlayer(), message);
-        } else {
-            source.getConsole().sendMessage(message);
-        }
     }
 
     @Override
@@ -94,12 +85,14 @@ public abstract class PaperCommand<P, L extends PaperLiteralBuilder<?, ?, PaperS
         PaperSource<P> source;
         if (sender instanceof Player player) {
             P customPlayer = this.getPlayer(player);
-            source = new PaperSource<>(customPlayer, null);
+            source = this.createSource(customPlayer, null);
         } else {
-            source = new PaperSource<>(null, sender);
+            source = this.createSource(null, sender);
         }
         return source;
     }
+
+    protected abstract PaperSource<P> createSource(P player, CommandSender console);
 
     protected abstract L createLiteralBuilder(String label);
 

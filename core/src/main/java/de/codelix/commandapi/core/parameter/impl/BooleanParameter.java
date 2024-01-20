@@ -5,13 +5,14 @@ import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.core.parameter.exceptions.InvalidBooleanParseException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
+import de.codelix.commandapi.core.parser.Source;
 
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class BooleanParameter<S> implements Parameter<Boolean, S> {
+public class BooleanParameter<S extends Source<M>, M> implements Parameter<Boolean, S, M> {
     @Override
-    public Boolean parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws ParseException {
+    public Boolean parse(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) throws ParseException {
         String next = ctx.getInput().poll();
         if ("true".equals(next)) return true;
         if ("false".equals(next)) return false;
@@ -19,7 +20,7 @@ public class BooleanParameter<S> implements Parameter<Boolean, S> {
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd) {
+    public List<String> getSuggestions(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) {
         String next = ctx.getRemaining();
         return this.startsWith(List.of("true", "end"), next);
     }

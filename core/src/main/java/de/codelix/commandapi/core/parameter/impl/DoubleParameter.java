@@ -7,19 +7,20 @@ import de.codelix.commandapi.core.parameter.exceptions.DoubleTooSmallParseExcept
 import de.codelix.commandapi.core.parameter.exceptions.InvalidDoubleParseException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
+import de.codelix.commandapi.core.parser.Source;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class DoubleParameter<S> implements Parameter<Double, S> {
+public class DoubleParameter<S extends Source<M>, M> implements Parameter<Double, S, M> {
     private static final char[] POSSIBLE_CHARS = "0123456789.".toCharArray();
     private final double min;
     private final double max;
 
     @Override
-    public Double parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws ParseException {
+    public Double parse(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) throws ParseException {
         String next = ctx.getInput().poll();
         assert next != null;
         try {
@@ -37,7 +38,7 @@ public class DoubleParameter<S> implements Parameter<Double, S> {
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd) {
+    public List<String> getSuggestions(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) {
         String next = ctx.getRemaining();
         List<String> suggestions = new ArrayList<>();
         int partialLength = next.length();

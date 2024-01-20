@@ -6,6 +6,7 @@ import de.codelix.commandapi.core.parameter.exceptions.IntegerTooSmallParseExcep
 import de.codelix.commandapi.core.parameter.exceptions.InvalidIntegerParseException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
+import de.codelix.commandapi.core.parser.Source;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,11 +15,11 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class IntegerParameter<S> implements Parameter<Integer, S> {
+public class IntegerParameter<S extends Source<M>, M> implements Parameter<Integer, S, M> {
     private final int min;
     private final int max;
     @Override
-    public Integer parse(ParseContext<S> ctx, ParsedCommand<S> cmd) throws ParseException {
+    public Integer parse(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) throws ParseException {
         String next = ctx.getInput().poll();
         assert next != null;
         try {
@@ -36,7 +37,7 @@ public class IntegerParameter<S> implements Parameter<Integer, S> {
     }
 
     @Override
-    public List<String> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd) {
+    public List<String> getSuggestions(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) {
         String next = ctx.getRemaining();
         List<String> suggestions = new ArrayList<>();
         for (int i = 0; i < 10; i++) {

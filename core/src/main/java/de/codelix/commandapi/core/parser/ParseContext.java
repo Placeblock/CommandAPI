@@ -9,15 +9,15 @@ import java.util.Queue;
 
 @Getter
 @AllArgsConstructor
-public class ParseContext<S> {
+public class ParseContext<S extends Source<M>, M> {
 
     @Setter
     private Queue<String> input;
 
     private final S source;
-    private final PermissionChecker<S> permissionChecker;
+    private final PermissionChecker<S, M> permissionChecker;
 
-    public ParseContext<S> copy() {
+    public ParseContext<S, M> copy() {
         return new ParseContext<>(new LinkedList<>(this.input), this.source, this.permissionChecker);
     }
 

@@ -1,17 +1,18 @@
 package de.codelix.commandapi.core.tree.builder;
 
 import de.codelix.commandapi.core.RunConsumer;
+import de.codelix.commandapi.core.parser.Source;
 import de.codelix.commandapi.core.tree.Node;
 
 @SuppressWarnings("unused")
-public interface NodeBuilder<B extends NodeBuilder<B, R, S>, R extends Node<S>, S> {
+public interface NodeBuilder<B extends NodeBuilder<B, R, S, M>, R extends Node<S, M>, S extends Source<M>, M> {
 
     B displayName(String displayName);
 
     B description(String description);
 
     @SuppressWarnings("UnusedReturnValue")
-    B then(NodeBuilder<?, ?, S> child);
+    B then(NodeBuilder<?, ?, S, M> child);
 
     B permission(String permission);
 
@@ -19,7 +20,7 @@ public interface NodeBuilder<B extends NodeBuilder<B, R, S>, R extends Node<S>, 
 
     B unsafePermission();
 
-    B runNative(RunConsumer.RC<S> runConsumer);
+    B runNative(RunConsumer.RC<S, M> runConsumer);
 
     B run(RunConsumer.RC0<S> runConsumer);
 

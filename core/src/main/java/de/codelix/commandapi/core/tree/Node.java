@@ -5,6 +5,7 @@ import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.core.RunConsumer;
 import de.codelix.commandapi.core.parser.PermissionChecker;
+import de.codelix.commandapi.core.parser.Source;
 import lombok.NonNull;
 
 import java.util.ArrayList;
@@ -15,17 +16,17 @@ import java.util.concurrent.CompletableFuture;
 /**
  * A node represents one element of a command
  */
-public interface Node<S> {
+public interface Node<S extends Source<M>, M> {
 
     /**
      * Children are sub-elements of a node
      * @return Children of this node
      */
-    List<Node<S>> getChildren();
+    List<Node<S, M>> getChildren();
 
-    default List<Node<S>> getChildrenOptional() {
-        List<Node<S>> children = new ArrayList<>();
-        for (Node<S> child : this.getChildren()) {
+    default List<Node<S, M>> getChildrenOptional() {
+        List<Node<S, M>> children = new ArrayList<>();
+        for (Node<S, M> child : this.getChildren()) {
             children.add(child);
             if (child.isOptional()) {
                children.addAll(child.getChildrenOptional());
@@ -34,18 +35,18 @@ public interface Node<S> {
         return children;
     }
 
-    default List<List<Node<S>>> flatten(S source, PermissionChecker<S> permissionChecker) {
-        List<List<Node<S>>> branches = new ArrayList<>();
+    default List<List<Node<S, M>>> flatten(S source, PermissionChecker<S, M> permissionChecker) {
+        List<List<Node<S, M>>> branches = new ArrayList<>();
         if (!this.isVisible(source, permissionChecker)) {
             return branches;
         }
-        List<Node<S>> children = this.getChildrenOptional();
-        if (children.size() == 0 || (!this.getRunConsumers().isEmpty() && !this.isUnsafePermission())) {
+        List<Node<S, M>> children = this.getChildrenOptional();
+        if (children.isEmpty() || (!this.getRunConsumers().isEmpty() && !this.isUnsafePermission())) {
             branches.add(new ArrayList<>(List.of(this)));
         }
-        for (Node<S> node : children) {
-            List<List<Node<S>>> childBranches = node.flatten(source, permissionChecker);
-            for (List<Node<S>> childBranch : childBranches) {
+        for (Node<S, M> node : children) {
+            List<List<Node<S, M>>> childBranches = node.flatten(source, permissionChecker);
+            for (List<Node<S, M>> childBranch : childBranches) {
                 childBranch.add(0, this);
                 branches.add(childBranch);
             }
@@ -81,19 +82,19 @@ public interface Node<S> {
      * Consumers that run if this command is executed
      * @return all consumers that run if this command is executed
      */
-    Collection<RunConsumer<S>> getRunConsumers();
+    Collection<RunConsumer> getRunConsumers();
 
     /**
      * Parses this node into a branch.
      * @param parsedCommand The branch
      */
-    void parse(ParseContext<S> ctx, ParsedCommand<S> parsedCommand) throws ParseException;
+    void parse(ParseContext<S, M> ctx, ParsedCommand<S, M> parsedCommand) throws ParseException;
 
     /**
      * Parses this node recursive. It tries to parse everything it can and creates a new branch for every child
      * @param parsedCommand The current branch
      */
-    void parseRecursive(ParseContext<S> ctx, ParsedCommand<S> parsedCommand);
+    void parseRecursive(ParseContext<S, M> ctx, ParsedCommand<S, M> parsedCommand);
 
     /**
      * The permission that is required to access that Node
@@ -108,9 +109,9 @@ public interface Node<S> {
      */
     boolean isUnsafePermission();
 
-    default boolean isVisible(S source, PermissionChecker<S> permissionChecker) {
+    default boolean isVisible(S source, PermissionChecker<S, M> permissionChecker) {
         return this.getPermission() == null || permissionChecker.hasPermission(source, this.getPermission()) || this.isUnsafePermission();
     }
 
-    CompletableFuture<List<String>> getSuggestions(ParseContext<S> ctx, ParsedCommand<S> cmd);
+    CompletableFuture<List<String>> getSuggestions(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd);
 }

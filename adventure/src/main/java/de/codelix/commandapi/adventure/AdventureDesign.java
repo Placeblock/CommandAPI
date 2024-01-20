@@ -16,7 +16,7 @@ import net.kyori.adventure.text.format.TextColor;
 
 import java.util.List;
 
-public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
+public class AdventureDesign<S extends AdventureSource<?, ?>> extends MinecraftDesign<S, TextComponent> {
     private final TextColor primaryColor;
     private final TextColor inferiorColor;
 
@@ -31,7 +31,7 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
     }
 
     public TextComponent getHelpHeadline(Command<S, TextComponent, ?, ?, ?> command) {
-        Node<S> rootNode = command.getRootNode();
+        Node<S, TextComponent> rootNode = command.getRootNode();
         return Component.text("---===[ ")
             .append( this.createNodeHelp(rootNode, this.primaryColor) )
             .append( Component.text(" ]===---"))
@@ -39,10 +39,10 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
             .color(this.primaryColor);
     }
 
-    public TextComponent getNodeHelp(Node<S> node) {
-        if (node instanceof Literal<S>) {
+    public TextComponent getNodeHelp(Node<S, TextComponent> node) {
+        if (node instanceof Literal<S, TextComponent>) {
             return Component.text(node.getDisplayNameSafe()).color(this.inferiorColor);
-        } else if (node instanceof Argument<?,?>) {
+        } else if (node instanceof Argument<?,?, TextComponent>) {
             return Component.text("[")
                 .append( Component.text(node.getDisplayNameSafe()) )
                 .append( Component.text("]")).color(this.inferiorColor);
@@ -50,8 +50,8 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
         return null;
     }
 
-    public TextComponent getNodeDescription(Node<?> node) {
-        if (node instanceof Literal<?> literal) {
+    public TextComponent getNodeDescription(Node<?, TextComponent> node) {
+        if (node instanceof Literal<?, TextComponent> literal) {
             List<String> names = literal.getNames();
             if (names.size() <= 1) return null;
             return Component.text("Alias: " + String.join(", ", names.subList(1, names.size()))).color(this.primaryColor);
@@ -61,16 +61,16 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
 
     @Override
     public TextComponent getHelpMessage(Command<S, TextComponent, ?, ?, ?> command, S source) {
-        List<List<Node<S>>> branches = command.flatten(source);
+        List<List<Node<S, TextComponent>>> branches = command.flatten(source);
         TextComponent helpMessage = Component.newline().append(this.getHelpHeadline(command));
-        for (List<Node<S>> branch : branches) {
+        for (List<Node<S, TextComponent>> branch : branches) {
             // We only want to generate the branchCommand to the first Parameter
             boolean argumentReached = false;
             StringBuilder branchCommand = new StringBuilder("/");
             TextComponent branchMessage = Component.text("/").color(this.primaryColor);
             for (int i = 0; i < branch.size(); i++) {
-                Node<S> node = branch.get(i);
-                if (node instanceof Argument<?,?>) {
+                Node<S, TextComponent> node = branch.get(i);
+                if (node instanceof Argument<?,?, TextComponent>) {
                     argumentReached = true;
                 }
                 TextColor color = i == 0 ? this.primaryColor : this.inferiorColor;
@@ -87,7 +87,7 @@ public class AdventureDesign<S> extends MinecraftDesign<S, TextComponent> {
     }
 
     @NonNull
-    private TextComponent createNodeHelp(Node<S> node, TextColor color) {
+    private TextComponent createNodeHelp(Node<S, TextComponent> node, TextColor color) {
         TextComponent nodeHelp = this.getNodeHelp(node).color(color);
         TextComponent hoverText = Component.empty();
         String description = node.getDescription();

@@ -8,7 +8,7 @@ import de.codelix.commandapi.minecraft.tree.builder.MinecraftLiteralBuilder;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public interface MinecraftCommand<S extends MinecraftSource<P, C>, P, C, M, D extends MinecraftDesign<S, M>, L extends MinecraftLiteralBuilder<?, ?, S, P, C>, A extends MinecraftArgumentBuilder<?, ?, ?, S, P, C>> extends Command<S, M, D, L, A> {
+public interface MinecraftCommand<S extends MinecraftSource<P, C, M>, P, C, M, D extends MinecraftDesign<S, M>, L extends MinecraftLiteralBuilder<?, ?, S, P, C, M>, A extends MinecraftArgumentBuilder<?, ?, ?, S, P, C, M>> extends Command<S, M, D, L, A> {
     void build(L builder);
 
     void register();
@@ -25,12 +25,12 @@ public interface MinecraftCommand<S extends MinecraftSource<P, C>, P, C, M, D ex
                 e instanceof InvalidLiteralParseException ||
                 e instanceof NoRunParseException ||
                 e instanceof NoPermissionParseException) {
-                this.sendMessage(source, this.getDesign().getHelpMessage(this, source));
+                source.sendMessage(this.getDesign().getHelpMessage(this, source));
                 return;
             }
             M message = this.getDesign().getMessages().getMessage(e);
             if (message == null) return;
-            this.sendMessage(source, message);
+            source.sendMessage(message);
         }
     }
 }

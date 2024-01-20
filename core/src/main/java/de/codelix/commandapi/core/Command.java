@@ -5,6 +5,7 @@ import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.core.message.CommandDesign;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
+import de.codelix.commandapi.core.parser.Source;
 import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.core.tree.builder.ArgumentBuilder;
 import de.codelix.commandapi.core.tree.builder.Factory;
@@ -20,19 +21,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("unused")
-public interface Command<S, M, D extends CommandDesign<M>, L extends LiteralBuilder<?, ?, S>, A extends ArgumentBuilder<?, ?, ?, S>> {
+public interface Command<S extends Source<M>, M, D extends CommandDesign<M>, L extends LiteralBuilder<?, ?, S, M>, A extends ArgumentBuilder<?, ?, ?, S, M>> {
 
-    Factory<L, A, S> factory();
+    Factory<L, A, S, M> factory();
 
-    Node<S> getRootNode();
+    Node<S, M> getRootNode();
 
     D getDesign();
 
-    default List<List<Node<S>>> flatten(S source) {
+    default List<List<Node<S, M>>> flatten(S source) {
         return this.getRootNode().flatten(source, this::hasPermission);
     }
-
-    void sendMessage(S source, M message);
 
     boolean hasPermission(S source, String permission);
 
@@ -42,54 +41,54 @@ public interface Command<S, M, D extends CommandDesign<M>, L extends LiteralBuil
         } catch (ParseException e) {
             M message = this.getDesign().getMessages().getMessage(e);
             if (message == null) return;
-            this.sendMessage(source, message);
+            source.sendMessage(message);
         }
     }
 
     default void run(List<String> input, S source) throws ParseException {
-        ParseContext<S> ctx = this.createParseContext(input, source);
+        ParseContext<S, M> ctx = this.createParseContext(input, source);
         this.run(ctx);
     }
 
-    default void run(ParseContext<S> ctx) throws ParseException {
-        ParsedCommand<S> cmd = this.execute(ctx);
+    default void run(ParseContext<S, M> ctx) throws ParseException {
+        ParsedCommand<S, M> cmd = this.execute(ctx);
         if (cmd.getException() != null) {
             throw cmd.getException();
         }
-        Node<S> lastNode = cmd.getNodes().get(cmd.getNodes().size() - 1);
-        Collection<RunConsumer<S>> runConsumers = lastNode.getRunConsumers();
+        Node<S, M> lastNode = cmd.getNodes().get(cmd.getNodes().size() - 1);
+        Collection<RunConsumer> runConsumers = lastNode.getRunConsumers();
         if (runConsumers.isEmpty()) {
             throw new NoRunParseException();
         }
-        for (RunConsumer<S> runConsumer : runConsumers) {
+        for (RunConsumer runConsumer : runConsumers) {
             for (Method method : runConsumer.getClass().getDeclaredMethods()) {
                 this.invokeWithParameters(ctx, cmd, runConsumer, method);
             }
         }
     }
 
-    private ParsedCommand<S> execute(ParseContext<S> ctx) {
-        ParsedCommand<S> cmd = new ParsedCommand<>();
+    private ParsedCommand<S, M> execute(ParseContext<S, M> ctx) {
+        ParsedCommand<S, M> cmd = new ParsedCommand<>();
         this.getRootNode().parseRecursive(ctx, cmd);
         return cmd;
     }
 
     default CompletableFuture<List<String>> getSuggestions(List<String> input, S source) {
-        ParseContext<S> ctx = this.createParseContext(input, source);
+        ParseContext<S, M> ctx = this.createParseContext(input, source);
         return this.getSuggestions(ctx);
     }
 
-    default CompletableFuture<List<String>> getSuggestions(ParseContext<S> ctx) {
-        ParsedCommand<S> cmd = this.execute(ctx);
-        List<Node<S>> nodes = cmd.getNodes();
+    default CompletableFuture<List<String>> getSuggestions(ParseContext<S, M> ctx) {
+        ParsedCommand<S, M> cmd = this.execute(ctx);
+        List<Node<S, M>> nodes = cmd.getNodes();
         if (nodes.isEmpty()) return this.getRootNode().getSuggestions(ctx, cmd);
-        Node<S> lastNode = nodes.get(nodes.size() - 1);
+        Node<S, M> lastNode = nodes.get(nodes.size() - 1);
         if (ctx.getInput().isEmpty()) {
             ctx.getInput().add(cmd.getParsed(lastNode));
             return lastNode.getSuggestions(ctx, cmd);
         }
         List<CompletableFuture<List<String>>> futures = new ArrayList<>();
-        for (Node<S> child : lastNode.getChildrenOptional()) {
+        for (Node<S, M> child : lastNode.getChildrenOptional()) {
             if (child.isVisible(ctx.getSource(), this::hasPermission)) {
                 futures.add(child.getSuggestions(ctx.copy(), cmd));
             }
@@ -115,19 +114,19 @@ public interface Command<S, M, D extends CommandDesign<M>, L extends LiteralBuil
         return result;
     }
 
-    default ParseContext<S> createParseContext(List<String> input, S source) {
+    default ParseContext<S, M> createParseContext(List<String> input, S source) {
         LinkedList<String> linkedInput = new LinkedList<>(input);
         return new ParseContext<>(linkedInput, source, this::hasPermission);
     }
 
 
-    default void invokeWithParameters(ParseContext<S> ctx, ParsedCommand<S> cmd, Object obj, Method method) {
+    default void invokeWithParameters(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd, Object obj, Method method) {
         java.lang.reflect.Parameter[] parameters = method.getParameters();
         Object[] params = new Object[parameters.length];
         if (params.length > 0) {
             params[0] = ctx.getSource();
         }
-        if (obj instanceof RunConsumer.RC<?>) {
+        if (obj instanceof RunConsumer.RC<?, ?>) {
             params[1] = cmd;
         } else {
             for (int i = 1; i < parameters.length; i++) {
