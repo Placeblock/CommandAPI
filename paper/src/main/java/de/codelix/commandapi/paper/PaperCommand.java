@@ -136,14 +136,4 @@ public abstract class PaperCommand<P, L extends PaperLiteralBuilder<?, ?, PaperS
     }
 
     protected abstract P getPlayer(Player player);
-
-    @Override
-    public boolean hasPermission(PaperSource<P> source, String permission) {
-        if (source.isConsole()) return true;
-        return this.hasPermissionPlayer(source.getPlayer(), permission);
-    }
-
-    protected abstract void sendMessagePlayer(P source, TextComponent message);
-
-    protected abstract boolean hasPermissionPlayer(P player, String permission);
 }

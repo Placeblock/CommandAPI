@@ -7,5 +7,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class NoPermissionParseException extends ParseException {
-    private final Node<?> node;
+    private final Node<?, ?> node;
 }

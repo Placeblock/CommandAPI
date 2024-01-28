@@ -4,4 +4,6 @@ public interface Source<M> {
 
     void sendMessage(M message);
 
+    boolean hasPermission(String permission);
+
 }

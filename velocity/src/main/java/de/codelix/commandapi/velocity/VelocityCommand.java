@@ -26,7 +26,7 @@ public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, 
     private CommandMeta meta;
     private final String label;
     @Getter
-    private Literal<VelocitySource<P>> rootNode;
+    private Literal<VelocitySource<P>, TextComponent> rootNode;
     @Getter
     @Accessors(fluent = true)
     private final VelocityFactory<L, A, VelocitySource<P>, P> factory;
@@ -38,15 +38,6 @@ public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, 
         this.proxy = proxy;
         this.design = design;
         this.factory = factory;
-    }
-
-    @Override
-    public void sendMessage(VelocitySource<P> source, TextComponent message) {
-        if (source.isPlayer()) {
-            this.sendMessagePlayer(source.getPlayer(), message);
-        } else {
-            source.getConsole().sendMessage(message);
-        }
     }
 
     @Override
@@ -76,14 +67,16 @@ public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, 
         VelocitySource<P> source;
         if (sender instanceof Player player) {
             P customPlayer = this.getPlayer(player);
-            source = new VelocitySource<>(customPlayer, null);
+            source = this.createSource(customPlayer, null);
         } else if (sender instanceof ConsoleCommandSource consoleCommandSource){
-            source = new VelocitySource<>(null, consoleCommandSource);
+            source = this.createSource(null, consoleCommandSource);
         } else {
             throw new IllegalStateException("Invalid source for command " + this.label);
         }
         return source;
     }
+
+    protected abstract VelocitySource<P> createSource(P player, CommandSource console);
 
     protected abstract L createLiteralBuilder(String label);
 
@@ -115,14 +108,4 @@ public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, 
     }
 
     protected abstract P getPlayer(Player player);
-
-    @Override
-    public boolean hasPermission(VelocitySource<P> source, String permission) {
-        if (source.isConsole()) return true;
-        return this.hasPermissionPlayer(source.getPlayer(), permission);
-    }
-
-    protected abstract void sendMessagePlayer(P source, TextComponent message);
-
-    protected abstract boolean hasPermissionPlayer(P player, String permission);
 }

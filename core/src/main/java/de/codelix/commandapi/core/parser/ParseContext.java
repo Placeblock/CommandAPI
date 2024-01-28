@@ -15,10 +15,9 @@ public class ParseContext<S extends Source<M>, M> {
     private Queue<String> input;
 
     private final S source;
-    private final PermissionChecker<S, M> permissionChecker;
 
     public ParseContext<S, M> copy() {
-        return new ParseContext<>(new LinkedList<>(this.input), this.source, this.permissionChecker);
+        return new ParseContext<>(new LinkedList<>(this.input), this.source);
     }
 
     public String getRemaining() {
@@ -26,6 +25,6 @@ public class ParseContext<S extends Source<M>, M> {
     }
 
     public boolean hasPermission(String permission) {
-        return permission == null || this.permissionChecker.hasPermission(this.source, permission);
+        return permission == null || this.source.hasPermission(permission);
     }
 }

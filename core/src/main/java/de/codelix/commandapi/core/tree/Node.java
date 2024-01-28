@@ -1,10 +1,9 @@
 package de.codelix.commandapi.core.tree;
 
+import de.codelix.commandapi.core.RunConsumer;
+import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
-import de.codelix.commandapi.core.exception.ParseException;
-import de.codelix.commandapi.core.RunConsumer;
-import de.codelix.commandapi.core.parser.PermissionChecker;
 import de.codelix.commandapi.core.parser.Source;
 import lombok.NonNull;
 
@@ -35,9 +34,9 @@ public interface Node<S extends Source<M>, M> {
         return children;
     }
 
-    default List<List<Node<S, M>>> flatten(S source, PermissionChecker<S, M> permissionChecker) {
+    default List<List<Node<S, M>>> flatten(S source) {
         List<List<Node<S, M>>> branches = new ArrayList<>();
-        if (!this.isVisible(source, permissionChecker)) {
+        if (!this.isVisible(source)) {
             return branches;
         }
         List<Node<S, M>> children = this.getChildrenOptional();
@@ -45,7 +44,7 @@ public interface Node<S extends Source<M>, M> {
             branches.add(new ArrayList<>(List.of(this)));
         }
         for (Node<S, M> node : children) {
-            List<List<Node<S, M>>> childBranches = node.flatten(source, permissionChecker);
+            List<List<Node<S, M>>> childBranches = node.flatten(source);
             for (List<Node<S, M>> childBranch : childBranches) {
                 childBranch.add(0, this);
                 branches.add(childBranch);
@@ -109,8 +108,8 @@ public interface Node<S extends Source<M>, M> {
      */
     boolean isUnsafePermission();
 
-    default boolean isVisible(S source, PermissionChecker<S, M> permissionChecker) {
-        return this.getPermission() == null || permissionChecker.hasPermission(source, this.getPermission()) || this.isUnsafePermission();
+    default boolean isVisible(S source) {
+        return this.getPermission() == null || source.hasPermission(this.getPermission()) || this.isUnsafePermission();
     }
 
     CompletableFuture<List<String>> getSuggestions(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd);

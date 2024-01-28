@@ -30,10 +30,8 @@ public interface Command<S extends Source<M>, M, D extends CommandDesign<M>, L e
     D getDesign();
 
     default List<List<Node<S, M>>> flatten(S source) {
-        return this.getRootNode().flatten(source, this::hasPermission);
+        return this.getRootNode().flatten(source);
     }
-
-    boolean hasPermission(S source, String permission);
 
     default void runSafe(List<String> input, S source) {
         try {
@@ -89,7 +87,7 @@ public interface Command<S extends Source<M>, M, D extends CommandDesign<M>, L e
         }
         List<CompletableFuture<List<String>>> futures = new ArrayList<>();
         for (Node<S, M> child : lastNode.getChildrenOptional()) {
-            if (child.isVisible(ctx.getSource(), this::hasPermission)) {
+            if (child.isVisible(ctx.getSource())) {
                 futures.add(child.getSuggestions(ctx.copy(), cmd));
             }
         }
@@ -116,7 +114,7 @@ public interface Command<S extends Source<M>, M, D extends CommandDesign<M>, L e
 
     default ParseContext<S, M> createParseContext(List<String> input, S source) {
         LinkedList<String> linkedInput = new LinkedList<>(input);
-        return new ParseContext<>(linkedInput, source, this::hasPermission);
+        return new ParseContext<>(linkedInput, source);
     }
 
 

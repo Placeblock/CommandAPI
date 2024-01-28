@@ -22,19 +22,19 @@ public interface NodeBuilder<B extends NodeBuilder<B, R, S, M>, R extends Node<S
 
     B runNative(RunConsumer.RC<S, M> runConsumer);
 
-    B run(RunConsumer.RC0<S> runConsumer);
+    B run(RunConsumer.RC0<S, M> runConsumer);
 
-    <T1> B run(RunConsumer.RC1<S, T1> runConsumer);
+    <T1> B run(RunConsumer.RC1<S, M, T1> runConsumer);
 
-    <T1, T2> B run(RunConsumer.RC2<S, T1, T2> runConsumer);
+    <T1, T2> B run(RunConsumer.RC2<S, M, T1, T2> runConsumer);
 
-    <T1, T2, T3> B run(RunConsumer.RC3<S, T1, T2, T3> runConsumer);
+    <T1, T2, T3> B run(RunConsumer.RC3<S, M, T1, T2, T3> runConsumer);
 
-    <T1, T2, T3, T4> B run(RunConsumer.RC4<S, T1, T2, T3, T4> runConsumer);
+    <T1, T2, T3, T4> B run(RunConsumer.RC4<S, M, T1, T2, T3, T4> runConsumer);
 
-    <T1, T2, T3, T4, T5> B run(RunConsumer.RC5<S, T1, T2, T3, T4, T5> runConsumer);
+    <T1, T2, T3, T4, T5> B run(RunConsumer.RC5<S, M, T1, T2, T3, T4, T5> runConsumer);
 
-    <T1, T2, T3, T4, T5, T6> B run(RunConsumer.RC6<S, T1, T2, T3, T4, T5, T6> runConsumer);
+    <T1, T2, T3, T4, T5, T6> B run(RunConsumer.RC6<S, M, T1, T2, T3, T4, T5, T6> runConsumer);
 
 
     R build();

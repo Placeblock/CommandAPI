@@ -9,5 +9,8 @@ public abstract class PaperSource<P> extends AdventureSource<P, CommandSender> {
         super(player, console);
     }
 
-    public abstract void sendMessagePlayer(TextComponent message);
+    @Override
+    public void sendMessageConsole(TextComponent message) {
+        this.getConsole().sendMessage(message);
+    }
 }

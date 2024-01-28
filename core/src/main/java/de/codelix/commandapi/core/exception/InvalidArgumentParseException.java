@@ -7,5 +7,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class InvalidArgumentParseException extends ParseException {
-    private final Argument<?, ?> node;
+    private final Argument<?, ?, ?> node;
 }

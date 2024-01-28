@@ -7,6 +7,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class InvalidLiteralParseException extends ParseException {
-    private final Literal<?> node;
+    private final Literal<?, ?> node;
     private final String provided;
 }

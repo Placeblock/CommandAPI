@@ -3,6 +3,7 @@ package de.codelix.commandapi.velocity.tree.builder.impl;
 import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.velocity.VelocitySource;
 import de.codelix.commandapi.velocity.tree.builder.VelocityFactory;
+import net.kyori.adventure.text.TextComponent;
 
 public class DefaultVelocityFactory<S extends VelocitySource<P>, P> implements VelocityFactory<DefaultVelocityLiteralBuilder<S, P>, DefaultVelocityArgumentBuilder<?, S, P>, S, P> {
     @Override
@@ -11,7 +12,7 @@ public class DefaultVelocityFactory<S extends VelocitySource<P>, P> implements V
     }
 
     @Override
-    public <T> DefaultVelocityArgumentBuilder<T, S, P> argument(String name, Parameter<T, S> parameter) {
+    public <T> DefaultVelocityArgumentBuilder<T, S, P> argument(String name, Parameter<T, S, TextComponent> parameter) {
         return new DefaultVelocityArgumentBuilder<>(name, parameter);
     }
 }

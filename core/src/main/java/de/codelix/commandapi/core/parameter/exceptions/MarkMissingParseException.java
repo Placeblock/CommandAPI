@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MarkMissingParseException extends ParseException {
 
-    private final QuotedParameter<?> parameter;
+    private final QuotedParameter<?, ?> parameter;
     private final String input;
 
 }
