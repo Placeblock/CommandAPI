@@ -1,5 +1,6 @@
 package de.codelix.commandapi.velocity;
 
+import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import de.codelix.commandapi.adventure.AdventureDesign;
@@ -13,6 +14,11 @@ public abstract class PlayerVelocityCommand extends DefaultVelocityCommand<Playe
 
     public PlayerVelocityCommand(ProxyServer proxy, String label) {
         super(proxy, label);
+    }
+
+    @Override
+    protected VelocitySource<Player> createSource(Player player, ConsoleCommandSource console) {
+        return new DefaultVelocitySource(player, console);
     }
 
     @Override

@@ -76,7 +76,7 @@ public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, 
         return source;
     }
 
-    protected abstract VelocitySource<P> createSource(P player, CommandSource console);
+    protected abstract VelocitySource<P> createSource(P player, ConsoleCommandSource console);
 
     protected abstract L createLiteralBuilder(String label);
 

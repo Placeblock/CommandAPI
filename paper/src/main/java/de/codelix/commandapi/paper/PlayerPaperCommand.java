@@ -1,6 +1,7 @@
 package de.codelix.commandapi.paper;
 
 import de.codelix.commandapi.adventure.AdventureDesign;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -20,6 +21,11 @@ public abstract class PlayerPaperCommand extends DefaultPaperCommand<Player> {
 
     public PlayerPaperCommand(Plugin plugin, String label) {
         super(plugin, label);
+    }
+
+    @Override
+    protected PaperSource<Player> createSource(Player player, CommandSender console) {
+        return new DefaultPaperSource(player, console);
     }
 
     @Override
