@@ -29,19 +29,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public abstract class PaperCommand<P, L extends PaperLiteralBuilder<?, ?, PaperSource<P>, P>, A extends PaperArgumentBuilder<?, ?, ?, PaperSource<P>, P>> extends BukkitCommand implements AdventureCommand<PaperSource<P>, P, CommandSender, AdventureDesign<PaperSource<P>>, L, A>, Listener {
+public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperLiteralBuilder<?, ?, S, P>, A extends PaperArgumentBuilder<?, ?, ?, S, P>> extends BukkitCommand implements AdventureCommand<S, P, CommandSender, AdventureDesign<S>, L, A>, Listener {
     private final Plugin plugin;
     @Getter
     private final boolean async;
     @Getter
-    private Literal<PaperSource<P>, TextComponent> rootNode;
+    private Literal<S, TextComponent> rootNode;
     @Getter
     @Accessors(fluent = true)
-    private final PaperFactory<L, A, PaperSource<P>, P> factory;
+    private final PaperFactory<L, A, S, P> factory;
     @Getter
-    private final AdventureDesign<PaperSource<P>> design;
+    private final AdventureDesign<S> design;
 
-    public PaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<PaperSource<P>> design, PaperFactory<L, A, PaperSource<P>, P> factory) {
+    public PaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<S> design, PaperFactory<L, A, S, P> factory) {
         super(label);
         this.async = async;
         this.plugin = plugin;
@@ -53,7 +53,7 @@ public abstract class PaperCommand<P, L extends PaperLiteralBuilder<?, ?, PaperS
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NonNull @NotNull String[] args) {
         List<String> arguments = new ArrayList<>(List.of(commandLabel));
         arguments.addAll(List.of(args));
-        PaperSource<P> source = this.getSource(sender);
+        S source = this.getSource(sender);
         if (this.isAsync()) {
             this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () ->
                 this.runSafe(arguments, source));
@@ -71,7 +71,7 @@ public abstract class PaperCommand<P, L extends PaperLiteralBuilder<?, ?, PaperS
             args.add("");
         }
         CommandSender sender = event.getSender();
-        PaperSource<P> source = this.getSource(sender);
+        S source = this.getSource(sender);
         try {
             List<String> suggestions = this.getSuggestions(args, source).get();
             List<AsyncTabCompleteEvent.Completion> completions = suggestions.stream().map(AsyncTabCompleteEvent.Completion::completion).toList();
@@ -81,8 +81,8 @@ public abstract class PaperCommand<P, L extends PaperLiteralBuilder<?, ?, PaperS
         }
     }
 
-    private PaperSource<P> getSource(CommandSender sender) {
-        PaperSource<P> source;
+    private S getSource(CommandSender sender) {
+        S source;
         if (sender instanceof Player player) {
             P customPlayer = this.getPlayer(player);
             source = this.createSource(customPlayer, null);
@@ -92,7 +92,7 @@ public abstract class PaperCommand<P, L extends PaperLiteralBuilder<?, ?, PaperS
         return source;
     }
 
-    protected abstract PaperSource<P> createSource(P player, CommandSender console);
+    protected abstract S createSource(P player, CommandSender console);
 
     protected abstract L createLiteralBuilder(String label);
 

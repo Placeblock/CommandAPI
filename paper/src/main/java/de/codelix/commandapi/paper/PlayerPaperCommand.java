@@ -6,12 +6,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 @SuppressWarnings("unused")
-public abstract class PlayerPaperCommand extends DefaultPaperCommand<Player> {
-    public PlayerPaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<PaperSource<Player>> design) {
+public abstract class PlayerPaperCommand extends DefaultPaperCommand<DefaultPaperSource, Player> {
+    public PlayerPaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<DefaultPaperSource> design) {
         super(plugin, label, async, design);
     }
 
-    public PlayerPaperCommand(Plugin plugin, String label, AdventureDesign<PaperSource<Player>> design) {
+    public PlayerPaperCommand(Plugin plugin, String label, AdventureDesign<DefaultPaperSource> design) {
         super(plugin, label, design);
     }
 
@@ -24,7 +24,7 @@ public abstract class PlayerPaperCommand extends DefaultPaperCommand<Player> {
     }
 
     @Override
-    protected PaperSource<Player> createSource(Player player, CommandSender console) {
+    protected DefaultPaperSource createSource(Player player, CommandSender console) {
         return new DefaultPaperSource(player, console);
     }
 

@@ -8,11 +8,11 @@ import de.codelix.commandapi.paper.tree.builder.impl.DefaultPaperLiteralBuilder;
 import org.bukkit.plugin.Plugin;
 
 @SuppressWarnings("unused")
-public abstract class DefaultPaperCommand<P> extends PaperCommand<P, DefaultPaperLiteralBuilder<PaperSource<P>, P>, DefaultPaperArgumentBuilder<?, PaperSource<P>, P>> {
-    public DefaultPaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<PaperSource<P>> design) {
+public abstract class DefaultPaperCommand<S extends PaperSource<P>, P> extends PaperCommand<S, P, DefaultPaperLiteralBuilder<S, P>, DefaultPaperArgumentBuilder<?, S, P>> {
+    public DefaultPaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<S> design) {
         super(plugin, label, async, design, new DefaultPaperFactory<>());
     }
-    public DefaultPaperCommand(Plugin plugin, String label, AdventureDesign<PaperSource<P>> design) {
+    public DefaultPaperCommand(Plugin plugin, String label, AdventureDesign<S> design) {
         super(plugin, label, true, design, new DefaultPaperFactory<>());
     }
     public DefaultPaperCommand(Plugin plugin, String label, boolean async) {
@@ -22,7 +22,7 @@ public abstract class DefaultPaperCommand<P> extends PaperCommand<P, DefaultPape
         super(plugin, label, true, new AdventureDesign<>(new AdventureMessages()), new DefaultPaperFactory<>());
     }
 
-    protected DefaultPaperLiteralBuilder<PaperSource<P>, P> createLiteralBuilder(String label) {
+    protected DefaultPaperLiteralBuilder<S, P> createLiteralBuilder(String label) {
         return new DefaultPaperLiteralBuilder<>(label);
     }
 }

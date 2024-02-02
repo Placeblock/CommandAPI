@@ -21,19 +21,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, VelocitySource<P>, P>, A extends VelocityArgumentBuilder<?, ?, ?, VelocitySource<P>, P>> implements RawCommand, AdventureCommand<VelocitySource<P>, P, ConsoleCommandSource, AdventureDesign<VelocitySource<P>>, L, A> {
+public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends VelocityLiteralBuilder<?, ?, S, P>, A extends VelocityArgumentBuilder<?, ?, ?, S, P>> implements RawCommand, AdventureCommand<S, P, ConsoleCommandSource, AdventureDesign<S>, L, A> {
     private final ProxyServer proxy;
     private CommandMeta meta;
     private final String label;
     @Getter
-    private Literal<VelocitySource<P>, TextComponent> rootNode;
+    private Literal<S, TextComponent> rootNode;
     @Getter
     @Accessors(fluent = true)
-    private final VelocityFactory<L, A, VelocitySource<P>, P> factory;
+    private final VelocityFactory<L, A, S, P> factory;
     @Getter
-    private final AdventureDesign<VelocitySource<P>> design;
+    private final AdventureDesign<S> design;
 
-    public VelocityCommand(ProxyServer proxy, String label, AdventureDesign<VelocitySource<P>> design, VelocityFactory<L, A, VelocitySource<P>, P> factory) {
+    public VelocityCommand(ProxyServer proxy, String label, AdventureDesign<S> design, VelocityFactory<L, A, S, P> factory) {
         this.label = label;
         this.proxy = proxy;
         this.design = design;
@@ -42,7 +42,7 @@ public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, 
 
     @Override
     public void execute(Invocation invocation) {
-        VelocitySource<P> source = this.getSource(invocation.source());
+        S source = this.getSource(invocation.source());
         List<String> arguments = this.getArguments(invocation);
         if (invocation.arguments().endsWith(" ")) {
             arguments.add(" ");
@@ -52,7 +52,7 @@ public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, 
 
     @Override
     public CompletableFuture<List<String>> suggestAsync(final Invocation invocation) {
-        VelocitySource<P> source = this.getSource(invocation.source());
+        S source = this.getSource(invocation.source());
         List<String> arguments = this.getArguments(invocation);
         return this.getSuggestions(arguments, source);
     }
@@ -63,8 +63,8 @@ public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, 
         return arguments;
     }
 
-    private VelocitySource<P> getSource(CommandSource sender) {
-        VelocitySource<P> source;
+    private S getSource(CommandSource sender) {
+        S source;
         if (sender instanceof Player player) {
             P customPlayer = this.getPlayer(player);
             source = this.createSource(customPlayer, null);
@@ -76,7 +76,7 @@ public abstract class VelocityCommand<P, L extends VelocityLiteralBuilder<?, ?, 
         return source;
     }
 
-    protected abstract VelocitySource<P> createSource(P player, ConsoleCommandSource console);
+    protected abstract S createSource(P player, ConsoleCommandSource console);
 
     protected abstract L createLiteralBuilder(String label);
 

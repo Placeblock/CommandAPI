@@ -6,9 +6,9 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import de.codelix.commandapi.adventure.AdventureDesign;
 
 @SuppressWarnings("unused")
-public abstract class PlayerVelocityCommand extends DefaultVelocityCommand<Player> {
+public abstract class PlayerVelocityCommand extends DefaultVelocityCommand<DefaultVelocitySource, Player> {
 
-    public PlayerVelocityCommand(ProxyServer proxy, String label, AdventureDesign<VelocitySource<Player>> design) {
+    public PlayerVelocityCommand(ProxyServer proxy, String label, AdventureDesign<DefaultVelocitySource> design) {
         super(proxy, label, design);
     }
 
@@ -17,7 +17,7 @@ public abstract class PlayerVelocityCommand extends DefaultVelocityCommand<Playe
     }
 
     @Override
-    protected VelocitySource<Player> createSource(Player player, ConsoleCommandSource console) {
+    protected DefaultVelocitySource createSource(Player player, ConsoleCommandSource console) {
         return new DefaultVelocitySource(player, console);
     }
 
