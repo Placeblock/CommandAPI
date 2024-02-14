@@ -1,19 +1,33 @@
 plugins {
     id("maven-publish")
     id("signing")
+    `java-library`
 }
 
+group = "de.codelix.commandapi"
 description = "API for an easier use of Commands"
-version = "2.2.6"
+version = "4.0.0-SNAPSHOT"
 
+repositories {
+    mavenCentral()
+}
 dependencies {
-    compileOnly("net.kyori:adventure-api:4.14.0")
-    testImplementation("net.kyori:adventure-api:4.14.0")
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation(platform("org.junit:junit-bom:5.10.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+}
+java {
+    withJavadocJar()
+    withSourcesJar()
+    // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
 
 tasks {
     compileJava {
@@ -23,16 +37,21 @@ tasks {
     processResources {
         filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything
     }
-    test {
-        useJUnitPlatform()
-    }
     javadoc {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
         title = "CommandAPI API Documentation"
     }
+    jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        dependsOn(configurations.runtimeClasspath)
+        from("${project.rootProject.layout.buildDirectory}/resources/main")
+        from({
+            configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+        })
+    }
 }
 
-tasks.withType<PublishToMavenRepository>() {
+tasks.withType<PublishToMavenRepository> {
     doFirst {
         println("Publishing ${publication.groupId}:${publication.artifactId}:${publication.version} to ${repository.url}")
         publication.artifacts.forEach {

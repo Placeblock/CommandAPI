@@ -1,20 +1,30 @@
 plugins {
     id("maven-publish")
     id("signing")
+    `java-library`
 }
 
-version = "2.2.4"
+group = "de.codelix.commandapi"
+description = "Paper support for the CommandAPI"
+version = "4.0.0-SNAPSHOT"
 
 repositories {
-    maven {
-        url = uri("https://repo.papermc.io/repository/maven-public/")
-    }
+    mavenCentral()
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
-
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    api(project(":adventure"))
     compileOnly(project(":core"))
-    implementation(project(":minecraft"))
+
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+}
+java {
+    withJavadocJar()
+    withSourcesJar()
+    // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
 tasks {
@@ -25,23 +35,17 @@ tasks {
     processResources {
         filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything
     }
+    javadoc {
+        options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
+        title = "CommandAPI API Documentation"
+    }
     jar {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         dependsOn(configurations.runtimeClasspath)
+        from("${project.rootProject.layout.buildDirectory}/resources/main")
         from({
             configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
         })
-    }
-}
-
-tasks.withType<PublishToMavenRepository>() {
-    doFirst {
-        println("Publishing ${publication.groupId}:${publication.artifactId}:${publication.version} to ${repository.url}")
-        publication.artifacts.forEach {
-            println("Classifier ${it.classifier}")
-            println("File ${it.file}")
-            println("Extension ${it.extension}")
-        }
     }
 }
 
@@ -54,8 +58,8 @@ publishing {
             version = project.version.toString()
             pom {
                 packaging = "jar"
-                name.set("Paper Bridge")
-                description.set("Paper Bridge for CommandAPI")
+                name.set("CommandAPI-Paper")
+                description.set(project.description)
                 url.set("https://github.com/Placeblock/CommandAPI")
                 licenses {
                     license {
@@ -88,7 +92,6 @@ publishing {
         }
     }
 }
-
 
 signing {
     sign(publishing.publications)
