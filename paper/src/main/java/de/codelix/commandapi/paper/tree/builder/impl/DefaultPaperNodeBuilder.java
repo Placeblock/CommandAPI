@@ -5,14 +5,14 @@ import de.codelix.commandapi.core.tree.builder.NodeBuilder;
 import de.codelix.commandapi.minecraft.tree.builder.PlayerRunConsumer;
 import de.codelix.commandapi.paper.PaperSource;
 import de.codelix.commandapi.paper.tree.builder.PaperNodeBuilder;
-import de.codelix.commandapi.paper.tree.impl.DefaultPaperNode;
+import de.codelix.commandapi.paper.tree.impl.PaperNodeImpl;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class DefaultPaperNodeBuilder<B extends DefaultPaperNodeBuilder<B, R, S, P>, R extends DefaultPaperNode<S, P>, S extends PaperSource<P>, P> implements PaperNodeBuilder<B, R, S, P> {
+public abstract class DefaultPaperNodeBuilder<B extends DefaultPaperNodeBuilder<B, R, S, P>, R extends PaperNodeImpl<S, P>, S extends PaperSource<P>, P> implements PaperNodeBuilder<B, R, S, P> {
     protected String displayName;
     protected String description;
     protected List<NodeBuilder<?, ?, S, TextComponent>> children = new ArrayList<>();

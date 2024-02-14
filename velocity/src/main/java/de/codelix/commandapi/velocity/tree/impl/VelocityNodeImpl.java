@@ -1,9 +1,9 @@
-package de.codelix.commandapi.paper.tree.impl;
+package de.codelix.commandapi.velocity.tree.impl;
 
 import de.codelix.commandapi.core.RunConsumer;
 import de.codelix.commandapi.core.tree.Node;
-import de.codelix.commandapi.paper.PaperSource;
-import de.codelix.commandapi.paper.tree.PaperNode;
+import de.codelix.commandapi.velocity.VelocitySource;
+import de.codelix.commandapi.velocity.tree.VelocityNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.TextComponent;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public abstract class DefaultPaperNode<S extends PaperSource<P>, P> implements PaperNode<S, P> {
+public abstract class VelocityNodeImpl<S extends VelocitySource<P>, P> implements VelocityNode<S, P> {
     protected final String displayName;
     protected final String description;
     protected final List<Node<S, TextComponent>> children;

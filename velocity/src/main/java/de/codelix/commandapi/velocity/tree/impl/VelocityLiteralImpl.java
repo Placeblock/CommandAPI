@@ -11,10 +11,10 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter
-public class DefaultVelocityLiteral<S extends VelocitySource<P>, P> extends DefaultVelocityNode<S, P> implements VelocityLiteral<S, P> {
+public class VelocityLiteralImpl<S extends VelocitySource<P>, P> extends VelocityNodeImpl<S, P> implements VelocityLiteral<S, P> {
     private final List<String> names;
 
-    public DefaultVelocityLiteral(List<String> names, String displayName, String description, List<Node<S, TextComponent>> children, String permission, boolean unsafePermission, boolean optional, Collection<RunConsumer> runConsumers) {
+    public VelocityLiteralImpl(List<String> names, String displayName, String description, List<Node<S, TextComponent>> children, String permission, boolean unsafePermission, boolean optional, Collection<RunConsumer> runConsumers) {
         super(displayName, description, children, permission, unsafePermission, optional, runConsumers);
         this.names = names;
     }

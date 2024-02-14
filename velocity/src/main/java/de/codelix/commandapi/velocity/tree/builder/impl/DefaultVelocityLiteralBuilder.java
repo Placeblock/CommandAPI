@@ -4,13 +4,13 @@ import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.core.tree.builder.NodeBuilder;
 import de.codelix.commandapi.velocity.VelocitySource;
 import de.codelix.commandapi.velocity.tree.builder.VelocityLiteralBuilder;
-import de.codelix.commandapi.velocity.tree.impl.DefaultVelocityLiteral;
+import de.codelix.commandapi.velocity.tree.impl.VelocityLiteralImpl;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultVelocityLiteralBuilder<S extends VelocitySource<P>, P> extends DefaultVelocityNodeBuilder<DefaultVelocityLiteralBuilder<S, P>, DefaultVelocityLiteral<S, P>, S, P> implements VelocityLiteralBuilder<DefaultVelocityLiteralBuilder<S, P>, DefaultVelocityLiteral<S, P>, S, P> {
+public class DefaultVelocityLiteralBuilder<S extends VelocitySource<P>, P> extends DefaultVelocityNodeBuilder<DefaultVelocityLiteralBuilder<S, P>, VelocityLiteralImpl<S, P>, S, P> implements VelocityLiteralBuilder<DefaultVelocityLiteralBuilder<S, P>, VelocityLiteralImpl<S, P>, S, P> {
 
     private final List<String> names;
 
@@ -25,12 +25,12 @@ public class DefaultVelocityLiteralBuilder<S extends VelocitySource<P>, P> exten
         return this;
     }
     @Override
-    public DefaultVelocityLiteral<S, P> build() {
+    public VelocityLiteralImpl<S, P> build() {
         List<Node<S, TextComponent>> children = new ArrayList<>();
         for (NodeBuilder<?, ?, S, TextComponent> child : this.children) {
             children.add(child.build());
         }
-        return new DefaultVelocityLiteral<>(this.names, this.displayName, this.description, children, this.permission,
+        return new VelocityLiteralImpl<>(this.names, this.displayName, this.description, children, this.permission,
             this.unsafePermission, this.optional, this.runConsumers);
     }
 

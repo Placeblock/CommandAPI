@@ -5,13 +5,13 @@ import de.codelix.commandapi.core.tree.Node;
 import de.codelix.commandapi.core.tree.builder.NodeBuilder;
 import de.codelix.commandapi.paper.PaperSource;
 import de.codelix.commandapi.paper.tree.builder.PaperArgumentBuilder;
-import de.codelix.commandapi.paper.tree.impl.DefaultPaperArgument;
+import de.codelix.commandapi.paper.tree.impl.PaperArgumentImpl;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultPaperArgumentBuilder<T, S extends PaperSource<P>, P> extends DefaultPaperNodeBuilder<DefaultPaperArgumentBuilder<T, S, P>, DefaultPaperArgument<T, S, P>, S, P> implements PaperArgumentBuilder<T, DefaultPaperArgumentBuilder<T, S, P>, DefaultPaperArgument<T, S, P>, S, P> {
+public class DefaultPaperArgumentBuilder<T, S extends PaperSource<P>, P> extends DefaultPaperNodeBuilder<DefaultPaperArgumentBuilder<T, S, P>, PaperArgumentImpl<T, S, P>, S, P> implements PaperArgumentBuilder<T, DefaultPaperArgumentBuilder<T, S, P>, PaperArgumentImpl<T, S, P>, S, P> {
     private final String name;
     private final Parameter<T, S, TextComponent> parameter;
 
@@ -21,12 +21,12 @@ public class DefaultPaperArgumentBuilder<T, S extends PaperSource<P>, P> extends
     }
 
     @Override
-    public DefaultPaperArgument<T, S, P> build() {
+    public PaperArgumentImpl<T, S, P> build() {
         List<Node<S, TextComponent>> children = new ArrayList<>();
         for (NodeBuilder<?, ?, S, TextComponent> child : this.children) {
             children.add(child.build());
         }
-        return new DefaultPaperArgument<>(this.name, this.parameter, this.displayName, this.description, children, this.permission,
+        return new PaperArgumentImpl<>(this.name, this.parameter, this.displayName, this.description, children, this.permission,
             this.unsafePermission, this.optional, this.runConsumers);
     }
     @Override

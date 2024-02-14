@@ -5,14 +5,14 @@ import de.codelix.commandapi.core.tree.builder.NodeBuilder;
 import de.codelix.commandapi.minecraft.tree.builder.PlayerRunConsumer;
 import de.codelix.commandapi.velocity.VelocitySource;
 import de.codelix.commandapi.velocity.tree.builder.VelocityNodeBuilder;
-import de.codelix.commandapi.velocity.tree.impl.DefaultVelocityNode;
+import de.codelix.commandapi.velocity.tree.impl.VelocityNodeImpl;
 import net.kyori.adventure.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class DefaultVelocityNodeBuilder<B extends DefaultVelocityNodeBuilder<B, R, S, P>, R extends DefaultVelocityNode<S, P>, S extends VelocitySource<P>, P> implements VelocityNodeBuilder<B, R, S, P> {
+public abstract class DefaultVelocityNodeBuilder<B extends DefaultVelocityNodeBuilder<B, R, S, P>, R extends VelocityNodeImpl<S, P>, S extends VelocitySource<P>, P> implements VelocityNodeBuilder<B, R, S, P> {
     protected String displayName;
     protected String description;
     protected List<NodeBuilder<?, ?, S, TextComponent>> children = new ArrayList<>();
