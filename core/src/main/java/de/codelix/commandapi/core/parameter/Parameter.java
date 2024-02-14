@@ -1,23 +1,28 @@
 package de.codelix.commandapi.core.parameter;
 
-import de.codelix.commandapi.core.SuggestionBuilder;
-import de.codelix.commandapi.core.exception.CommandParseException;
-import de.codelix.commandapi.core.parser.ParsedCommandBranch;
+import de.codelix.commandapi.core.exception.ParseException;
+import de.codelix.commandapi.core.parser.ParseContext;
+import de.codelix.commandapi.core.parser.ParsedCommand;
+import de.codelix.commandapi.core.parser.Source;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-/**
- * Author: Placeblock
- */
-public interface Parameter<S, T> {
+public interface Parameter<T, S extends Source<M>, M> {
 
-    T parse(ParsedCommandBranch<S> command, S source) throws CommandParseException;
+    T parse(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) throws ParseException;
 
-    void getSuggestions(SuggestionBuilder<S> suggestionBuilder);
-
-    @SuppressWarnings("unused")
-    static List<String> startsWith(List<String> list, String partial) {
-        return list.stream().filter(item -> item.startsWith(partial)).toList();
+    default CompletableFuture<List<String>> getSuggestionsAsync(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) {
+        return CompletableFuture.completedFuture(this.getSuggestions(ctx, cmd));
     }
 
+    default List<String> getSuggestions(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) {
+        return new ArrayList<>();
+    }
+
+    default List<String> startsWith(Collection<String> list, String partial) {
+        return list.stream().filter(item -> item.startsWith(partial)).toList();
+    }
 }

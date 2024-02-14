@@ -1,190 +1,141 @@
 package de.codelix.commandapi.core;
 
-import de.codelix.commandapi.core.design.CoreDefaultMessages;
-import de.codelix.commandapi.core.exception.*;
-import de.codelix.commandapi.core.design.CommandDesign;
-import de.codelix.commandapi.core.design.DefaultCommandDesign;
-import de.codelix.commandapi.core.parser.ParsedCommandBranch;
-import de.codelix.commandapi.core.tree.CommandNode;
-import de.codelix.commandapi.core.tree.LiteralCommandNode;
-import de.codelix.commandapi.core.tree.builder.LiteralCommandNodeBuilder;
-import de.codelix.commandapi.core.parser.StringReader;
-import lombok.Getter;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.Style;
+import de.codelix.commandapi.core.exception.NoRunParseException;
+import de.codelix.commandapi.core.exception.ParseException;
+import de.codelix.commandapi.core.message.CommandDesign;
+import de.codelix.commandapi.core.parser.ParseContext;
+import de.codelix.commandapi.core.parser.ParsedCommand;
+import de.codelix.commandapi.core.parser.Source;
+import de.codelix.commandapi.core.tree.Node;
+import de.codelix.commandapi.core.tree.builder.ArgumentBuilder;
+import de.codelix.commandapi.core.tree.builder.Factory;
+import de.codelix.commandapi.core.tree.builder.LiteralBuilder;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-/**
- * Author: Placeblock
- */
-@Getter
-public abstract class Command<S> {
+@SuppressWarnings("unused")
+public interface Command<S extends Source<M>, M, D extends CommandDesign<M>, L extends LiteralBuilder<?, ?, S, M>, A extends ArgumentBuilder<?, ?, ?, S, M>> {
 
-    public static Logger LOGGER;
-    public static CommandDesign DESIGN = new DefaultCommandDesign();
+    Factory<L, A, S, M> factory();
 
-    static {
-        LOGGER = Logger.getLogger("commandapi");
-        LOGGER.setLevel(Level.WARNING);
-        new CoreDefaultMessages().register();
+    Node<S, M> getRootNode();
+
+    D getDesign();
+
+    default List<List<Node<S, M>>> flatten(S source) {
+        return this.getRootNode().flatten(source);
     }
 
-    private final LiteralCommandNode<S> base;
-    private final TextComponent prefix;
-    private final boolean async;
-    private final ExecutorService threadPool;
-    private final CommandDesign design;
-
-    public Command(String label) {
-        this(label, false);
-    }
-
-    public Command(String label, CommandDesign commandDesign) {
-        this(label, false, commandDesign);
-    }
-
-    public Command(String label, boolean async) {
-        this(label, async, DESIGN);
-    }
-
-    public Command(String label, boolean async, CommandDesign commandDesign) {
-        this.design = commandDesign;
-        this.async = async;
-        CommandNode<S> baseCommand = this.generateCommand(new LiteralCommandNodeBuilder<>(label)).build(this);
-        if (!(baseCommand instanceof LiteralCommandNode<S> literalTreeCommand)) {
-            throw new IllegalArgumentException("You can only use LiteralTreeCommandBuilder as root");
-        }
-        this.base = literalTreeCommand;
-        this.prefix = this.design.getPrefix(this);
-        if (this.async) {
-            this.threadPool = Executors.newFixedThreadPool(4);
-        } else {
-            this.threadPool = null;
-        }
-    }
-
-    public abstract LiteralCommandNodeBuilder<S> generateCommand(LiteralCommandNodeBuilder<S> builder);
-
-    public abstract boolean hasPermission(S source, String permission);
-
-    public void sendMessage(S source, TextComponent message) {
-        this.sendMessage(source, message, true);
-    }
-    public void sendMessage(S source, TextComponent message, boolean prefix) {
-        if (prefix && this.prefix != null) {
-            message = this.prefix.append(Component.empty().style(Style.empty())).append(message);
-        }
-        this.sendMessageRaw(source, message);
-    }
-
-    public abstract void sendMessageRaw(S source, TextComponent message);
-
-    public void parseAndExecute(String text, S source) {
-        List<ParsedCommandBranch<S>> parseResult = this.parse(text, source);
-        this.execute(getBestResult(parseResult), source);
-    }
-
-    public List<ParsedCommandBranch<S>> parse(String text, S source) {
-        ParsedCommandBranch<S> parsedCommandBranch = new ParsedCommandBranch<>(new StringReader(text));
-        return this.base.parseRecursive(parsedCommandBranch, source);
-    }
-
-    public void execute(ParsedCommandBranch<S> result, S source) {
+    default void runSafe(List<String> input, S source) {
         try {
-            this.executeRaw(result, source);
-        } catch (CommandHelpException e) {
-            TextComponent message = this.design.generateHelpMessage(this, source);
-            this.sendMessage(source, message, false);
-        } catch (CommandParseException e) {
-            TextComponent message = this.design.getMessage(e);
-            if (message == null) {
-                this.sendMessage(source, Component.text("Missing Exception Message for Exception: " + e.getClass().getSimpleName()));
-                return;
-            }
-            this.sendMessage(source, message);
+            this.run(input, source);
+        } catch (ParseException e) {
+            M message = this.getDesign().getMessages().getMessage(e);
+            if (message == null) return;
+            source.sendMessage(message);
         }
     }
 
-    public void executeRaw(ParsedCommandBranch<S> result, S source) throws CommandParseException {
-        Command.LOGGER.info("Command for Execution: " + result.getBranch().stream().map(CommandNode::getName).toList());
-        Command.LOGGER.info("Command for Execution2: " + result.getReader().debugString());
-        CommandNode<S> lastParsed = result.getLastParsedTreeCommand();
-        if (result.getException() != null) {
-            if (result.getException() instanceof InvalidLiteralException) {
-                throw new CommandHelpException();
-            } else {
-                throw result.getException();
-            }
+    default void run(List<String> input, S source) throws ParseException {
+        ParseContext<S, M> ctx = this.createParseContext(input, source);
+        this.run(ctx);
+    }
+
+    default void run(ParseContext<S, M> ctx) throws ParseException {
+        ParsedCommand<S, M> cmd = this.execute(ctx);
+        if (cmd.getException() != null) {
+            throw cmd.getException();
         }
-        CommandExecutor<S> commandExecutor = lastParsed.getCommandExecutor();
-        if (commandExecutor == null) {
-            throw new CommandHelpException();
-        } else {
-            commandExecutor.run(result, source);
+        Node<S, M> lastNode = cmd.getNodes().get(cmd.getNodes().size() - 1);
+        Collection<RunConsumer> runConsumers = lastNode.getRunConsumers();
+        if (runConsumers.isEmpty()) {
+            throw new NoRunParseException();
+        }
+        for (RunConsumer runConsumer : runConsumers) {
+            for (Method method : runConsumer.getClass().getDeclaredMethods()) {
+                this.invokeWithParameters(ctx, cmd, runConsumer, method);
+            }
         }
     }
 
-    public List<String> getSuggestions(List<ParsedCommandBranch<S>> results, S source) {
-        List<String> suggestions = new ArrayList<>();
-        for (ParsedCommandBranch<S> result : results) {
-            Command.LOGGER.info("Checking Result: " + result.getBranch().stream().map(CommandNode::getName).toList());
-            StringReader reader = result.getReader();
-            String remaining = reader.getRemaining();
-            // We only get suggestions if the remaining text starts with a whitespace and the next char is no whitespace
-            if (remaining.startsWith(" ") && !remaining.substring(1).startsWith(" ")) {
-                reader.skip();
-                CommandNode<S> lastParsedCommandNode = result.getLastParsedTreeCommand();
-                List<CommandNode<S>> suggestionCommandNodes;
-                // If the last command was parsed successfully we get suggestions for the child commands
-                if (result.getException() != null) {
-                    suggestionCommandNodes = List.of(lastParsedCommandNode);
-                } else {
-                    suggestionCommandNodes = lastParsedCommandNode.getChildren();
+    private ParsedCommand<S, M> execute(ParseContext<S, M> ctx) {
+        ParsedCommand<S, M> cmd = new ParsedCommand<>();
+        this.getRootNode().parseRecursive(ctx, cmd);
+        return cmd;
+    }
+
+    default CompletableFuture<List<String>> getSuggestions(List<String> input, S source) {
+        ParseContext<S, M> ctx = this.createParseContext(input, source);
+        return this.getSuggestions(ctx);
+    }
+
+    default CompletableFuture<List<String>> getSuggestions(ParseContext<S, M> ctx) {
+        ParsedCommand<S, M> cmd = this.execute(ctx);
+        List<Node<S, M>> nodes = cmd.getNodes();
+        if (nodes.isEmpty()) return this.getRootNode().getSuggestions(ctx, cmd);
+        Node<S, M> lastNode = nodes.get(nodes.size() - 1);
+        if (ctx.getInput().isEmpty()) {
+            ctx.getInput().add(cmd.getParsed(lastNode));
+            return lastNode.getSuggestions(ctx, cmd);
+        }
+        List<CompletableFuture<List<String>>> futures = new ArrayList<>();
+        for (Node<S, M> child : lastNode.getChildrenOptional()) {
+            if (child.isVisible(ctx.getSource())) {
+                futures.add(child.getSuggestions(ctx.copy(), cmd));
+            }
+        }
+        return this.combine(futures);
+    }
+
+    default CompletableFuture<List<String>> combine(List<CompletableFuture<List<String>>> futures) {
+        CompletableFuture<Void> combined = CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+        CompletableFuture<List<String>> result = new CompletableFuture<>();
+        combined.whenComplete((a, b) -> {
+            List<String> suggestions = new ArrayList<>();
+            for (CompletableFuture<List<String>> future : futures) {
+                try {
+                    List<String> futureSuggestions = future.get();
+                    suggestions.addAll(futureSuggestions);
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
                 }
-                for (CommandNode<S> suggestionCommandNode : suggestionCommandNodes) {
-                    Command.LOGGER.info("Getting Suggestions for TreeCommand: " + suggestionCommandNode.getName());
-                    List<String> resultSuggestions = suggestionCommandNode.getSuggestions(result, source);
-                    Command.LOGGER.info(resultSuggestions.toString());
-                    suggestions.addAll(resultSuggestions);
-                }
             }
-        }
-        return suggestions;
-    }
-
-    /**
-     * Returns the best Result for a list of ParsedCommands
-     */
-    public static <S> ParsedCommandBranch<S> getBestResult(List<ParsedCommandBranch<S>> results) {
-        results.sort((a, b) -> {
-            if (a.getBranch().size() > b.getBranch().size()) return -1;
-            if (a.getBranch().size() < b.getBranch().size()) return 1;
-            if (!a.getReader().canRead() && b.getReader().canRead()) return -1;
-            if (a.getReader().canRead() && !b.getReader().canRead()) return 1;
-            if (a.getException() == null && b.getException() != null) return -1;
-            if (a.getException() != null && b.getException() == null) return 1;
-            CommandExecutor<S> aCommandExecutor = a.getLastParsedTreeCommand().getCommandExecutor();
-            CommandExecutor<S> bCommandExecutor = b.getLastParsedTreeCommand().getCommandExecutor();
-            if (aCommandExecutor != null && bCommandExecutor == null) return -1;
-            if (aCommandExecutor == null && bCommandExecutor != null) return 1;
-            return 0;
+            result.complete(suggestions);
         });
-        Command.LOGGER.info("Sorted Parsed Commands:");
-        for (ParsedCommandBranch<S> parsedCommandBranch : results) {
-            Command.LOGGER.info(parsedCommandBranch.getBranch().stream().map(CommandNode::getName).toList() + ": " + parsedCommandBranch.getReader().debugString());
-            Command.LOGGER.info("Tree Commands:" + parsedCommandBranch.getBranch().size());
-            Command.LOGGER.info("Exception:" + parsedCommandBranch.getException());
-            if (parsedCommandBranch.getLastParsedTreeCommand() != null) {
-                Command.LOGGER.info("Executor:" + parsedCommandBranch.getLastParsedTreeCommand().getCommandExecutor());
+        return result;
+    }
+
+    default ParseContext<S, M> createParseContext(List<String> input, S source) {
+        LinkedList<String> linkedInput = new LinkedList<>(input);
+        return new ParseContext<>(linkedInput, source);
+    }
+
+
+    default void invokeWithParameters(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd, Object obj, Method method) {
+        java.lang.reflect.Parameter[] parameters = method.getParameters();
+        Object[] params = new Object[parameters.length];
+        if (params.length > 0) {
+            params[0] = ctx.getSource();
+        }
+        if (obj instanceof RunConsumer.RC<?, ?>) {
+            params[1] = cmd;
+        } else {
+            for (int i = 1; i < parameters.length; i++) {
+                params[i] = cmd.getArgument(i-1);
             }
         }
-        return results.get(0);
+        try {
+            method.setAccessible(true);
+            method.invoke(obj, params);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

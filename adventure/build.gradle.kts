@@ -5,17 +5,16 @@ plugins {
 }
 
 group = "de.codelix.commandapi"
-description = "Paper support for the CommandAPI"
+description = "Adventure API support for the CommandAPI"
 version = "4.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/")
 }
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
-    api(project(":adventure"))
     compileOnly(project(":core"))
+    api(project(":minecraft"))
+    compileOnly("net.kyori:adventure-api:4.14.0")
 
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
@@ -49,6 +48,7 @@ tasks {
     }
 }
 
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -58,7 +58,7 @@ publishing {
             version = project.version.toString()
             pom {
                 packaging = "jar"
-                name.set("CommandAPI-Paper")
+                name.set("CommandAPI-Adventure")
                 description.set(project.description)
                 url.set("https://github.com/Placeblock/CommandAPI")
                 licenses {

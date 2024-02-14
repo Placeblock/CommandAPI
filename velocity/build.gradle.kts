@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "de.codelix.commandapi"
-description = "Paper support for the CommandAPI"
+description = "Velocity Support for the Command API"
 version = "4.0.0-SNAPSHOT"
 
 repositories {
@@ -13,7 +13,8 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
 }
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("com.velocitypowered:velocity-api:3.2.0-SNAPSHOT")
+    annotationProcessor("com.velocitypowered:velocity-api:3.2.0-SNAPSHOT")
     api(project(":adventure"))
     compileOnly(project(":core"))
 
@@ -26,7 +27,6 @@ java {
     // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
-
 tasks {
     compileJava {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
@@ -58,7 +58,7 @@ publishing {
             version = project.version.toString()
             pom {
                 packaging = "jar"
-                name.set("CommandAPI-Paper")
+                name.set("CommandAPI-Velocity")
                 description.set(project.description)
                 url.set("https://github.com/Placeblock/CommandAPI")
                 licenses {
