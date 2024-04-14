@@ -1,5 +1,14 @@
 # The CommandAPI
 
+The CommandAPI is ja Java Library for handling user input. It is written very generic so it can be used in various
+situations and extended where needed. Although written for minecraft plugins, all Minecraft functionality is inside
+own modules and the core module which handles the parsing of commands has nothing to do with Minecraft at all!
+You could use it for a native command line application too!
+The CommandAPI parses whole words instead of each char individually which makes it much more performant than most of
+the other Command-parsing libraries out there!
+
+Have fun using it ;)
+
 Builds are availible at the mavenCentral Repository 📦
 <details>
 <summary>Gradle Kotlin</summary>
