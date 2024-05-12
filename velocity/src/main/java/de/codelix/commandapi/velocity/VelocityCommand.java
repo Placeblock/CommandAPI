@@ -44,9 +44,6 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
     public void execute(Invocation invocation) {
         S source = this.getSource(invocation.source());
         List<String> arguments = this.getArguments(invocation);
-        if (invocation.arguments().endsWith(" ")) {
-            arguments.add(" ");
-        }
         this.runSafe(arguments, source);
     }
 
@@ -54,12 +51,17 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
     public CompletableFuture<List<String>> suggestAsync(final Invocation invocation) {
         S source = this.getSource(invocation.source());
         List<String> arguments = this.getArguments(invocation);
+        if (invocation.arguments().endsWith(" ")) {
+            arguments.add("");
+        }
         return this.getSuggestions(arguments, source);
     }
 
     private List<String> getArguments(Invocation invocation) {
         List<String> arguments = new ArrayList<>(List.of(invocation.alias()));
-        arguments.addAll(List.of(invocation.arguments().split(" ")));
+        if (!invocation.arguments().isEmpty()) {
+            arguments.addAll(List.of(invocation.arguments().split(" ")));
+        }
         return arguments;
     }
 

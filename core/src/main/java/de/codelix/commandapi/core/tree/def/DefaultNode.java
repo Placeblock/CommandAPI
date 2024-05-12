@@ -27,7 +27,7 @@ public interface DefaultNode<S extends Source<M>, M> extends Node<S, M> {
             cmd.setException(ex);
             return;
         }
-        if (ctx.getInput().isEmpty()) {
+        if (ctx.getInput().isEmpty() || ctx.getInput().peek().isEmpty()) {
             if (ctx.hasPermission(this.getPermission())) {
                 cmd.addNode(this);
             } else {
