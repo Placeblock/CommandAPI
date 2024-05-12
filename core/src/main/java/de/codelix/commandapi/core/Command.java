@@ -1,5 +1,6 @@
 package de.codelix.commandapi.core;
 
+import de.codelix.commandapi.core.exception.NoPermissionParseException;
 import de.codelix.commandapi.core.exception.NoRunParseException;
 import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.core.message.CommandDesign;
@@ -89,6 +90,9 @@ public interface Command<S extends Source<M>, M, D extends CommandDesign<M>, L e
     default CompletableFuture<List<String>> getSuggestions(ParseContext<S, M> ctx) {
         ParsedCommand<S, M> cmd = this.execute(ctx);
         List<Node<S, M>> nodes = cmd.getNodes();
+        if (cmd.getException() instanceof NoPermissionParseException) {
+            return CompletableFuture.completedFuture(new ArrayList<>());
+        }
         if (nodes.isEmpty()) return this.getRootNode().getSuggestions(ctx, cmd);
         Node<S, M> lastNode = nodes.get(nodes.size() - 1);
         if (ctx.getInput().isEmpty()) {
