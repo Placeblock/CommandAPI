@@ -113,4 +113,6 @@ public interface Node<S extends Source<M>, M> {
     }
 
     CompletableFuture<List<String>> getSuggestions(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd);
+
+    long getCacheTime();
 }

@@ -1,5 +1,6 @@
 package de.codelix.commandapi.core;
 
+import de.codelix.commandapi.core.cache.SuggestionCache;
 import de.codelix.commandapi.core.exception.NoPermissionParseException;
 import de.codelix.commandapi.core.exception.NoRunParseException;
 import de.codelix.commandapi.core.exception.ParseException;
@@ -29,6 +30,8 @@ public interface Command<S extends Source<M>, M, D extends CommandDesign<M>, L e
     Node<S, M> getRootNode();
 
     D getDesign();
+
+    SuggestionCache<S, M> getSuggestionCache();
 
     default List<List<Node<S, M>>> flatten(S source) {
         return this.getRootNode().flatten(source);
