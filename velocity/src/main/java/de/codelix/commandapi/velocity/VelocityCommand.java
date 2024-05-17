@@ -51,7 +51,7 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
     public CompletableFuture<List<String>> suggestAsync(final Invocation invocation) {
         S source = this.getSource(invocation.source());
         List<String> arguments = this.getArguments(invocation);
-        if (invocation.arguments().endsWith(" ")) {
+        if (invocation.arguments().endsWith(" ") || invocation.arguments().isEmpty()) {
             arguments.add("");
         }
         return this.getSuggestions(arguments, source);
