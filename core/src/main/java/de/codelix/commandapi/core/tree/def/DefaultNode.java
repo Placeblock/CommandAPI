@@ -8,6 +8,8 @@ import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.parser.Source;
 import de.codelix.commandapi.core.tree.Node;
 
+import java.util.List;
+
 public interface DefaultNode<S extends Source<M>, M> extends Node<S, M> {
     @Override
     default void parseRecursive(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) {
@@ -37,10 +39,11 @@ public interface DefaultNode<S extends Source<M>, M> extends Node<S, M> {
             return;
         }
         cmd.addNode(this);
-        if (this.getChildrenOptional().isEmpty() && !ctx.getInput().isEmpty()) {
+        List<Node<S, M>> parseChildren = this.getParseChildren(ctx, cmd);
+        if (parseChildren.isEmpty() && !ctx.getInput().isEmpty()) {
             cmd.setException(new EndOfCommandParseException());
         }
-        for (Node<S, M> child : this.getChildrenOptional()) {
+        for (Node<S, M> child : parseChildren) {
             child.parseRecursive(ctx, cmd);
             if (cmd.getException() == null) break;
         }
