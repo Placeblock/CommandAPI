@@ -23,8 +23,7 @@ public interface MinecraftCommand<S extends MinecraftSource<P, C, M>, P, C, M, D
             if (e instanceof EndOfCommandParseException ||
                 e instanceof InvalidArgumentParseException ||
                 e instanceof InvalidLiteralParseException ||
-                e instanceof NoRunParseException ||
-                e instanceof NoPermissionParseException) {
+                e instanceof NoRunParseException) {
                 source.sendMessage(this.getDesign().getHelpMessage(this, source));
                 return;
             }

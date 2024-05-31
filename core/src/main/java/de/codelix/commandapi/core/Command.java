@@ -1,5 +1,6 @@
 package de.codelix.commandapi.core;
 
+import de.codelix.commandapi.core.exception.NoPermissionParseException;
 import de.codelix.commandapi.core.exception.NoRunParseException;
 import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.core.message.CommandDesign;
@@ -76,14 +77,30 @@ public interface Command<S extends Source<M>, M, D extends CommandDesign<M>, L e
         return this.getSuggestions(ctx);
     }
 
+    /**
+     * Nodes contains a list with all parsed nodes. If this list is empty we just suggest from
+     * the root node. If not we check if the input queue is empty. An empty queue means the command
+     * has found a valid route. This also means that there is no empty space at the end as the queue
+     * would contain an empty string otherwise. If the queue is empty we add the last parsed string
+     * back to the queue because we want to obtain suggestions with it. If the last node was parsed
+     * successful without a leading empty space we want to get suggestions from all children of the
+     * node before the last node. If there is no "node before the last node" we do suggestions with
+     * the root node again. Otherwise, we use the node before the last node and get suggestions from it.
+     */
     default CompletableFuture<List<String>> getSuggestions(ParseContext<S, M> ctx) {
         ParsedCommand<S, M> cmd = this.execute(ctx);
         List<Node<S, M>> nodes = cmd.getNodes();
+        if (cmd.getException() instanceof NoPermissionParseException) {
+            return CompletableFuture.completedFuture(new ArrayList<>());
+        }
         if (nodes.isEmpty()) return this.getRootNode().getSuggestions(ctx, cmd);
         Node<S, M> lastNode = nodes.get(nodes.size() - 1);
         if (ctx.getInput().isEmpty()) {
             ctx.getInput().add(cmd.getParsed(lastNode));
-            return lastNode.getSuggestions(ctx, cmd);
+            if (nodes.size() <= 1) {
+                return this.getRootNode().getSuggestions(ctx, cmd);
+            }
+            lastNode = nodes.get(nodes.size() - 2);
         }
         List<CompletableFuture<List<String>>> futures = new ArrayList<>();
         for (Node<S, M> child : lastNode.getChildrenOptional()) {

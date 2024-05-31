@@ -67,6 +67,7 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
     public void on(AsyncTabCompleteEvent event) {
         String buffer = event.getBuffer().substring(1);
         List<String> args = new ArrayList<>(List.of(buffer.split(" ")));
+        if (!args.get(0).equals(this.getLabel())) return;
         if (buffer.endsWith(" ")) {
             args.add("");
         }
@@ -104,6 +105,7 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
 
     @Override
     public void register() {
+        this.plugin.getLogger().info("REGISTERING COMMAND: " + this.getLabel());
         if (this.rootNode == null) {
             this.build();
             List<String> names = this.rootNode.getNames();
