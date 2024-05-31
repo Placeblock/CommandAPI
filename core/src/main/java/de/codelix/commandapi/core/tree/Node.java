@@ -23,6 +23,10 @@ public interface Node<S extends Source<M>, M> {
      */
     List<Node<S, M>> getChildren();
 
+    default List<Node<S, M>> getParseChildren(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) {
+        return this.getChildrenOptional();
+    }
+
     default List<Node<S, M>> getChildrenOptional() {
         List<Node<S, M>> children = new ArrayList<>();
         for (Node<S, M> child : this.getChildren()) {
