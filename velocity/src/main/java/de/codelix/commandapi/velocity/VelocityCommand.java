@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends VelocityLiteralBuilder<?, ?, S, P>, A extends VelocityArgumentBuilder<?, ?, ?, S, P>> implements RawCommand, AdventureCommand<S, P, ConsoleCommandSource, AdventureDesign<S>, L, A> {
     private final ProxyServer proxy;
+    private final Object plugin;
     private CommandMeta meta;
     private final String label;
     @Getter
@@ -33,9 +34,10 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
     @Getter
     private final AdventureDesign<S> design;
 
-    public VelocityCommand(ProxyServer proxy, String label, AdventureDesign<S> design, VelocityFactory<L, A, S, P> factory) {
-        this.label = label;
+    public VelocityCommand(ProxyServer proxy, Object plugin, String label, AdventureDesign<S> design, VelocityFactory<L, A, S, P> factory) {
+        this.plugin = plugin;
         this.proxy = proxy;
+        this.label = label;
         this.design = design;
         this.factory = factory;
     }
@@ -98,7 +100,7 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
         CommandManager manager = this.proxy.getCommandManager();
         this.meta = manager.metaBuilder(this.label)
             .aliases(aliases.toArray(String[]::new))
-            .plugin(this)
+            .plugin(this.plugin)
             .build();
         manager.register(this.meta, this);
     }
