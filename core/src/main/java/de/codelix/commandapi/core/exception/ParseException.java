@@ -5,5 +5,5 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ParseException extends Exception {
+public class ParseException extends Exception implements CommandException {
 }

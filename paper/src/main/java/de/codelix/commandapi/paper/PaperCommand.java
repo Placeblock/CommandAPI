@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
 import de.codelix.commandapi.adventure.AdventureCommand;
 import de.codelix.commandapi.adventure.AdventureDesign;
 import de.codelix.commandapi.core.tree.Literal;
+import de.codelix.commandapi.minecraft.exception.InvalidPlayerException;
 import de.codelix.commandapi.paper.tree.builder.PaperFactory;
 import de.codelix.commandapi.paper.tree.builder.PaperArgumentBuilder;
 import de.codelix.commandapi.paper.tree.builder.PaperLiteralBuilder;
@@ -53,7 +54,13 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NonNull @NotNull String[] args) {
         List<String> arguments = new ArrayList<>(List.of(commandLabel));
         arguments.addAll(List.of(args));
-        S source = this.getSource(sender);
+        S source;
+        try {
+            source = this.getSource(sender);
+        } catch (InvalidPlayerException e) {
+            sender.sendMessage(this.design.getMessages().getMessage(e));
+            return false;
+        }
         if (this.isAsync()) {
             this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () ->
                 this.runSafe(arguments, source));
@@ -72,7 +79,13 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
             args.add("");
         }
         CommandSender sender = event.getSender();
-        S source = this.getSource(sender);
+        S source;
+        try {
+            source = this.getSource(sender);
+        } catch (InvalidPlayerException e) {
+            event.completions(new ArrayList<>());
+            return;
+        }
         try {
             List<String> suggestions = this.getSuggestions(args, source).get();
             List<AsyncTabCompleteEvent.Completion> completions = suggestions.stream().map(AsyncTabCompleteEvent.Completion::completion).toList();
@@ -94,6 +107,8 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
     }
 
     protected abstract S createSource(P player, CommandSender console);
+
+    protected abstract P getPlayer(Player player) throws InvalidPlayerException;
 
     protected abstract L createLiteralBuilder(String label);
 
@@ -136,6 +151,4 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
             throw new RuntimeException(e);
         }
     }
-
-    protected abstract P getPlayer(Player player);
 }

@@ -10,6 +10,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import de.codelix.commandapi.adventure.AdventureCommand;
 import de.codelix.commandapi.adventure.AdventureDesign;
 import de.codelix.commandapi.core.tree.Literal;
+import de.codelix.commandapi.minecraft.exception.InvalidPlayerException;
 import de.codelix.commandapi.velocity.tree.builder.VelocityArgumentBuilder;
 import de.codelix.commandapi.velocity.tree.builder.VelocityFactory;
 import de.codelix.commandapi.velocity.tree.builder.VelocityLiteralBuilder;
@@ -44,14 +45,25 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
 
     @Override
     public void execute(Invocation invocation) {
-        S source = this.getSource(invocation.source());
+        S source;
+        try {
+            source = this.getSource(invocation.source());
+        } catch (InvalidPlayerException e) {
+            invocation.source().sendMessage(this.getDesign().getMessages().getMessage(e));
+            return;
+        }
         List<String> arguments = this.getArguments(invocation);
         this.runSafe(arguments, source);
     }
 
     @Override
     public CompletableFuture<List<String>> suggestAsync(final Invocation invocation) {
-        S source = this.getSource(invocation.source());
+        S source;
+        try {
+            source = this.getSource(invocation.source());
+        } catch (InvalidPlayerException e) {
+            return CompletableFuture.completedFuture(new ArrayList<>());
+        }
         List<String> arguments = this.getArguments(invocation);
         if (invocation.arguments().endsWith(" ") || invocation.arguments().isEmpty()) {
             arguments.add("");
@@ -111,5 +123,5 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
         manager.unregister(this.meta);
     }
 
-    protected abstract P getPlayer(Player player);
+    protected abstract P getPlayer(Player player) throws InvalidPlayerException;
 }
