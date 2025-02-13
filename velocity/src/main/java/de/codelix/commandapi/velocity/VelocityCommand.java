@@ -45,28 +45,28 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
 
     @Override
     public void execute(Invocation invocation) {
+        List<String> arguments = this.getArguments(invocation);
         S source;
         try {
             source = this.getSource(invocation.source());
         } catch (InvalidPlayerException e) {
-            invocation.source().sendMessage(this.getDesign().getMessages().getMessage(e));
+            this.onInvalidPlayerExecute(invocation.source(), e, arguments);
             return;
         }
-        List<String> arguments = this.getArguments(invocation);
         this.runSafe(arguments, source);
     }
 
     @Override
     public CompletableFuture<List<String>> suggestAsync(final Invocation invocation) {
+        List<String> arguments = this.getArguments(invocation);
+        if (invocation.arguments().endsWith(" ") || invocation.arguments().isEmpty()) {
+            arguments.add("");
+        }
         S source;
         try {
             source = this.getSource(invocation.source());
         } catch (InvalidPlayerException e) {
-            return CompletableFuture.completedFuture(new ArrayList<>());
-        }
-        List<String> arguments = this.getArguments(invocation);
-        if (invocation.arguments().endsWith(" ") || invocation.arguments().isEmpty()) {
-            arguments.add("");
+            return CompletableFuture.completedFuture(this.onInvalidPlayerTabComplete(invocation.source(), e, arguments));
         }
         return this.getSuggestions(arguments, source);
     }
@@ -90,6 +90,13 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
             throw new IllegalStateException("Invalid source for command " + this.label);
         }
         return source;
+    }
+
+    protected void onInvalidPlayerExecute(CommandSource source, InvalidPlayerException ex, List<String> command) {
+        source.sendMessage(this.getDesign().getMessages().getMessage(ex));
+    }
+    protected List<String> onInvalidPlayerTabComplete(CommandSource source, InvalidPlayerException ex, List<String> command) {
+        return new ArrayList<>();
     }
 
     protected abstract S createSource(P player, ConsoleCommandSource console);
