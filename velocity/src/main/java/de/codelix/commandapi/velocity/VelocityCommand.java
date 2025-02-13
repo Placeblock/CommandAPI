@@ -50,7 +50,7 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
         try {
             source = this.getSource(invocation.source());
         } catch (InvalidPlayerException e) {
-            this.onInvalidPlayerExecute(invocation.source(), e, arguments);
+            this.onInvalidPlayerExecute((Player) invocation.source(), e, arguments);
             return;
         }
         this.runSafe(arguments, source);
@@ -66,7 +66,9 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
         try {
             source = this.getSource(invocation.source());
         } catch (InvalidPlayerException e) {
-            return CompletableFuture.completedFuture(this.onInvalidPlayerTabComplete(invocation.source(), e, arguments));
+            return CompletableFuture.completedFuture(
+                this.onInvalidPlayerTabComplete((Player) invocation.source(), e, arguments)
+            );
         }
         return this.getSuggestions(arguments, source);
     }
@@ -92,10 +94,10 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
         return source;
     }
 
-    protected void onInvalidPlayerExecute(CommandSource source, InvalidPlayerException ex, List<String> command) {
-        source.sendMessage(this.getDesign().getMessages().getMessage(ex));
+    protected void onInvalidPlayerExecute(Player player, InvalidPlayerException ex, List<String> command) {
+        player.sendMessage(this.getDesign().getMessages().getMessage(ex));
     }
-    protected List<String> onInvalidPlayerTabComplete(CommandSource source, InvalidPlayerException ex, List<String> command) {
+    protected List<String> onInvalidPlayerTabComplete(Player player, InvalidPlayerException ex, List<String> command) {
         return new ArrayList<>();
     }
 

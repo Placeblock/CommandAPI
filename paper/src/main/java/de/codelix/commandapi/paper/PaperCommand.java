@@ -58,7 +58,7 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
         try {
             source = this.getSource(sender);
         } catch (InvalidPlayerException e) {
-            this.onInvalidPlayerExecute(sender, e, arguments);
+            this.onInvalidPlayerExecute((Player) sender, e, arguments);
             return false;
         }
         if (this.isAsync()) {
@@ -83,7 +83,7 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
         try {
             source = this.getSource(sender);
         } catch (InvalidPlayerException e) {
-            List<String> suggestions = this.onInvalidPlayerTabComplete(sender, e, args);
+            List<String> suggestions = this.onInvalidPlayerTabComplete((Player) sender, e, args);
             List<AsyncTabCompleteEvent.Completion> completions = suggestions.stream().map(AsyncTabCompleteEvent.Completion::completion).toList();
             event.completions(completions);
             return;
@@ -114,10 +114,10 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
 
     protected abstract L createLiteralBuilder(String label);
 
-    protected void onInvalidPlayerExecute(CommandSender sender, InvalidPlayerException ex, List<String> command) {
-        sender.sendMessage(this.getDesign().getMessages().getMessage(ex));
+    protected void onInvalidPlayerExecute(Player player, InvalidPlayerException ex, List<String> command) {
+        player.sendMessage(this.getDesign().getMessages().getMessage(ex));
     }
-    protected List<String> onInvalidPlayerTabComplete(CommandSender sender, InvalidPlayerException ex, List<String> command) {
+    protected List<String> onInvalidPlayerTabComplete(Player player, InvalidPlayerException ex, List<String> command) {
         return new ArrayList<>();
     }
 
