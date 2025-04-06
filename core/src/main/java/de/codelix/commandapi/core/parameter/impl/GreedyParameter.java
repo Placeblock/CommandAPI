@@ -10,6 +10,9 @@ import de.codelix.commandapi.core.parser.Source;
 public class GreedyParameter<S extends Source<M>, M> implements Parameter<String, S, M> {
     @Override
     public String parse(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) throws ParseException {
-        return ctx.getRemaining();
+        String content = ctx.getRemaining();
+        ctx.getInput().clear();
+        return content;
+        //return ctx.getRemaining();
     }
 }
