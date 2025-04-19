@@ -9,17 +9,17 @@ import org.bukkit.plugin.Plugin;
 
 @SuppressWarnings("unused")
 public abstract class DefaultPaperCommand<S extends PaperSource<P>, P> extends PaperCommand<S, P, DefaultPaperLiteralBuilder<S, P>, DefaultPaperArgumentBuilder<?, S, P>> {
-    public DefaultPaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<S> design) {
+    public DefaultPaperCommand(Plugin plugin, String label, boolean async, AdventureDesign design) {
         super(plugin, label, async, design, new DefaultPaperFactory<>());
     }
-    public DefaultPaperCommand(Plugin plugin, String label, AdventureDesign<S> design) {
+    public DefaultPaperCommand(Plugin plugin, String label, AdventureDesign design) {
         super(plugin, label, true, design, new DefaultPaperFactory<>());
     }
     public DefaultPaperCommand(Plugin plugin, String label, boolean async) {
-        super(plugin, label, async, new AdventureDesign<>(new AdventureMessages()), new DefaultPaperFactory<>());
+        super(plugin, label, async, new AdventureDesign(new AdventureMessages()), new DefaultPaperFactory<>());
     }
     public DefaultPaperCommand(Plugin plugin, String label) {
-        super(plugin, label, true, new AdventureDesign<>(new AdventureMessages()), new DefaultPaperFactory<>());
+        super(plugin, label, true, new AdventureDesign(new AdventureMessages()), new DefaultPaperFactory<>());
     }
 
     protected DefaultPaperLiteralBuilder<S, P> createLiteralBuilder(String label) {

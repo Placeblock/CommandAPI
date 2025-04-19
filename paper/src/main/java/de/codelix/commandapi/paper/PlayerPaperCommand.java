@@ -7,11 +7,11 @@ import org.bukkit.plugin.Plugin;
 
 @SuppressWarnings("unused")
 public abstract class PlayerPaperCommand extends DefaultPaperCommand<DefaultPaperSource, Player> {
-    public PlayerPaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<DefaultPaperSource> design) {
+    public PlayerPaperCommand(Plugin plugin, String label, boolean async, AdventureDesign design) {
         super(plugin, label, async, design);
     }
 
-    public PlayerPaperCommand(Plugin plugin, String label, AdventureDesign<DefaultPaperSource> design) {
+    public PlayerPaperCommand(Plugin plugin, String label, AdventureDesign design) {
         super(plugin, label, design);
     }
 

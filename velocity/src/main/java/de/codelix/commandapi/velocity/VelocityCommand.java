@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends VelocityLiteralBuilder<?, ?, S, P>, A extends VelocityArgumentBuilder<?, ?, ?, S, P>> implements RawCommand, AdventureCommand<S, P, ConsoleCommandSource, AdventureDesign<S>, L, A> {
+public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends VelocityLiteralBuilder<?, ?, S, P>, A extends VelocityArgumentBuilder<?, ?, ?, S, P>> implements RawCommand, AdventureCommand<S, P, ConsoleCommandSource, AdventureDesign, L, A> {
     private final ProxyServer proxy;
     private final Object plugin;
     private CommandMeta meta;
@@ -33,9 +33,9 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
     @Accessors(fluent = true)
     private final VelocityFactory<L, A, S, P> factory;
     @Getter
-    private final AdventureDesign<S> design;
+    private final AdventureDesign design;
 
-    public VelocityCommand(ProxyServer proxy, Object plugin, String label, AdventureDesign<S> design, VelocityFactory<L, A, S, P> factory) {
+    public VelocityCommand(ProxyServer proxy, Object plugin, String label, AdventureDesign design, VelocityFactory<L, A, S, P> factory) {
         this.plugin = plugin;
         this.proxy = proxy;
         this.label = label;

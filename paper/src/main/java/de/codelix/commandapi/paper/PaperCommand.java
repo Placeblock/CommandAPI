@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperLiteralBuilder<?, ?, S, P>, A extends PaperArgumentBuilder<?, ?, ?, S, P>> extends BukkitCommand implements AdventureCommand<S, P, CommandSender, AdventureDesign<S>, L, A>, Listener {
+public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperLiteralBuilder<?, ?, S, P>, A extends PaperArgumentBuilder<?, ?, ?, S, P>> extends BukkitCommand implements AdventureCommand<S, P, CommandSender, AdventureDesign, L, A>, Listener {
     private final Plugin plugin;
     @Getter
     private final boolean async;
@@ -40,9 +40,9 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
     @Accessors(fluent = true)
     private final PaperFactory<L, A, S, P> factory;
     @Getter
-    private final AdventureDesign<S> design;
+    private final AdventureDesign design;
 
-    public PaperCommand(Plugin plugin, String label, boolean async, AdventureDesign<S> design, PaperFactory<L, A, S, P> factory) {
+    public PaperCommand(Plugin plugin, String label, boolean async, AdventureDesign design, PaperFactory<L, A, S, P> factory) {
         super(label);
         this.async = async;
         this.plugin = plugin;

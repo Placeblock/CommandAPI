@@ -9,11 +9,11 @@ import de.codelix.commandapi.velocity.tree.builder.impl.DefaultVelocityLiteralBu
 
 @SuppressWarnings("unused")
 public abstract class DefaultVelocityCommand<S extends VelocitySource<P>, P> extends VelocityCommand<S, P, DefaultVelocityLiteralBuilder<S, P>, DefaultVelocityArgumentBuilder<?, S, P>> {
-    public DefaultVelocityCommand(ProxyServer proxy, Object plugin, String label, AdventureDesign<S> design) {
+    public DefaultVelocityCommand(ProxyServer proxy, Object plugin, String label, AdventureDesign design) {
         super(proxy, plugin, label, design, new DefaultVelocityFactory<>());
     }
     public DefaultVelocityCommand(ProxyServer proxy, Object plugin, String label) {
-        super(proxy, plugin, label, new AdventureDesign<>(new AdventureMessages()), new DefaultVelocityFactory<>());
+        super(proxy, plugin, label, new AdventureDesign(new AdventureMessages()), new DefaultVelocityFactory<>());
     }
 
     protected DefaultVelocityLiteralBuilder<S, P> createLiteralBuilder(String label) {

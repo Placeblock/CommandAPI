@@ -8,7 +8,7 @@ import de.codelix.commandapi.adventure.AdventureDesign;
 @SuppressWarnings("unused")
 public abstract class PlayerVelocityCommand extends DefaultVelocityCommand<DefaultVelocitySource, Player> {
 
-    public PlayerVelocityCommand(ProxyServer proxy, Object plugin, String label, AdventureDesign<DefaultVelocitySource> design) {
+    public PlayerVelocityCommand(ProxyServer proxy, Object plugin, String label, AdventureDesign design) {
         super(proxy, plugin, label, design);
     }
 
