@@ -14,14 +14,14 @@ public class BooleanParameter<S extends Source<M>, M> implements Parameter<Boole
     @Override
     public Boolean parse(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) throws ParseException {
         String next = ctx.getInput().poll();
-        if ("true".equals(next)) return true;
-        if ("false".equals(next)) return false;
+        if ("true".equals(next) || "yes".equals(next) || "ja".equals(next)) return true;
+        if ("false".equals(next) || "no".equals(next) || "nein".equals(next)) return false;
         throw new InvalidBooleanParseException(this, next);
     }
 
     @Override
     public List<String> getSuggestions(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) {
         String next = ctx.getRemaining();
-        return this.startsWith(List.of("true", "end"), next);
+        return this.startsWith(List.of("true", "end", "yes", "no", "ja", "nein"), next);
     }
 }
