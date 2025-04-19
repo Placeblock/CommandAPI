@@ -25,6 +25,7 @@ public interface DefaultNode<S extends Source<M>, M> extends Node<S, M> {
             parseCopy.getInput().removeAll(ctx.getInput());
             cmd.storeParsed(this, parseCopy.getRemaining());
         } catch (ParseException ex) {
+            ex.setNode(this);
             ctx.setInput(ctxCopy.getInput());
             cmd.setException(ex);
             return;

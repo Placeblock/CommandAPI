@@ -1,6 +1,7 @@
 package de.codelix.commandapi.core.parameter.impl;
 
 import de.codelix.commandapi.core.parameter.Parameter;
+import de.codelix.commandapi.core.parameter.exceptions.InvalidSetValueParseException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.parser.Source;
@@ -13,14 +14,14 @@ import java.util.Set;
 public class SetParameter<S extends Source<M>, M> implements Parameter<String, S, M> {
     private final Set<String> values;
     @Override
-    public String parse(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) {
+    public String parse(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) throws InvalidSetValueParseException {
         String next = ctx.getInput().poll();
         for (String value : this.values) {
             if (value.equals(next)) {
                 return value;
             }
         }
-        return null;
+        throw new InvalidSetValueParseException(next);
     }
 
     @Override

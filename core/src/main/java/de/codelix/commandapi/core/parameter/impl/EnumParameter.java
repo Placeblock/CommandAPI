@@ -2,6 +2,7 @@ package de.codelix.commandapi.core.parameter.impl;
 
 import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.core.parameter.Parameter;
+import de.codelix.commandapi.core.parameter.exceptions.InvalidEnumValueParseException;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
 import de.codelix.commandapi.core.parser.Source;
@@ -31,7 +32,7 @@ public class EnumParameter<T extends Enum<T>, S extends Source<M>, M> implements
                 return Enum.valueOf(this.enumClass, next.toUpperCase());
             }
         } catch (IllegalArgumentException ex) {
-            return null;
+            throw new InvalidEnumValueParseException(next);
         }
     }
 
