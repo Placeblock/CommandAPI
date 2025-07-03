@@ -1,4 +1,4 @@
-package de.codelix.commandapi.velocity.parameter;
+package de.codelix.commandapi.minecraft.exception;
 
 import de.codelix.commandapi.core.exception.ParseException;
 import lombok.Getter;

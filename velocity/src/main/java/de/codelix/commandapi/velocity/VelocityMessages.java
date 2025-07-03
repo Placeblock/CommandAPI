@@ -1,7 +1,7 @@
 package de.codelix.commandapi.velocity;
 
 import de.codelix.commandapi.adventure.AdventureMessages;
-import de.codelix.commandapi.velocity.parameter.InvalidPlayerParseException;
+import de.codelix.commandapi.minecraft.exception.InvalidPlayerParseException;
 import net.kyori.adventure.text.Component;
 
 public class VelocityMessages extends AdventureMessages {

@@ -6,6 +6,7 @@ import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.core.parser.ParseContext;
 import de.codelix.commandapi.core.parser.ParsedCommand;
+import de.codelix.commandapi.minecraft.exception.InvalidPlayerParseException;
 import de.codelix.commandapi.velocity.VelocitySource;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.TextComponent;

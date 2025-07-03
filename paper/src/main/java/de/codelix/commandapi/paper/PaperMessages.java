@@ -1,7 +1,7 @@
 package de.codelix.commandapi.paper;
 
 import de.codelix.commandapi.adventure.AdventureMessages;
-import de.codelix.commandapi.paper.parameter.InvalidPlayerParseException;
+import de.codelix.commandapi.minecraft.exception.InvalidPlayerParseException;
 import net.kyori.adventure.text.Component;
 
 public class PaperMessages extends AdventureMessages {
