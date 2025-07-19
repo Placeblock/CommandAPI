@@ -18,6 +18,9 @@ public interface DefaultArgument<T, S extends Source<M>, M> extends DefaultNode<
         if (value != null) {
             cmd.storeArgument(this, value);
         } else {
+            if (this.isOptional()) {
+                cmd.storeArgument(this, null);
+            }
             throw new InvalidArgumentParseException(this);
         }
     }

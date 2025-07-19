@@ -1,5 +1,6 @@
 package de.codelix.commandapi.core;
 
+import de.codelix.commandapi.core.exception.CommandException;
 import de.codelix.commandapi.core.exception.NoPermissionParseException;
 import de.codelix.commandapi.core.exception.NoRunParseException;
 import de.codelix.commandapi.core.exception.ParseException;
@@ -37,8 +38,11 @@ public interface Command<S extends Source<M>, M, D extends CommandDesign<M>, L e
     default void runSafe(List<String> input, S source) {
         try {
             this.run(input, source);
-        } catch (ParseException e) {
-            M message = this.getDesign().getMessages().getMessage(e);
+        } catch (Exception e) {
+            if (!(e instanceof CommandException ce)) {
+                throw new RuntimeException(e);
+            }
+            M message = this.getDesign().getMessages().getMessage(ce);
             if (message == null) return;
             source.sendMessage(message);
         }

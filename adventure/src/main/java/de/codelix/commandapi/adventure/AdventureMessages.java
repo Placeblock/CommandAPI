@@ -19,5 +19,6 @@ public class AdventureMessages extends CommandMessages<TextComponent> {
         add(IntegerTooLargeParseException.class, (e) -> Component.text("Integer " + e.getValue() + " is too large (Max " + e.getMax() + ")"));
         add(DoubleTooLargeParseException.class, (e) -> Component.text("Double " + e.getValue() + " is too large (Max " + e.getMax() + ")"));
         add(InvalidPlayerException.class, (e) -> Component.text("You cannot execute this command: " + e.getMessage()));
+        add(InvalidSetValueParseException.class, (e) -> Component.text("Invalid value: " + e.getInput() + " for " + e.getNode().getDisplayNameSafe()));
     }
 }

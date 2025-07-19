@@ -20,16 +20,18 @@ public interface DefaultNode<S extends Source<M>, M> extends Node<S, M> {
         ParseContext<S, M> ctxCopy = ctx.copy();
         try {
             this.parse(ctx, cmd);
-            cmd.setException(null);
-            ParseContext<S, M> parseCopy = ctxCopy.copy();
-            parseCopy.getInput().removeAll(ctx.getInput());
-            cmd.storeParsed(this, parseCopy.getRemaining());
         } catch (ParseException ex) {
-            ex.setNode(this);
-            ctx.setInput(ctxCopy.getInput());
-            cmd.setException(ex);
-            return;
+            if (!this.isOptional()) {
+                ex.setNode(this);
+                ctx.setInput(ctxCopy.getInput());
+                cmd.setException(ex);
+                return;
+            }
         }
+        cmd.setException(null);
+        ParseContext<S, M> parseCopy = ctxCopy.copy();
+        parseCopy.getInput().removeAll(ctx.getInput());
+        cmd.storeParsed(this, parseCopy.getRemaining());
         if (ctx.getInput().isEmpty() || ctx.getInput().peek().isEmpty()) {
             if (ctx.hasPermission(this.getPermission())) {
                 cmd.addNode(this);
@@ -40,7 +42,7 @@ public interface DefaultNode<S extends Source<M>, M> extends Node<S, M> {
             return;
         }
         cmd.addNode(this);
-        List<Node<S, M>> parseChildren = this.getParseChildren(ctx, cmd);
+        List<Node<S, M>> parseChildren = this.getChildren();
         if (parseChildren.isEmpty() && !ctx.getInput().isEmpty()) {
             cmd.setException(new EndOfCommandParseException());
         }
