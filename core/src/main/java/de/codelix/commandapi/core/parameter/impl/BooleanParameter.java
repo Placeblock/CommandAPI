@@ -22,6 +22,6 @@ public class BooleanParameter<S extends Source<M>, M> implements Parameter<Boole
     @Override
     public List<String> getSuggestions(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) {
         String next = ctx.getRemaining();
-        return this.startsWith(List.of("true", "end", "yes", "no", "ja", "nein"), next);
+        return this.startsWith(List.of("true", "false", "yes", "no", "ja", "nein"), next);
     }
 }
