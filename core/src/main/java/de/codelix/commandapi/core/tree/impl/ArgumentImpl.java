@@ -14,10 +14,12 @@ import java.util.List;
 public class ArgumentImpl<T, S extends Source<M>, M> extends NodeImpl<S, M> implements DefaultArgument<T, S, M> {
     private final String name;
     private final Parameter<T, S, M> parameter;
+    private final T defaultValue;
 
-    public ArgumentImpl(String name, Parameter<T, S, M> parameter, String displayName, String description, List<Node<S, M>> children, String permission, boolean unsafePermission, boolean optional, Collection<RunConsumer> runConsumers) {
+    public ArgumentImpl(String name, Parameter<T, S, M> parameter, T defaultValue, String displayName, String description, List<Node<S, M>> children, String permission, boolean unsafePermission, boolean optional, Collection<RunConsumer> runConsumers) {
         super(displayName, description, children, permission, unsafePermission, optional, runConsumers);
         this.name = name;
         this.parameter = parameter;
+        this.defaultValue = defaultValue;
     }
 }

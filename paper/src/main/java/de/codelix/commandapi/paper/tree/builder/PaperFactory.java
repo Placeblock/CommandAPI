@@ -1,8 +1,13 @@
 package de.codelix.commandapi.paper.tree.builder;
 
 import de.codelix.commandapi.adventure.AdventureFactory;
+import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.paper.PaperSource;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.command.CommandSender;
 
-public interface PaperFactory<L extends PaperLiteralBuilder<?, ?, S, P>, A extends PaperArgumentBuilder<?, ?, ?, S, P>, S extends PaperSource<P>, P> extends AdventureFactory<L, A, S, P, CommandSender> {
+public interface PaperFactory<S extends PaperSource<P>, P> extends AdventureFactory<S, P, CommandSender> {
+    PaperLiteralBuilder<?, ?, S, P> literal(String name, String... aliases);
+
+    <T> PaperArgumentBuilder<T, ?, ?, S, P> argument(String name, Parameter<T, S, TextComponent> parameter);
 }

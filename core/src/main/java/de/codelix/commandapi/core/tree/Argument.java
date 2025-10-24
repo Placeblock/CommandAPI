@@ -21,4 +21,5 @@ public interface Argument<T, S extends Source<M>, M> extends Node<S, M> {
      */
     Parameter<T, S, M> getParameter();
 
+    T getDefaultValue();
 }

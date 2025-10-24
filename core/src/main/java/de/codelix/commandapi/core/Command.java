@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutionException;
 @SuppressWarnings("unused")
 public interface Command<S extends Source<M>, M, D extends CommandDesign<M>, L extends LiteralBuilder<?, ?, S, M>, A extends ArgumentBuilder<?, ?, ?, S, M>> {
 
-    Factory<L, A, S, M> factory();
+    Factory<S, M> factory();
 
     Node<S, M> getRootNode();
 

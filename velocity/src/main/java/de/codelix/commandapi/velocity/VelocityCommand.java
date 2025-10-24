@@ -31,11 +31,11 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
     private Literal<S, TextComponent> rootNode;
     @Getter
     @Accessors(fluent = true)
-    private final VelocityFactory<L, A, S, P> factory;
+    private final VelocityFactory<S, P> factory;
     @Getter
     private final AdventureDesign design;
 
-    public VelocityCommand(ProxyServer proxy, Object plugin, String label, AdventureDesign design, VelocityFactory<L, A, S, P> factory) {
+    public VelocityCommand(ProxyServer proxy, Object plugin, String label, AdventureDesign design, VelocityFactory<S, P> factory) {
         this.plugin = plugin;
         this.proxy = proxy;
         this.label = label;

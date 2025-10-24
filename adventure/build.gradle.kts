@@ -6,7 +6,7 @@ plugins {
 
 group = "de.codelix.commandapi"
 description = "Adventure API support for the CommandAPI"
-version = "4.0.0-SNAPSHOT"
+version = "4.3.1"
 
 repositories {
     mavenCentral()
@@ -16,20 +16,20 @@ dependencies {
     api(project(":minecraft"))
     compileOnly("net.kyori:adventure-api:4.14.0")
 
-    compileOnly("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
 }
 java {
     withJavadocJar()
     withSourcesJar()
     // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(24))
 }
 
 tasks {
     compileJava {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
-        options.release.set(17)
+        options.release.set(24)
     }
     processResources {
         filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything

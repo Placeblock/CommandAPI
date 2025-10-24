@@ -38,11 +38,11 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
     private Literal<S, TextComponent> rootNode;
     @Getter
     @Accessors(fluent = true)
-    private final PaperFactory<L, A, S, P> factory;
+    private final PaperFactory<S, P> factory;
     @Getter
     private final AdventureDesign design;
 
-    public PaperCommand(Plugin plugin, String label, boolean async, AdventureDesign design, PaperFactory<L, A, S, P> factory) {
+    public PaperCommand(Plugin plugin, String label, boolean async, AdventureDesign design, PaperFactory<S, P> factory) {
         super(label);
         this.async = async;
         this.plugin = plugin;

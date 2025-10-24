@@ -5,7 +5,7 @@ import de.codelix.commandapi.paper.PaperSource;
 import de.codelix.commandapi.paper.tree.builder.PaperFactory;
 import net.kyori.adventure.text.TextComponent;
 
-public class DefaultPaperFactory<S extends PaperSource<P>, P> implements PaperFactory<DefaultPaperLiteralBuilder<S, P>, DefaultPaperArgumentBuilder<?, S, P>, S, P> {
+public class DefaultPaperFactory<S extends PaperSource<P>, P> implements PaperFactory<S, P> {
     @Override
     public DefaultPaperLiteralBuilder<S, P> literal(String name, String... aliases) {
         return new DefaultPaperLiteralBuilder<>(name, aliases);

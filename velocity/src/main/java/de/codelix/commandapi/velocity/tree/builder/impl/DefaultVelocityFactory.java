@@ -5,7 +5,7 @@ import de.codelix.commandapi.velocity.VelocitySource;
 import de.codelix.commandapi.velocity.tree.builder.VelocityFactory;
 import net.kyori.adventure.text.TextComponent;
 
-public class DefaultVelocityFactory<S extends VelocitySource<P>, P> implements VelocityFactory<DefaultVelocityLiteralBuilder<S, P>, DefaultVelocityArgumentBuilder<?, S, P>, S, P> {
+public class DefaultVelocityFactory<S extends VelocitySource<P>, P> implements VelocityFactory<S, P> {
     @Override
     public DefaultVelocityLiteralBuilder<S, P> literal(String name, String... aliases) {
         return new DefaultVelocityLiteralBuilder<>(name, aliases);

@@ -44,7 +44,8 @@ public interface Node<S extends Source<M>, M> {
             return branches;
         }
         List<Node<S, M>> children = this.getChildrenOptional();
-        if (children.isEmpty() || (!this.getRunConsumers().isEmpty() && !this.isUnsafePermission())) {
+        if (children.isEmpty() ||
+            (!this.getRunConsumers().isEmpty() && !this.isUnsafePermission())) {
             branches.add(new ArrayList<>(List.of(this)));
         }
         for (Node<S, M> node : children) {

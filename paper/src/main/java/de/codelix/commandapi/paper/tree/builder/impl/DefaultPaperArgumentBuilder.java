@@ -14,10 +14,17 @@ import java.util.List;
 public class DefaultPaperArgumentBuilder<T, S extends PaperSource<P>, P> extends DefaultPaperNodeBuilder<DefaultPaperArgumentBuilder<T, S, P>, PaperArgumentImpl<T, S, P>, S, P> implements PaperArgumentBuilder<T, DefaultPaperArgumentBuilder<T, S, P>, PaperArgumentImpl<T, S, P>, S, P> {
     private final String name;
     private final Parameter<T, S, TextComponent> parameter;
+    private T defaultValue;
 
     public DefaultPaperArgumentBuilder(String name, Parameter<T, S, TextComponent> parameter) {
         this.name = name;
         this.parameter = parameter;
+    }
+
+    @Override
+    public DefaultPaperArgumentBuilder<T, S, P> defaultValue(T defaultValue) {
+        this.defaultValue = defaultValue;
+        return getThis();
     }
 
     @Override
@@ -26,7 +33,7 @@ public class DefaultPaperArgumentBuilder<T, S extends PaperSource<P>, P> extends
         for (NodeBuilder<?, ?, S, TextComponent> child : this.children) {
             children.add(child.build());
         }
-        return new PaperArgumentImpl<>(this.name, this.parameter, this.displayName, this.description, children, this.permission,
+        return new PaperArgumentImpl<>(this.name, this.parameter, this.defaultValue, this.displayName, this.description, children, this.permission,
             this.unsafePermission, this.optional, this.runConsumers);
     }
     @Override

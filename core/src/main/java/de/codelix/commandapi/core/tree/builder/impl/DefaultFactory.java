@@ -4,7 +4,7 @@ import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.core.parser.Source;
 import de.codelix.commandapi.core.tree.builder.Factory;
 
-public class DefaultFactory<S extends Source<M>, M> implements Factory<DefaultLiteralBuilder<S, M>, DefaultArgumentBuilder<?, S, M>, S, M> {
+public class DefaultFactory<S extends Source<M>, M> implements Factory<S, M> {
     @Override
     public DefaultLiteralBuilder<S, M> literal(String name, String... aliases) {
         return new DefaultLiteralBuilder<>(name, aliases);

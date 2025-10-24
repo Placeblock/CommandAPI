@@ -14,10 +14,17 @@ import java.util.List;
 public class DefaultVelocityArgumentBuilder<T, S extends VelocitySource<P>, P> extends DefaultVelocityNodeBuilder<DefaultVelocityArgumentBuilder<T, S, P>, VelocityArgumentImpl<T, S, P>, S, P> implements VelocityArgumentBuilder<T, DefaultVelocityArgumentBuilder<T, S, P>, VelocityArgumentImpl<T, S, P>, S, P> {
     private final String name;
     private final Parameter<T, S, TextComponent> parameter;
+    private T defaultValue;
 
     public DefaultVelocityArgumentBuilder(String name, Parameter<T, S, TextComponent> parameter) {
         this.name = name;
         this.parameter = parameter;
+    }
+
+    @Override
+    public DefaultVelocityArgumentBuilder<T, S, P> defaultValue(T defaultValue) {
+        this.defaultValue = defaultValue;
+        return getThis();
     }
 
     @Override
@@ -26,7 +33,7 @@ public class DefaultVelocityArgumentBuilder<T, S extends VelocitySource<P>, P> e
         for (NodeBuilder<?, ?, S, TextComponent> child : this.children) {
             children.add(child.build());
         }
-        return new VelocityArgumentImpl<>(this.name, this.parameter, this.displayName, this.description, children, this.permission,
+        return new VelocityArgumentImpl<>(this.name, this.parameter, this.defaultValue, this.displayName, this.description, children, this.permission,
             this.unsafePermission, this.optional, this.runConsumers);
     }
     @Override

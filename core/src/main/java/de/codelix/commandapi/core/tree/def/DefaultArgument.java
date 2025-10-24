@@ -19,7 +19,7 @@ public interface DefaultArgument<T, S extends Source<M>, M> extends DefaultNode<
             cmd.storeArgument(this, value);
         } else {
             if (this.isOptional()) {
-                cmd.storeArgument(this, null);
+                cmd.storeArgument(this, this.getDefaultValue());
             }
             throw new InvalidArgumentParseException(this);
         }

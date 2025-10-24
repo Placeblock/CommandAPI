@@ -6,23 +6,24 @@ plugins {
 
 group = "de.codelix.commandapi"
 description = "API for an easier use of Commands"
-version = "4.0.0-SNAPSHOT"
+version = "4.3.1"
 
 repositories {
     mavenCentral()
 }
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
 
-    testImplementation(platform("org.junit:junit-bom:5.10.1"))
+    testImplementation(platform("org.junit:junit-bom:6.0.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.platform:junit-platform-launcher:6.0.0")
 }
 java {
     withJavadocJar()
     withSourcesJar()
     // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(24))
 }
 
 tasks.test {
@@ -32,7 +33,7 @@ tasks.test {
 tasks {
     compileJava {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
-        options.release.set(17)
+        options.release.set(24)
     }
     processResources {
         filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything

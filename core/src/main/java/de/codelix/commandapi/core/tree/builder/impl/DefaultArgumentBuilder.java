@@ -13,10 +13,17 @@ import java.util.List;
 public class DefaultArgumentBuilder<T, S extends Source<M>, M> extends DefaultNodeBuilder<DefaultArgumentBuilder<T, S, M>, ArgumentImpl<T, S, M>, S, M> implements ArgumentBuilder<T, DefaultArgumentBuilder<T, S, M>, ArgumentImpl<T, S, M>, S, M> {
     private final String name;
     private final Parameter<T, S, M> parameter;
+    private T defaultValue = null;
 
     public DefaultArgumentBuilder(String name, Parameter<T, S, M> parameter) {
         this.name = name;
         this.parameter = parameter;
+    }
+
+    @Override
+    public DefaultArgumentBuilder<T, S, M> defaultValue(T defaultValue) {
+        this.defaultValue = defaultValue;
+        return getThis();
     }
 
     @Override
@@ -25,7 +32,7 @@ public class DefaultArgumentBuilder<T, S extends Source<M>, M> extends DefaultNo
         for (NodeBuilder<?, ?, S, M> child : this.children) {
             children.add(child.build());
         }
-        return new ArgumentImpl<>(this.name, this.parameter, this.displayName, this.description, children, this.permission,
+        return new ArgumentImpl<>(this.name, this.parameter, this.defaultValue, this.displayName, this.description, children, this.permission,
             this.unsafePermission, this.optional, this.runConsumers);
     }
     @Override
