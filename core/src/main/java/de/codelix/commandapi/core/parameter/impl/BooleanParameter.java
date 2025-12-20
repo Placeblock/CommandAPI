@@ -19,6 +19,7 @@ public class BooleanParameter<S extends Source<M>, M> implements Parameter<Boole
         throw new InvalidBooleanParseException(this, next);
     }
 
+
     @Override
     public List<String> getSuggestions(ParseContext<S, M> ctx, ParsedCommand<S, M> cmd) {
         String next = ctx.getRemaining();

@@ -19,6 +19,9 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
+
+    implementation("tools.jackson.core:jackson-core:3.0.3")
+    implementation("tools.jackson.core:jackson-databind:3.0.3")
 }
 java {
     withJavadocJar()
