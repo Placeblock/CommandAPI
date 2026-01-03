@@ -20,8 +20,9 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
 
-    implementation("tools.jackson.core:jackson-core:3.0.3")
-    implementation("tools.jackson.core:jackson-databind:3.0.3")
+    api("tools.jackson.core:jackson-core:3.0.3")
+    api("tools.jackson.core:jackson-databind:3.0.3")
+    api("com.fasterxml.jackson.core:jackson-annotations:2.20")
 }
 java {
     withJavadocJar()

@@ -13,6 +13,7 @@ public class ParsedCommand<S extends Source<M>, M> {
     @Getter
     private final List<Node<S, M>> nodes = new ArrayList<>();
     private final LinkedHashMap<Argument<?, S, M>, Object> arguments = new LinkedHashMap<>();
+    private final HashMap<String, Object> metadata = new HashMap<>();
     private final LinkedHashMap<Node<S, M>, String> parsed = new LinkedHashMap<>();
     @Getter
     @Setter
@@ -45,5 +46,13 @@ public class ParsedCommand<S extends Source<M>, M> {
 
     public void addNode(Node<S, M> node) {
         this.nodes.add(node);
+    }
+
+    public void storeMetadata(String key, Object value) {
+        this.metadata.put(key, value);
+    }
+
+    public Object getMetadata(String key) {
+        return this.metadata.get(key);
     }
 }
