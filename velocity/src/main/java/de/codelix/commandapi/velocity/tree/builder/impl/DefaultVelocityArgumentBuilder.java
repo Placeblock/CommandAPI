@@ -6,17 +6,17 @@ import de.codelix.commandapi.core.tree.builder.NodeBuilder;
 import de.codelix.commandapi.velocity.VelocitySource;
 import de.codelix.commandapi.velocity.tree.builder.VelocityArgumentBuilder;
 import de.codelix.commandapi.velocity.tree.impl.VelocityArgumentImpl;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultVelocityArgumentBuilder<T, S extends VelocitySource<P>, P> extends DefaultVelocityNodeBuilder<DefaultVelocityArgumentBuilder<T, S, P>, VelocityArgumentImpl<T, S, P>, S, P> implements VelocityArgumentBuilder<T, DefaultVelocityArgumentBuilder<T, S, P>, VelocityArgumentImpl<T, S, P>, S, P> {
     private final String name;
-    private final Parameter<T, S, TextComponent> parameter;
+    private final Parameter<T, S, Component> parameter;
     private T defaultValue;
 
-    public DefaultVelocityArgumentBuilder(String name, Parameter<T, S, TextComponent> parameter) {
+    public DefaultVelocityArgumentBuilder(String name, Parameter<T, S, Component> parameter) {
         this.name = name;
         this.parameter = parameter;
     }
@@ -29,8 +29,8 @@ public class DefaultVelocityArgumentBuilder<T, S extends VelocitySource<P>, P> e
 
     @Override
     public VelocityArgumentImpl<T, S, P> build() {
-        List<Node<S, TextComponent>> children = new ArrayList<>();
-        for (NodeBuilder<?, ?, S, TextComponent> child : this.children) {
+        List<Node<S, Component>> children = new ArrayList<>();
+        for (NodeBuilder<?, ?, S, Component> child : this.children) {
             children.add(child.build());
         }
         return new VelocityArgumentImpl<>(this.name, this.parameter, this.defaultValue, this.displayName, this.description, children, this.permission,

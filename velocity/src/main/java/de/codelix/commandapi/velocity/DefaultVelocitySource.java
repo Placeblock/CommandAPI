@@ -2,12 +2,12 @@ package de.codelix.commandapi.velocity;
 
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 @SuppressWarnings("unused")
 public class DefaultVelocitySource extends VelocitySource<Player> {
     @Override
-    public void sendMessagePlayer(TextComponent message) {
+    public void sendMessagePlayer(Component message) {
         this.getPlayer().sendMessage(message);
     }
 

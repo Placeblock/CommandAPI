@@ -6,7 +6,7 @@ import de.codelix.commandapi.minecraft.tree.builder.PlayerRunConsumer;
 import de.codelix.commandapi.paper.PaperSource;
 import de.codelix.commandapi.paper.tree.builder.PaperNodeBuilder;
 import de.codelix.commandapi.paper.tree.impl.PaperNodeImpl;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class DefaultPaperNodeBuilder<B extends DefaultPaperNodeBuilder<B, R, S, P>, R extends PaperNodeImpl<S, P>, S extends PaperSource<P>, P> implements PaperNodeBuilder<B, R, S, P> {
     protected String displayName;
     protected String description;
-    protected List<NodeBuilder<?, ?, S, TextComponent>> children = new ArrayList<>();
+    protected List<NodeBuilder<?, ?, S, Component>> children = new ArrayList<>();
     protected String permission;
     protected boolean unsafePermission = false;
     protected boolean optional = false;
@@ -34,7 +34,7 @@ public abstract class DefaultPaperNodeBuilder<B extends DefaultPaperNodeBuilder<
     }
 
     @Override
-    public B then(NodeBuilder<?, ?, S, TextComponent> child) {
+    public B then(NodeBuilder<?, ?, S, Component> child) {
         this.children.add(child);
         return this.getThis();
     }
@@ -58,13 +58,13 @@ public abstract class DefaultPaperNodeBuilder<B extends DefaultPaperNodeBuilder<
     }
 
     @Override
-    public B runNative(RunConsumer.RC<S, TextComponent> runConsumer) {
+    public B runNative(RunConsumer.RC<S, Component> runConsumer) {
         this.runConsumers.add(runConsumer);
         return this.getThis();
     }
 
     @Override
-    public B run(RunConsumer.RC0<S, TextComponent> runConsumer) {
+    public B run(RunConsumer.RC0<S, Component> runConsumer) {
         this.runConsumers.add(runConsumer);
         return this.getThis();
     }
@@ -78,7 +78,7 @@ public abstract class DefaultPaperNodeBuilder<B extends DefaultPaperNodeBuilder<
     }
 
     @Override
-    public <T1> B run(RunConsumer.RC1<S, TextComponent, T1> runConsumer) {
+    public <T1> B run(RunConsumer.RC1<S, Component, T1> runConsumer) {
         this.runConsumers.add(runConsumer);
         return this.getThis();
     }
@@ -92,7 +92,7 @@ public abstract class DefaultPaperNodeBuilder<B extends DefaultPaperNodeBuilder<
     }
 
     @Override
-    public <T1, T2> B run(RunConsumer.RC2<S, TextComponent, T1, T2> runConsumer) {
+    public <T1, T2> B run(RunConsumer.RC2<S, Component, T1, T2> runConsumer) {
         this.runConsumers.add(runConsumer);
         return this.getThis();
     }
@@ -106,7 +106,7 @@ public abstract class DefaultPaperNodeBuilder<B extends DefaultPaperNodeBuilder<
     }
 
     @Override
-    public <T1, T2, T3> B run(RunConsumer.RC3<S, TextComponent, T1, T2, T3> runConsumer) {
+    public <T1, T2, T3> B run(RunConsumer.RC3<S, Component, T1, T2, T3> runConsumer) {
         this.runConsumers.add(runConsumer);
         return this.getThis();
     }
@@ -120,7 +120,7 @@ public abstract class DefaultPaperNodeBuilder<B extends DefaultPaperNodeBuilder<
     }
 
     @Override
-    public <T1, T2, T3, T4> B run(RunConsumer.RC4<S, TextComponent, T1, T2, T3, T4> runConsumer) {
+    public <T1, T2, T3, T4> B run(RunConsumer.RC4<S, Component, T1, T2, T3, T4> runConsumer) {
         this.runConsumers.add(runConsumer);
         return this.getThis();
     }
@@ -134,7 +134,7 @@ public abstract class DefaultPaperNodeBuilder<B extends DefaultPaperNodeBuilder<
     }
 
     @Override
-    public <T1, T2, T3, T4, T5> B run(RunConsumer.RC5<S, TextComponent, T1, T2, T3, T4, T5> runConsumer) {
+    public <T1, T2, T3, T4, T5> B run(RunConsumer.RC5<S, Component, T1, T2, T3, T4, T5> runConsumer) {
         this.runConsumers.add(runConsumer);
         return this.getThis();
     }
@@ -148,7 +148,7 @@ public abstract class DefaultPaperNodeBuilder<B extends DefaultPaperNodeBuilder<
     }
 
     @Override
-    public <T1, T2, T3, T4, T5, T6> B run(RunConsumer.RC6<S, TextComponent, T1, T2, T3, T4, T5, T6> runConsumer) {
+    public <T1, T2, T3, T4, T5, T6> B run(RunConsumer.RC6<S, Component, T1, T2, T3, T4, T5, T6> runConsumer) {
         this.runConsumers.add(runConsumer);
         return this.getThis();
     }

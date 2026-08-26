@@ -6,7 +6,7 @@ plugins {
 
 group = "de.codelix.commandapi"
 description = "Velocity Support for the Command API"
-version = "4.3.1"
+version = "4.4.0"
 
 repositories {
     mavenCentral()

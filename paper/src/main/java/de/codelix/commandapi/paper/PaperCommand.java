@@ -11,7 +11,7 @@ import de.codelix.commandapi.paper.tree.builder.PaperLiteralBuilder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -35,7 +35,7 @@ public abstract class PaperCommand<S extends PaperSource<P>, P, L extends PaperL
     @Getter
     private final boolean async;
     @Getter
-    private Literal<S, TextComponent> rootNode;
+    private Literal<S, Component> rootNode;
     @Getter
     @Accessors(fluent = true)
     private final PaperFactory<S, P> factory;

@@ -16,7 +16,7 @@ import de.codelix.commandapi.velocity.tree.builder.VelocityFactory;
 import de.codelix.commandapi.velocity.tree.builder.VelocityLiteralBuilder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public abstract class VelocityCommand<S extends VelocitySource<P>, P, L extends 
     private CommandMeta meta;
     private final String label;
     @Getter
-    private Literal<S, TextComponent> rootNode;
+    private Literal<S, Component> rootNode;
     @Getter
     @Accessors(fluent = true)
     private final VelocityFactory<S, P> factory;

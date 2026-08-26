@@ -1,6 +1,6 @@
 package de.codelix.commandapi.paper;
 
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -11,7 +11,7 @@ public class DefaultPaperSource extends PaperSource<Player> {
     }
 
     @Override
-    public void sendMessagePlayer(TextComponent message) {
+    public void sendMessagePlayer(Component message) {
         this.getPlayer().sendMessage(message);
     }
 

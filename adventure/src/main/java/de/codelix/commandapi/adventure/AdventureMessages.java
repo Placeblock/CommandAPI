@@ -5,9 +5,9 @@ import de.codelix.commandapi.core.message.CommandMessages;
 import de.codelix.commandapi.core.parameter.exceptions.*;
 import de.codelix.commandapi.minecraft.exception.InvalidPlayerException;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
-public class AdventureMessages extends CommandMessages<TextComponent> {
+public class AdventureMessages extends CommandMessages<Component> {
 
     public AdventureMessages() {
         add(NoPermissionParseException.class, (e) -> Component.text("No permission"));

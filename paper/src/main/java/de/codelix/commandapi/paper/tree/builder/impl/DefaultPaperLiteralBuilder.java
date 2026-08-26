@@ -5,7 +5,7 @@ import de.codelix.commandapi.core.tree.builder.NodeBuilder;
 import de.codelix.commandapi.paper.PaperSource;
 import de.codelix.commandapi.paper.tree.builder.PaperLiteralBuilder;
 import de.codelix.commandapi.paper.tree.impl.PaperLiteralImpl;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,8 @@ public class DefaultPaperLiteralBuilder<S extends PaperSource<P>, P> extends Def
     }
     @Override
     public PaperLiteralImpl<S, P> build() {
-        List<Node<S, TextComponent>> children = new ArrayList<>();
-        for (NodeBuilder<?, ?, S, TextComponent> child : this.children) {
+        List<Node<S, Component>> children = new ArrayList<>();
+        for (NodeBuilder<?, ?, S, Component> child : this.children) {
             children.add(child.build());
         }
         return new PaperLiteralImpl<>(this.names, this.displayName, this.description, children, this.permission,

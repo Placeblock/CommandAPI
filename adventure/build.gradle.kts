@@ -6,7 +6,7 @@ plugins {
 
 group = "de.codelix.commandapi"
 description = "Adventure API support for the CommandAPI"
-version = "4.3.1"
+version = "4.4.0"
 
 repositories {
     mavenCentral()
@@ -14,7 +14,7 @@ repositories {
 dependencies {
     compileOnly(project(":core"))
     api(project(":minecraft"))
-    compileOnly("net.kyori:adventure-api:4.14.0")
+    compileOnly("net.kyori:adventure-api:5.2.0")
 
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")

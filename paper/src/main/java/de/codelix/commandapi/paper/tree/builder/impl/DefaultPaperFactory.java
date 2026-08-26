@@ -3,7 +3,7 @@ package de.codelix.commandapi.paper.tree.builder.impl;
 import de.codelix.commandapi.core.parameter.Parameter;
 import de.codelix.commandapi.paper.PaperSource;
 import de.codelix.commandapi.paper.tree.builder.PaperFactory;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 public class DefaultPaperFactory<S extends PaperSource<P>, P> implements PaperFactory<S, P> {
     @Override
@@ -12,7 +12,7 @@ public class DefaultPaperFactory<S extends PaperSource<P>, P> implements PaperFa
     }
 
     @Override
-    public <T> DefaultPaperArgumentBuilder<T, S, P> argument(String name, Parameter<T, S, TextComponent> parameter) {
+    public <T> DefaultPaperArgumentBuilder<T, S, P> argument(String name, Parameter<T, S, Component> parameter) {
         return new DefaultPaperArgumentBuilder<>(name, parameter);
     }
 }
